@@ -1,14 +1,70 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  // This helps Windows find the correct file
+  binaryTargets = ["native"] 
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// prisma/schema.prisma
+
+model User {
+  id                String   @id @default(uuid())
+  name              String
+  email             String   @unique
+  password          String
+  role              String   // "ADMIN", "VENDOR", "CUSTOMER"
+  gstin             String?
+  company           String?
+  
+  // NEW: Verification Fields
+  emailVerified     DateTime?
+  verificationToken String?   @unique
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
+  
+  orders            RentalOrder[]
+}
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String   // e.g., "Camera", "Laptop"
+  hourlyPrice Float    @default(0)
+  dailyPrice  Float    // Primary rental rate
+  totalStock  Int      // Critical for reservation logic
+  isRentable  Boolean  @default(true)
+  image       String?
+  lines       OrderLine[]
+}
+
+model RentalOrder {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  status      String      // "DRAFT", "CONFIRMED", "PICKED_UP", "RETURNED"
+  totalAmount Float
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime    @default(now())
+  
+  // Invoice & Payment
+  paymentStatus String    @default("UNPAID")
+  
+  lines       OrderLine[]
+}
+
+model OrderLine {
+  id          String      @id @default(uuid())
+  orderId     String
+  order       RentalOrder @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id])
+  quantity    Int
+  price       Float
 }
