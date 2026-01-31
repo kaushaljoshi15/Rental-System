@@ -13,12 +13,24 @@ datasource db {
 
 // prisma/schema.prisma
 
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique  // "ADMIN", "VENDOR", "CUSTOMER", etc.
+  slug        String   @unique  // "admin", "vendor", "customer", etc.
+  description String?
+  permissions String[] // Array of permission strings
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
+
 model User {
   id                String   @id @default(uuid())
   name              String
   email             String   @unique
   password          String
-  role              String   // "ADMIN", "VENDOR", "CUSTOMER"
+  roleId            String?  // Reference to Role model
+  role              Role?    @relation(fields: [roleId], references: [id])
   gstin             String?
   company           String?
   
@@ -30,11 +42,23 @@ model User {
   
   orders            RentalOrder[]
 }
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products    Product[]
+}
+
 model Product {
   id          String   @id @default(uuid())
   name        String
   description String?
-  category    String   // e.g., "Camera", "Laptop"
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
   hourlyPrice Float    @default(0)
   dailyPrice  Float    // Primary rental rate
   totalStock  Int      // Critical for reservation logic

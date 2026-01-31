@@ -17,29 +17,37 @@ export async function registerUser(formData: FormData) {
 
   try {
     // 2. Database Check
-    // If this line fails with "Can't reach database", it means your WiFi is blocking Port 5432.
-    // FIX: Switch to Mobile Hotspot immediately.
     const existing = await prisma.user.findUnique({ where: { email } });
     
     if (existing) return { error: "User already exists" };
 
-    // 3. Prepare Secure Data
+    // 3. Find Role by slug (convert "CUSTOMER" to "customer", "VENDOR" to "vendor")
+    const roleSlug = role.toLowerCase();
+    const roleRecord = await prisma.role.findUnique({
+      where: { slug: roleSlug },
+    });
+
+    if (!roleRecord) {
+      return { error: `Invalid role: ${role}. Please select a valid role.` };
+    }
+
+    // 4. Prepare Secure Data
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = uuidv4();
 
-    // 4. Create User in Database
+    // 5. Create User in Database with Role reference
     await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role,
+        roleId: roleRecord.id, // Use roleId instead of role string
         gstin: role === "VENDOR" ? "GST_PENDING" : null,
         verificationToken,
       },
     });
 
-    // 5. Print verification link to Terminal (backup method)
+    // 6. Print verification link to Terminal (backup method)
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
     const verificationLink = `${baseUrl}/verify-email?token=${verificationToken}`;
     console.log("----------------------------------------------------------");
@@ -47,7 +55,7 @@ export async function registerUser(formData: FormData) {
     console.log(verificationLink);
     console.log("----------------------------------------------------------");
 
-    // 6. Send Verification Email (for both CUSTOMER and VENDOR)
+    // 7. Send Verification Email (for both CUSTOMER and VENDOR)
     const emailSent = await sendVerificationEmail(email, verificationToken, name, role);
 
     if (!emailSent) {
