@@ -4,85 +4,47 @@ import { Resend } from 'resend';
 // Initialize Resend with your API Key
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-// Enhanced Email Verification Function
+// Helper to get base URL
+const getBaseUrl = () => process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
+// ==========================================
+// 1. EMAIL VERIFICATION (For Registration)
+// ==========================================
 export async function sendVerificationEmail(
   email: string, 
   token: string, 
   name: string, 
   role: string = 'CUSTOMER'
 ) {
-  // Fallback to localhost if NEXTAUTH_URL is not set
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  const confirmLink = `${baseUrl}/verify-email?token=${token}`;
-
-  // Role-specific messaging
-  const roleText = role === 'VENDOR' 
-    ? 'vendor' 
-    : role === 'ADMIN' 
-    ? 'administrator' 
-    : 'customer';
+  const confirmLink = `${getBaseUrl()}/verify-email?token=${token}`;
   
-  const welcomeMessage = role === 'VENDOR'
-    ? 'Welcome to our Rental Platform! As a vendor, you can now list your equipment and start renting to customers.'
-    : 'Welcome to our Rental Platform! You can now browse and rent equipment from verified vendors.';
+  // Role text logic
+  const roleText = role === 'VENDOR' ? 'Vendor' : role === 'ADMIN' ? 'Administrator' : 'Customer';
 
-  // If Resend is not configured, return false (link will be printed to console)
   if (!resend) {
-    console.log('⚠️  Resend API key not configured. Email not sent.');
-    console.log(`📧 Verification email would be sent to: ${email}`);
+    console.log('⚠️ Resend API key missing. Logged to console instead.');
+    console.log(`🔗 VERIFY LINK: ${confirmLink}`);
     return false;
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'Rental System <onboarding@resend.dev>', // "onboarding@resend.dev" is REQUIRED for free tier
+    const { error } = await resend.emails.send({
+      from: 'Rental System <onboarding@resend.dev>',
       to: email,
-      subject: `Verify your ${roleText} account - Rental System`,
+      subject: `Verify your ${roleText} account`,
       html: `
         <!DOCTYPE html>
         <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to Rental System!</h1>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #0f172a; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">Welcome, ${name}!</h1>
           </div>
-          
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e0e0e0; border-top: none;">
-            <p style="font-size: 16px; margin-top: 0;">Hello ${name},</p>
-            
-            <p style="font-size: 16px;">${welcomeMessage}</p>
-            
-            <p style="font-size: 16px;">To complete your registration and verify your email address, please click the button below:</p>
-            
+          <div style="background: #ffffff; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+            <p>Thanks for joining as a <strong>${roleText}</strong>. Please verify your email to get started.</p>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${confirmLink}" 
-                 style="display: inline-block; padding: 14px 28px; background-color: #667eea; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">
-                Verify Email Address
-              </a>
+              <a href="${confirmLink}" style="background-color: #0f172a; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">Verify Email</a>
             </div>
-            
-            <p style="font-size: 14px; color: #666; margin-top: 30px;">
-              Or copy and paste this link into your browser:
-            </p>
-            <p style="font-size: 12px; color: #667eea; word-break: break-all; background: #f0f0f0; padding: 10px; border-radius: 5px;">
-              ${confirmLink}
-            </p>
-            
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
-              <p style="font-size: 14px; color: #666; margin: 0;">
-                <strong>Account Type:</strong> ${roleText.charAt(0).toUpperCase() + roleText.slice(1)}
-              </p>
-              <p style="font-size: 12px; color: #999; margin-top: 20px;">
-                This verification link will expire in 24 hours. If you didn't create an account, please ignore this email.
-              </p>
-            </div>
-          </div>
-          
-          <div style="text-align: center; margin-top: 20px; padding: 20px; color: #999; font-size: 12px;">
-            <p>© ${new Date().getFullYear()} Rental System. All rights reserved.</p>
+            <p style="font-size: 12px; color: #64748b;">Link expires in 24 hours. If you didn't create an account, ignore this.</p>
           </div>
         </body>
         </html>
@@ -93,11 +55,59 @@ export async function sendVerificationEmail(
       console.error("❌ Resend Error:", error);
       return false;
     }
-    
-    console.log(`✅ Verification email sent successfully to: ${email}`);
     return true;
-  } catch (e: any) {
-    console.error("❌ Email sending failed:", e.message || e);
+  } catch (e) {
+    console.error("❌ Email failed:", e);
+    return false;
+  }
+}
+
+// ==========================================
+// 2. PASSWORD RESET (For Forgot Password)
+// ==========================================
+export async function sendPasswordResetEmail(email: string, token: string) {
+  const resetLink = `${getBaseUrl()}/reset-password?token=${token}`;
+
+  // HACKATHON BACKUP: Always log the link locally so you can test without real emails
+  console.log("----------------------------------------------------------");
+  console.log(`🔐 RESET LINK FOR ${email}:`);
+  console.log(resetLink);
+  console.log("----------------------------------------------------------");
+
+  if (!resend) return false;
+
+  try {
+    const { error } = await resend.emails.send({
+      from: 'Rental System <onboarding@resend.dev>',
+      to: email,
+      subject: 'Reset your password',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background-color: #0f172a; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">Reset Password</h1>
+          </div>
+          <div style="background: #ffffff; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
+            <p>You requested a password reset. Click the button below to choose a new password.</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetLink}" style="background-color: #0f172a; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold;">Reset Password</a>
+            </div>
+            <p style="font-size: 12px; color: #64748b; word-break: break-all;">Or copy this link: ${resetLink}</p>
+            <p style="font-size: 12px; color: #64748b; margin-top: 20px;">If you didn't ask for this, you can safely ignore this email.</p>
+          </div>
+        </body>
+        </html>
+      `
+    });
+
+    if (error) {
+      console.error("❌ Resend Error:", error);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("❌ Email failed:", e);
     return false;
   }
 }
