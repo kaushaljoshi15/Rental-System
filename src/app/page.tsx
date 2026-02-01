@@ -1,8 +1,21 @@
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { getDashboardRoute } from "@/lib/middleware";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  
+  // If logged in, redirect to dashboard
+  if (session?.user) {
+    const role = (session.user as any).role || "CUSTOMER";
+    redirect(getDashboardRoute(role));
+  }
+
+  // Show home page for non-logged-in users
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <Card className="w-full max-w-2xl shadow-lg">

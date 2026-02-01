@@ -17,6 +17,20 @@ A modern equipment rental management system built with Next.js, Prisma, PostgreS
 - PostgreSQL database (local or cloud)
 - (Optional) Resend API key for email functionality
 
+## Admin Account Setup
+
+**Important:** Only the reserved email `kaushaldj1515@gmail.com` can access admin features and create admin accounts.
+
+To set up the first admin:
+1. Register with the email `kaushaldj1515@gmail.com`
+2. Select any role (CUSTOMER or VENDOR)
+3. After registration, manually update the user's role to "ADMIN" in the database using Prisma Studio:
+   ```bash
+   npm run db:studio
+   ```
+   Then update the user's role field to "ADMIN"
+4. Once logged in as admin, you can create additional admin accounts via the admin dashboard
+
 ## Getting Started
 
 ### 1. Install Dependencies

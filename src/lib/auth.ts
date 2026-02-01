@@ -23,9 +23,6 @@ export const authOptions: NextAuthOptions = {
         try {
           const user = await prisma.user.findUnique({
             where: { email: credentials.email },
-            include: { 
-              role: true
-            } as any, // Type assertion for Prisma include
           });
 
           if (!user) throw new Error("User not found");
@@ -38,8 +35,8 @@ export const authOptions: NextAuthOptions = {
           const isValid = await bcrypt.compare(credentials.password, user.password);
           if (!isValid) throw new Error("Invalid password");
 
-          // Get role name from Role model (fallback to "CUSTOMER" if no role assigned)
-          const roleName = (user as any).role?.name || "CUSTOMER";
+          // Get role from user (role is stored as string in schema)
+          const roleName = user.role || "CUSTOMER";
 
           return {
             id: user.id,

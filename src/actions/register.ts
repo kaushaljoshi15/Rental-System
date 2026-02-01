@@ -15,33 +15,35 @@ export async function registerUser(formData: FormData) {
 
   if (!email || !password) return { error: "Missing fields" };
 
+  // ADMIN RESTRICTION: Only reserved email can create admin accounts
+  const RESERVED_ADMIN_EMAIL = "kaushaldj1515@gmail.com";
+  
+  if (role === "ADMIN" && email.toLowerCase() !== RESERVED_ADMIN_EMAIL.toLowerCase()) {
+    return { error: "Admin accounts can only be created by the reserved admin email." };
+  }
+
   try {
     // 2. Database Check
     const existing = await prisma.user.findUnique({ where: { email } });
     
     if (existing) return { error: "User already exists" };
 
-    // 3. Find Role by slug (convert "CUSTOMER" to "customer", "VENDOR" to "vendor")
-    const roleSlug = role.toLowerCase();
-    const roleRecord = await prisma.role.findUnique({
-      where: { slug: roleSlug },
-    });
-
-    if (!roleRecord) {
-      return { error: `Invalid role: ${role}. Please select a valid role.` };
+    // 3. Validate role (only CUSTOMER and VENDOR allowed in registration)
+    if (role !== "CUSTOMER" && role !== "VENDOR") {
+      return { error: "Invalid role. Only Customer and Vendor roles can be registered." };
     }
 
     // 4. Prepare Secure Data
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = uuidv4();
 
-    // 5. Create User in Database with Role reference
+    // 5. Create User in Database
     await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        roleId: roleRecord.id, // Use roleId instead of role string
+        role: role, // Use role string directly
         gstin: role === "VENDOR" ? "GST_PENDING" : null,
         verificationToken,
       },

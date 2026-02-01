@@ -39,8 +39,12 @@ export default function LoginPage() {
        toast.error(result.error)
     } else {
        toast.success("Welcome back!")
-       router.push("/") 
-       router.refresh()
+       // Redirect to role-specific dashboard
+       // Get role from session after login
+       setTimeout(() => {
+         router.push("/dashboard")
+         router.refresh()
+       }, 500)
     }
   }
 

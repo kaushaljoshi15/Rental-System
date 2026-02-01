@@ -1,94 +1,142 @@
-// prisma/schema.prisma
+  // prisma/schema.prisma
 
-generator client {
-  provider = "prisma-client-js"
-  // This helps Windows find the correct file
-  binaryTargets = ["native"] 
-}
+  generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native"] 
+  }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
 
-// prisma/schema.prisma
+  // ==========================================
+  // 1. USER & AUTHENTICATION
+  // ==========================================
+  model User {
+    id                String   @id @default(uuid())
+    name              String
+    email             String   @unique
+    password          String
+    
+    // ROLES: "CUSTOMER", "VENDOR", "ADMIN"
+    role              String   @default("CUSTOMER")
+    
+    // PROFILE FIELDS
+    phoneNumber       String?  
+    companyName       String?  // For Vendors/Business Customers
+    gstin             String?  // Mandatory for B2B/Vendors
+    address           String?  
+    
+    // SECURITY
+    emailVerified     DateTime?
+    verificationToken String?   @unique
+    resetToken        String?   @unique
+    resetTokenExpiry  DateTime?
+    
+    // TIMESTAMPS (Fixes your error)
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
 
-model Role {
-  id          String   @id @default(uuid())
-  name        String   @unique  // "ADMIN", "VENDOR", "CUSTOMER", etc.
-  slug        String   @unique  // "admin", "vendor", "customer", etc.
-  description String?
-  permissions String[] // Array of permission strings
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  users       User[]
-}
+    // RELATIONS
+    orders            RentalOrder[] // Orders placed by this user
+    products          Product[]     // Products owned by this user (Vendor)
+  }
 
-model User {
-  id                String   @id @default(uuid())
-  name              String
-  email             String   @unique
-  password          String
-  roleId            String?  // Reference to Role model
-  role              Role?    @relation(fields: [roleId], references: [id])
-  gstin             String?
-  company           String?
-  
-  // NEW: Verification Fields
-  emailVerified     DateTime?
-  verificationToken String?   @unique
-  resetToken        String?   @unique
-  resetTokenExpiry  DateTime?
-  
-  orders            RentalOrder[]
-}
-model Category {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  slug        String   @unique
-  description String?
-  image       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  products    Product[]
-}
+  // ==========================================
+  // 2. PRODUCT MANAGEMENT
+  // ==========================================
+  model Category {
+    id          String    @id @default(uuid())
+    name        String    @unique
+    slug        String    @unique
+    description String?
+    image       String?   
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    products    Product[] 
+  }
 
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id])
-  hourlyPrice Float    @default(0)
-  dailyPrice  Float    // Primary rental rate
-  totalStock  Int      // Critical for reservation logic
-  isRentable  Boolean  @default(true)
-  image       String?
-  lines       OrderLine[]
-}
+  model Product {
+    id          String   @id @default(uuid())
+    
+    // VENDOR LINK
+    vendorId    String?  
+    vendor      User?    @relation(fields: [vendorId], references: [id])
 
-model RentalOrder {
-  id          String      @id @default(uuid())
-  userId      String
-  user        User        @relation(fields: [userId], references: [id])
-  status      String      // "DRAFT", "CONFIRMED", "PICKED_UP", "RETURNED"
-  totalAmount Float
-  startDate   DateTime
-  endDate     DateTime
-  createdAt   DateTime    @default(now())
-  
-  // Invoice & Payment
-  paymentStatus String    @default("UNPAID")
-  
-  lines       OrderLine[]
-}
+    name        String
+    description String?
+    
+    categoryId  String?  
+    category    Category? @relation(fields: [categoryId], references: [id])
 
-model OrderLine {
-  id          String      @id @default(uuid())
-  orderId     String
-  order       RentalOrder @relation(fields: [orderId], references: [id])
-  productId   String
-  product     Product     @relation(fields: [productId], references: [id])
-  quantity    Int
-  price       Float
-}
+    // RENTAL PRICING
+    priceHourly Float    @default(0)
+    priceDaily  Float    @default(0) // Primary rate
+    priceWeekly Float    @default(0)
+    
+    // INVENTORY
+    totalStock  Int      @default(1)
+    isRentable  Boolean  @default(true)
+    image       String?
+    
+    // TIMESTAMPS (Good practice to add here too)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    
+    lines       OrderLine[]
+  }
+
+  // ==========================================
+  // 3. RENTAL ORDER FLOW
+  // ==========================================
+  model RentalOrder {
+    id            String      @id @default(uuid())
+    userId        String
+    user          User        @relation(fields: [userId], references: [id])
+    
+    // STATUS FLOW
+    status        String      @default("QUOTATION")
+    
+    // RENTAL PERIOD
+    startDate     DateTime
+    endDate       DateTime
+    
+    // FINANCIALS
+    totalAmount   Float
+    securityDeposit Float     @default(0) 
+    
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+    
+    // INVOICE LINK
+    invoice       Invoice?
+    
+    lines         OrderLine[]
+  }
+
+  model OrderLine {
+    id          String      @id @default(uuid())
+    orderId     String
+    order       RentalOrder @relation(fields: [orderId], references: [id])
+    productId   String
+    product     Product     @relation(fields: [productId], references: [id])
+    
+    quantity    Int
+    price       Float       
+  }
+
+  // ==========================================
+  // 4. INVOICING
+  // ==========================================
+  model Invoice {
+    id            String      @id @default(uuid())
+    orderId       String      @unique
+    order         RentalOrder @relation(fields: [orderId], references: [id])
+    
+    invoiceNumber String      @unique
+    amount        Float
+    status        String      @default("UNPAID")
+    paymentMethod String?
+    createdAt     DateTime    @default(now())
+  }
