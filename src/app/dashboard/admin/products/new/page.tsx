@@ -16,6 +16,9 @@ import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
 import { createProduct } from "@/actions/product-management";
 
+// FIX 1: Bulletproof relative path import
+import { DashboardSidebar } from "@/components/dashboard-sidebar"; 
+
 export default async function AddProductPage() {
   // 1. Protect Page
   await requireRole(["ADMIN"]);
@@ -50,8 +53,14 @@ export default async function AddProductPage() {
             <CardDescription>Enter the information for the new rental item.</CardDescription>
           </CardHeader>
           <CardContent>
-            {/* FIX: Pass createProduct directly here */}
-            <form action={createProduct} className="space-y-6">
+            {/* FIX 2: Wrapped action handler to fix the TypeScript type mismatch */}
+            <form 
+              action={async (formData: FormData) => {
+                'use server'
+                await createProduct(formData);
+              }} 
+              className="space-y-6"
+            >
               
               {/* Product Name */}
               <div className="space-y-2">

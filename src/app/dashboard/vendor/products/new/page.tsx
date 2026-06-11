@@ -17,6 +17,8 @@ import {
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
 import { createVendorProduct } from "@/actions/product-management";
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
+
 
 export default async function AddVendorProductPage() {
   await requireRole(["VENDOR"]);
@@ -55,7 +57,13 @@ export default async function AddVendorProductPage() {
             <CardDescription>Enter the information for the new rental item.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={createVendorProduct} className="space-y-6">
+            <form 
+              action={async (formData: FormData) => {
+                'use server'
+                await createVendorProduct(formData);
+              }} 
+              className="space-y-6"
+            >
               
               {/* Product Name */}
               <div className="space-y-2">

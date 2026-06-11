@@ -20,6 +20,8 @@ import {
 } from "lucide-react"
 import LogoutButton from "./logout-button"
 
+import { useSession } from "next-auth/react"
+
 interface SidebarItem {
   title: string
   href: string
@@ -32,6 +34,8 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ role }: DashboardSidebarProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const isMasterAdmin = session?.user?.email?.toLowerCase() === "joshikaushald1596@gmail.com"
 
   const adminItems: SidebarItem[] = [
     { title: "Dashboard", href: "/dashboard/admin", icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -39,7 +43,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
     { title: "Products", href: "/dashboard/admin/products", icon: <Package className="w-5 h-5" /> },
     { title: "Orders", href: "/dashboard/admin/orders", icon: <ShoppingCart className="w-5 h-5" /> },
     { title: "Reports", href: "/dashboard/admin/reports", icon: <BarChart3 className="w-5 h-5" /> },
-    { title: "Create Admin", href: "/dashboard/admin/create-admin", icon: <UserPlus className="w-5 h-5" /> },
+    ...(isMasterAdmin ? [{ title: "Create Admin", href: "/dashboard/admin/create-admin", icon: <UserPlus className="w-5 h-5" /> }] : []),
     { title: "Settings", href: "/dashboard/admin/settings", icon: <Settings className="w-5 h-5" /> },
   ]
 
@@ -86,7 +90,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-4">
+        <nav className="flex-1 space-y-1.5 p-4">
           {items.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
             return (
@@ -94,13 +98,18 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-200",
                   isActive
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                    ? "bg-slate-900 text-white shadow-md border border-slate-800"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
                 )}
               >
-                {item.icon}
+                <span className={cn(
+                  "transition-transform group-hover:scale-105 duration-200 shrink-0",
+                  isActive ? "text-amber-500" : "text-slate-400 group-hover:text-slate-600"
+                )}>
+                  {item.icon}
+                </span>
                 <span>{item.title}</span>
               </Link>
             )

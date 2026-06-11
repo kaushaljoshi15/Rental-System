@@ -11,7 +11,7 @@ import { createAdmin } from "@/actions/admin";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-const RESERVED_ADMIN_EMAIL = "kaushaldj1515@gmail.com";
+const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
 
 export default function CreateAdminPage() {
   const { data: session } = useSession();
@@ -20,7 +20,7 @@ export default function CreateAdminPage() {
   const [loading, setLoading] = useState(false);
   
   useEffect(() => {
-    if (session?.user?.email?.toLowerCase() !== RESERVED_ADMIN_EMAIL.toLowerCase()) {
+    if (session && session.user?.email?.toLowerCase() !== RESERVED_ADMIN_EMAIL.toLowerCase()) {
       toast.error("Only the reserved admin can access this page");
       router.push("/dashboard/admin");
     }

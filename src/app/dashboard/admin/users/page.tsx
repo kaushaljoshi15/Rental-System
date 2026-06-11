@@ -17,6 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { UserActionsMenu } from "./user-actions";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export default async function UserManagementPage({
   searchParams,
@@ -25,6 +27,9 @@ export default async function UserManagementPage({
 }) {
   // 1. Security Check
   await requireRole(["ADMIN"]);
+  
+  const session = await getServerSession(authOptions);
+  const isMasterAdmin = session?.user?.email?.toLowerCase() === "joshikaushald1596@gmail.com";
 
   // 2. Fetch Users
   const users = await prisma.user.findMany({
@@ -70,11 +75,13 @@ export default async function UserManagementPage({
                 className="pl-10 h-10 bg-white border-slate-200 focus-visible:ring-slate-400 shadow-sm transition-shadow"
               />
             </div>
-            <Link href="/dashboard/admin/create-admin" className="w-full sm:w-auto">
-              <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all hover:shadow-lg">
-                <UserPlus className="w-4 h-4 mr-2" /> Add Admin
-              </Button>
-            </Link>
+            {isMasterAdmin && (
+              <Link href="/dashboard/admin/create-admin" className="w-full sm:w-auto">
+                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all hover:shadow-lg">
+                  <UserPlus className="w-4 h-4 mr-2" /> Add Admin
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -187,11 +194,13 @@ export default async function UserManagementPage({
                 <p className="text-slate-500 max-w-sm mt-2 mb-6 text-sm leading-relaxed">
                   It looks like there are no registered users in the system yet. Users will appear here once they sign up.
                 </p>
-                <Link href="/dashboard/admin/create-admin">
-                  <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
-                    Create First User
-                  </Button>
-                </Link>
+                {isMasterAdmin && (
+                  <Link href="/dashboard/admin/create-admin">
+                    <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+                      Create First User
+                    </Button>
+                  </Link>
+                )}
               </div>
             )}
           </CardContent>

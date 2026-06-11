@@ -16,9 +16,10 @@ export async function registerUser(formData: FormData) {
   if (!email || !password) return { error: "Missing fields" };
 
   // ADMIN RESTRICTION: Only reserved email can create admin accounts
-  const RESERVED_ADMIN_EMAIL = "kaushaldj1515@gmail.com";
+  const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
+  const targetRole = email.toLowerCase() === RESERVED_ADMIN_EMAIL.toLowerCase() ? "ADMIN" : role;
   
-  if (role === "ADMIN" && email.toLowerCase() !== RESERVED_ADMIN_EMAIL.toLowerCase()) {
+  if (targetRole === "ADMIN" && email.toLowerCase() !== RESERVED_ADMIN_EMAIL.toLowerCase()) {
     return { error: "Admin accounts can only be created by the reserved admin email." };
   }
 
@@ -29,7 +30,7 @@ export async function registerUser(formData: FormData) {
     if (existing) return { error: "User already exists" };
 
     // 3. Validate role (only CUSTOMER and VENDOR allowed in registration)
-    if (role !== "CUSTOMER" && role !== "VENDOR") {
+    if (targetRole !== "ADMIN" && targetRole !== "CUSTOMER" && targetRole !== "VENDOR") {
       return { error: "Invalid role. Only Customer and Vendor roles can be registered." };
     }
 
@@ -43,8 +44,8 @@ export async function registerUser(formData: FormData) {
         name,
         email,
         password: hashedPassword,
-        role: role, // Use role string directly
-        gstin: role === "VENDOR" ? "GST_PENDING" : null,
+        role: targetRole, // Assign targetRole directly
+        gstin: targetRole === "VENDOR" ? "GST_PENDING" : null,
         verificationToken,
       },
     });

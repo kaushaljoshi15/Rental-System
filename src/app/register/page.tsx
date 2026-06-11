@@ -5,11 +5,22 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { registerUser } from "@/actions/register"
 import Link from "next/link"
+import { 
+  ShoppingCart, 
+  ShieldCheck, 
+  Truck, 
+  RotateCcw, 
+  Mail, 
+  Lock,
+  User,
+  Sparkles,
+  Building
+} from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -44,90 +55,144 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]">
-      
-      <Card className="w-full max-w-md mx-4 shadow-2xl border-slate-800 bg-slate-900/60 backdrop-blur-md text-slate-100">
-        <CardHeader className="space-y-1 text-center pb-8 pt-10">
-          <div className="mx-auto w-12 h-12 bg-slate-100 rounded-xl mb-4 flex items-center justify-center shadow-lg shadow-slate-500/20">
-            {/* Simple User Icon */}
-            <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-          </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-white">
-            Create an account
-          </CardTitle>
-          <CardDescription className="text-slate-400 text-base">
-            Join our platform to rent or list equipment
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen w-full flex bg-slate-50">
+      {/* Left Column: SaaS Promo split screen (hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 text-white flex-col justify-between p-12 relative overflow-hidden bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]">
+        <div className="absolute top-0 right-0 h-96 w-96 bg-amber-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Full Name</label>
-              <Input 
-                name="name" 
-                placeholder="John Doe" 
-                required 
-                className="h-11 bg-slate-950 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-slate-500"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Email Address</label>
-              <Input 
-                name="email" 
-                type="email" 
-                placeholder="name@example.com" 
-                required 
-                className="h-11 bg-slate-950 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-slate-500"
-              />
-            </div>
+        {/* Brand */}
+        <Link href="/" className="flex items-center gap-2 shrink-0 group">
+          <div className="bg-amber-500 p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
+            <ShoppingCart className="w-5 h-5" />
+          </div>
+          <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
+            Rent<span className="text-amber-500">Kart</span>
+          </span>
+        </Link>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
-              <Input 
-                name="password" 
-                type="password" 
-                placeholder="••••••••" 
-                required 
-                className="h-11 bg-slate-950 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-slate-500"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">I want to...</label>
-              <Select value={role} onValueChange={setRole}>
-                <SelectTrigger className="h-11 bg-slate-950 border-slate-800 text-white focus:ring-slate-500">
-                  <SelectValue placeholder="Select Role" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800 text-slate-100">
-                  <SelectItem value="CUSTOMER" className="focus:bg-slate-800 focus:text-white cursor-pointer">Rent Items (Customer)</SelectItem>
-                  <SelectItem value="VENDOR" className="focus:bg-slate-800 focus:text-white cursor-pointer">List Items (Vendor)</SelectItem>
-                </SelectContent>
-              </Select>
-              <input type="hidden" name="role" value={role} />
-            </div>
-
-            <Button 
-              type="submit" 
-              className="w-full h-11 text-base font-medium mt-2 bg-slate-100 text-slate-900 hover:bg-slate-200 transition-all duration-200" 
-              disabled={loading}
-            >
-              {loading ? "Creating Account..." : "Register"}
-            </Button>
-          </form>
-
-          <div className="mt-8 text-center text-sm text-slate-500">
-            <p>
-              Already have an account?{" "}
-              <Link href="/login" className="font-semibold text-white hover:underline underline-offset-4">
-                Sign in
-              </Link>
+        {/* Info */}
+        <div className="space-y-8 max-w-md my-auto">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-extrabold tracking-tight">
+              Join India's Top Rental Grid.
+            </h2>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Create an account in minutes. List gear to start earning passive income, or rent high-fidelity equipment with verified security waivers.
             </p>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="space-y-4 pt-4">
+            <div className="flex gap-3">
+              <ShieldCheck className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-sm text-slate-100">Zero Security Deposit</h4>
+                <p className="text-xs text-slate-400 mt-0.5">Flexible quotation orders with zero upfront security constraints.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Sparkles className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-sm text-slate-100">Multiple Portals</h4>
+                <p className="text-xs text-slate-400 mt-0.5">Dedicated, custom dashboard controls for Customers and Vendors.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-xs text-slate-500">
+          © {new Date().getFullYear()} RentKart Portal. Fully Secure SaaS Infrastructure.
+        </div>
+      </div>
+
+      {/* Right Column: Form Container */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12">
+        <Card className="w-full max-w-md shadow-xl border-slate-200 bg-white rounded-2xl overflow-hidden">
+          <CardContent className="p-8 space-y-6">
+            <div className="space-y-2 text-center lg:text-left">
+              <div className="mx-auto lg:mx-0 w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-100 mb-4">
+                <Sparkles className="w-5 h-5 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-bold tracking-tight text-slate-900">Create Account</h3>
+              <p className="text-sm text-slate-500">Register as a customer or seller partner</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Full Name</label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    name="name" 
+                    placeholder="John Doe" 
+                    required 
+                    className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    name="email" 
+                    type="email" 
+                    placeholder="name@example.com" 
+                    required 
+                    className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    name="password" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    required 
+                    className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">I want to...</label>
+                <Select value={role} onValueChange={setRole}>
+                  <SelectTrigger className="h-11 bg-slate-50 border-slate-200 text-slate-900 focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-slate-200 text-slate-800">
+                    <SelectItem value="CUSTOMER" className="focus:bg-slate-100 cursor-pointer">Rent Items (Customer)</SelectItem>
+                    <SelectItem value="VENDOR" className="focus:bg-slate-100 cursor-pointer">List Items (Vendor)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <input type="hidden" name="role" value={role} />
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-11 text-sm font-extrabold mt-4 bg-slate-900 hover:bg-indigo-600 text-white transition-all duration-200 rounded-lg shadow-sm" 
+                disabled={loading}
+              >
+                {loading ? "Creating Account..." : "Register"}
+              </Button>
+            </form>
+
+            <div className="text-center text-sm text-slate-500 pt-2 border-t border-slate-100">
+              <p>
+                Already have an account?{" "}
+                <Link href="/login" className="font-bold text-indigo-600 hover:underline">
+                  Sign in
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

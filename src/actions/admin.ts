@@ -9,7 +9,7 @@ import { authOptions } from "@/lib/auth";
 
 // Create admin account (only reserved admin email can create)
 export async function createAdmin(formData: FormData) {
-  const RESERVED_ADMIN_EMAIL = "kaushaldj1515@gmail.com";
+  const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
   
   // Check if current user is the reserved admin
   const session = await getServerSession(authOptions);

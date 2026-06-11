@@ -1,15 +1,17 @@
 // src/app/reset-password/page.tsx
 'use client'
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { resetPassword } from "@/actions/auth-reset"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
+import Link from "next/link"
+import { Lock, ShoppingCart } from "lucide-react"
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get("token")
@@ -34,30 +36,68 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 text-slate-100">
-      <Card className="w-full max-w-md mx-4 shadow-2xl border-slate-800 bg-slate-900/50 backdrop-blur-sm text-slate-100">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">New Password</CardTitle>
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-slate-50 p-6">
+      
+      {/* Brand Header */}
+      <Link href="/" className="flex items-center gap-2 shrink-0 group mb-8">
+        <div className="bg-amber-500 p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
+          <ShoppingCart className="w-5 h-5" />
+        </div>
+        <span className="text-xl font-extrabold tracking-tight text-slate-900 transition-colors">
+          Rent<span className="text-amber-500">Kart</span>
+        </span>
+      </Link>
+
+      <Card className="w-full max-w-md shadow-xl border-slate-200 bg-white rounded-2xl overflow-hidden">
+        <CardHeader className="text-center pb-4 pt-8">
+          <div className="mx-auto w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-100 mb-3">
+            <Lock className="w-5 h-5 text-amber-600" />
+          </div>
+          <CardTitle className="text-2xl font-bold text-slate-900">New Password</CardTitle>
+          <CardDescription className="text-slate-500 text-xs mt-1 leading-relaxed">
+            Enter your new secure password below to regain account access.
+          </CardDescription>
         </CardHeader>
-        <CardContent>
+        
+        <CardContent className="p-8 pt-4 space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium ml-1 text-slate-300">Enter New Password</label>
-              <Input 
-                type="password" 
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-slate-950 border-slate-800 text-slate-100 placeholder:text-slate-600 focus-visible:ring-slate-500"
-              />
+              <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Enter New Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input 
+                  type="password" 
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 rounded-lg"
+                />
+              </div>
             </div>
-            <Button type="submit" className="w-full bg-slate-100 text-slate-900 hover:bg-slate-200" disabled={loading}>
+            
+            <Button 
+              type="submit" 
+              className="w-full h-11 text-sm font-extrabold mt-4 bg-slate-900 hover:bg-indigo-600 text-white transition-all duration-200 rounded-lg shadow-sm" 
+              disabled={loading}
+            >
               {loading ? "Updating..." : "Update Password"}
             </Button>
           </form>
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50">
+        <div className="text-slate-500 font-semibold">Loading...</div>
+      </div>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   )
 }

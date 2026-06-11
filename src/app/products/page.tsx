@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { searchHalls } from "@/actions/search";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, Tag, ImageOff } from "lucide-react";
+import { Search, Filter, Tag, ImageOff, Star, Heart, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
@@ -24,30 +25,32 @@ export default async function ProductsPage({
   const session = await getServerSession(authOptions);
   const isCustomer = session?.user && (session.user as any).role === "CUSTOMER";
 
+  // Simulated rating & MRP generators
+  const getSimulatedRating = (id: string) => {
+    const charCodeSum = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const rating = 4.0 + (charCodeSum % 10) * 0.1;
+    const reviewsCount = 15 + (charCodeSum % 200);
+    return { rating: rating.toFixed(1), count: reviewsCount };
+  };
+
+  const getSimulatedMRP = (price: number) => {
+    const mrp = Math.round(price * 1.35);
+    const discount = Math.round(((mrp - price) / mrp) * 100);
+    return { mrp, discount };
+  };
+
   // 1. Fetch Categories for Sidebar
   const categories = await prisma.category.findMany({
     orderBy: { name: 'asc' }
   });
 
-  // 2. Build Search Filters
-  const whereClause: any = {
-    isRentable: true,
-  };
-
-  if (categorySlug) {
-    whereClause.category = { slug: categorySlug };
-  }
-
-  if (searchQuery) {
-    whereClause.name = { contains: searchQuery, mode: 'insensitive' };
-  }
-
-  // 3. Fetch Products
-  const products = await prisma.product.findMany({
-    where: whereClause,
-    include: { category: true },
-    orderBy: { createdAt: 'desc' }
+  // 2. Fetch Products via searchHalls action
+  const selectedCategory = categories.find(c => c.slug === categorySlug);
+  const searchResult = await searchHalls({
+    query: searchQuery,
+    categoryId: selectedCategory?.id,
   });
+  const products = searchResult.success ? (searchResult.data as any[]) : [];
 
   return (
     <div className={`min-h-screen bg-slate-50 ${isCustomer ? 'flex' : ''}`}>
@@ -132,67 +135,91 @@ export default async function ProductsPage({
             ) : (
               // Product Cards
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <Card key={product.id} className="group overflow-hidden border-slate-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white flex flex-col h-full">
-                    
-                    {/* Image Section */}
-                    <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden flex items-center justify-center border-b border-slate-100">
-                      {product.image && product.image.startsWith("http") ? (
-                        <img 
-                          src={product.image} 
-                          alt={product.name} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center gap-2 text-slate-400">
-                          <ImageOff className="h-8 w-8 opacity-20" />
-                          <span className="text-[10px] font-medium uppercase tracking-wider">No Image</span>
-                        </div>
-                      )}
+                {products.map((product) => {
+                  const { rating, count } = getSimulatedRating(product.id);
+                  const { mrp, discount } = getSimulatedMRP(product.priceDaily);
+
+                  return (
+                    <Card key={product.id} className="group overflow-hidden border-slate-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white flex flex-col h-full">
                       
-                      {/* Category Badge */}
-                      <Badge className="absolute top-3 right-3 bg-white/90 text-slate-700 shadow-sm hover:bg-white backdrop-blur-sm border border-slate-200/50 pointer-events-none">
-                        {product.category?.name || "General"}
-                      </Badge>
-                    </div>
-
-                    {/* Content Section */}
-                    <CardHeader className="p-4 pb-2 space-y-1">
-                      <CardTitle className="text-base font-bold text-slate-900 line-clamp-1 leading-tight" title={product.name}>
-                        {product.name}
-                      </CardTitle>
-                      <p className="text-xs text-slate-500 line-clamp-2 min-h-[32px] leading-relaxed">
-                        {product.description || "Professional quality equipment ready for your next project."}
-                      </p>
-                    </CardHeader>
-
-                    {/* Price & Stock */}
-                    <CardContent className="p-4 pt-2 mt-auto">
-                      <div className="flex items-end justify-between">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium mb-0.5">Daily Rate</span>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-xl font-bold text-slate-900">₹{product.priceDaily.toLocaleString()}</span>
-                            </div>
-                        </div>
+                      {/* Image Section */}
+                      <Link href={`/products/${product.id}`} className="block relative aspect-[4/3] bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                        {product.image && product.image.startsWith("http") ? (
+                          <img 
+                            src={product.image} 
+                            alt={product.name} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center gap-2 text-slate-400">
+                            <ImageOff className="h-8 w-8 opacity-20" />
+                            <span className="text-[10px] font-medium uppercase tracking-wider">No Image</span>
+                          </div>
+                        )}
                         
-                        <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-medium border ${product.totalStock > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
-                            <div className={`h-1.5 w-1.5 rounded-full ${product.totalStock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                            {product.totalStock > 0 ? `${product.totalStock} In Stock` : 'Out of Stock'}
-                        </div>
-                      </div>
-                    </CardContent>
+                        {/* Category Badge */}
+                        <Badge className="absolute top-3 right-3 bg-white/90 text-slate-700 shadow-sm hover:bg-white backdrop-blur-sm border border-slate-200/50 pointer-events-none">
+                          {product.category?.name || "General"}
+                        </Badge>
+                      </Link>
 
-                    {/* --- 2. REPLACED CARD FOOTER --- */}
-                    <CardFooter className="p-4 pt-0">
-                      <RentButton 
-                        productId={product.id} 
-                        price={product.priceDaily} 
-                        stock={product.totalStock} 
-                      />
-                    </CardFooter>
-                  </Card>
-                ))}
+                      {/* Content Section */}
+                      <CardHeader className="p-4 pb-2 space-y-1">
+                        <Link href={`/products/${product.id}`} className="block">
+                          <CardTitle className="text-base font-bold text-slate-900 line-clamp-1 leading-tight hover:text-indigo-600 transition-colors" title={product.name}>
+                            {product.name}
+                          </CardTitle>
+                        </Link>
+                        
+                        {/* Simulated Rating (Amazon Style) */}
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <div className="flex items-center text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded text-[11px] font-bold border border-amber-200/30">
+                            <Star className="w-3 h-3 fill-current mr-0.5 shrink-0" />
+                            {rating}
+                          </div>
+                          <span className="text-xs text-slate-500">({count})</span>
+                          <span className="text-xs text-slate-300">•</span>
+                          <span className="text-[11px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">Best Seller</span>
+                        </div>
+
+                        <p className="text-xs text-slate-500 line-clamp-2 min-h-[32px] leading-relaxed mt-2">
+                          {product.description || "Professional quality equipment ready for your next project."}
+                        </p>
+                      </CardHeader>
+
+                      {/* Price & Stock */}
+                      <CardContent className="p-4 pt-2 mt-auto">
+                        <div className="space-y-3">
+                          <div className="flex items-baseline gap-1.5 flex-wrap">
+                            <span className="text-lg font-extrabold text-slate-900">₹{product.priceDaily.toLocaleString()}</span>
+                            <span className="text-xs text-slate-500">/day</span>
+                            <span className="text-xs text-slate-400 line-through">₹{mrp}</span>
+                            <span className="text-xs font-bold text-emerald-600">({discount}% Off)</span>
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div className={`flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-bold border ${product.totalStock > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
+                                <div className={`h-1.5 w-1.5 rounded-full ${product.totalStock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                                {product.totalStock > 0 ? `${product.totalStock} In Stock` : 'Out of Stock'}
+                            </div>
+                            <span className="text-[10px] text-slate-400 font-semibold flex items-center gap-1">
+                              <Truck className="w-3.5 h-3.5 text-slate-400" /> Free Delivery
+                            </span>
+                          </div>
+                        </div>
+                      </CardContent>
+
+                      {/* --- 2. REPLACED CARD FOOTER --- */}
+                      <CardFooter className="p-4 pt-0">
+                        <RentButton 
+                          productId={product.id} 
+                          price={product.priceDaily} 
+                          stock={product.totalStock} 
+                        />
+                      </CardFooter>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>

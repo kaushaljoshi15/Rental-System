@@ -13,7 +13,12 @@ import {
   Store,
   TrendingUp,
   Clock,
-  ArrowRight
+  ArrowRight,
+  User,
+  PackagePlus,
+  ExternalLink,
+  History,
+  CheckCircle2
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
@@ -64,216 +69,237 @@ export default async function VendorDashboard() {
     <div className="flex min-h-screen bg-slate-50/50">
       <DashboardSidebar role="VENDOR" />
       <div className="flex-1 ml-64">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm backdrop-blur-xl bg-white/80">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="bg-slate-900 p-2 rounded-lg shadow-md shadow-slate-900/10">
-              <Store className="w-5 h-5 text-white" />
+        
+        {/* Top Navigation Bar */}
+        <header className="sticky top-0 z-30 bg-white/80 border-b border-slate-200 shadow-sm backdrop-blur-md">
+          <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="bg-slate-900 p-2 rounded-lg shadow-md shadow-slate-900/10">
+                <Store className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-base font-extrabold text-slate-900 leading-none">Seller Control Center</h1>
+                <p className="text-xs text-slate-500 font-medium mt-1">Vendor inventory & logistics manager</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-slate-900 leading-none tracking-tight">Vendor Portal</h1>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">Welcome back, {user?.name}</p>
+            <div className="flex items-center gap-3">
+              <div className="hidden md:flex flex-col items-end text-right">
+                <span className="text-sm font-bold text-slate-900 leading-none">{user?.name}</span>
+                <span className="text-[10px] text-slate-400 font-semibold mt-0.5">{user?.email}</span>
+              </div>
+              <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 shadow-sm">
+                <User className="w-4 h-4 text-slate-600" />
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        
-        {/* Section 1: KPI Overview */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Revenue Card - The Hero Metric */}
-            <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-white shadow-sm relative overflow-hidden group">
-              <div className="absolute right-0 top-0 h-24 w-24 bg-emerald-100/50 rounded-full blur-2xl -mr-10 -mt-10 transition-all group-hover:bg-emerald-200/50" />
+        <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+          
+          {/* Welcome Seller Banner */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm bg-gradient-to-r from-white via-indigo-50/10 to-indigo-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h2 className="text-xl font-extrabold text-slate-950">Welcome back, {user?.name}!</h2>
+              <p className="text-slate-500 text-sm mt-0.5">List products, manage incoming rental requests, and verify returned equipment.</p>
+            </div>
+            <Link href="/dashboard/vendor/products/new">
+              <Button className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs shadow-sm transition-all rounded-lg">
+                <Plus className="w-4 h-4 mr-2" /> Add New Product
+              </Button>
+            </Link>
+          </div>
+
+          {/* Section 1: KPI Grid */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Earnings Card */}
+            <Card className="border-emerald-100 bg-gradient-to-br from-emerald-50/50 via-white to-white shadow-sm relative overflow-hidden group rounded-xl">
+              <div className="absolute right-0 top-0 h-20 w-20 bg-emerald-100/30 rounded-full blur-xl -mr-8 -mt-8" />
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 relative z-10">
-                <CardTitle className="text-sm font-semibold text-emerald-900">Total Earnings</CardTitle>
-                <div className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center shadow-sm">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Earnings</span>
+                <div className="h-8 w-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center shadow-sm">
                   <DollarSign className="h-4 w-4 text-emerald-600" />
                 </div>
               </CardHeader>
-              <CardContent className="relative z-10">
-                <div className="text-3xl font-bold text-emerald-700 tracking-tight">₹{totalRevenue.toLocaleString()}</div>
-                <p className="text-xs text-emerald-600/80 mt-1 font-medium flex items-center gap-1">
+              <CardContent className="relative z-10 mt-1">
+                <div className="text-3xl font-extrabold text-emerald-700 tracking-tight">₹{totalRevenue.toLocaleString()}</div>
+                <p className="text-xs text-emerald-600/80 mt-1 font-semibold flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
-                  Lifetime Earnings
+                  Total payout volume
                 </p>
               </CardContent>
             </Card>
 
-            {/* Products Metric */}
-            <StatCard 
-              title="My Products" 
-              value={totalProducts} 
-              icon={<Package className="h-4 w-4 text-blue-600" />}
-              subtext="Items in inventory"
-              bgClass="bg-blue-50"
-            />
-
-            {/* Orders Metric */}
-            <StatCard 
-              title="Orders Received" 
-              value={totalOrders} 
-              icon={<ShoppingCart className="h-4 w-4 text-purple-600" />}
-              subtext="Total rentals"
-              bgClass="bg-purple-50"
-            />
-        </section>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Section 2: Management Modules (Main Area) */}
-            <section className="lg:col-span-2 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-slate-900 tracking-tight">Management Modules</h2>
+            {/* Products Card */}
+            <Card className="border-blue-100 bg-gradient-to-br from-blue-50/50 via-white to-white shadow-sm relative overflow-hidden group rounded-xl">
+              <div className="absolute right-0 top-0 h-20 w-20 bg-blue-100/30 rounded-full blur-xl -mr-8 -mt-8" />
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 relative z-10">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">My Listings</span>
+                <div className="h-8 w-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm">
+                  <Package className="h-4 w-4 text-blue-600" />
                 </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <ManagementCard 
-                        href="/dashboard/vendor/products"
-                        title="My Products"
-                        description="Manage your product listings, stock levels, and pricing."
-                        icon={<Package className="w-5 h-5 text-indigo-600" />}
-                        color="indigo"
-                    />
-                    <ManagementCard 
-                        href="/dashboard/vendor/orders"
-                        title="Rental Orders"
-                        description="Track orders for your products and manage rentals."
-                        icon={<ShoppingCart className="w-5 h-5 text-rose-600" />}
-                        color="rose"
-                    />
+              </CardHeader>
+              <CardContent className="relative z-10 mt-1">
+                <div className="text-3xl font-extrabold text-blue-700 tracking-tight">{totalProducts}</div>
+                <p className="text-xs text-blue-500 font-semibold mt-1">Active items in catalog</p>
+              </CardContent>
+            </Card>
+
+            {/* Orders Card */}
+            <Card className="border-purple-100 bg-gradient-to-br from-purple-50/50 via-white to-white shadow-sm relative overflow-hidden group rounded-xl">
+              <div className="absolute right-0 top-0 h-20 w-20 bg-purple-100/30 rounded-full blur-xl -mr-8 -mt-8" />
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 relative z-10">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Rental Orders</span>
+                <div className="h-8 w-8 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center shadow-sm">
+                  <ShoppingCart className="h-4 w-4 text-purple-600" />
                 </div>
+              </CardHeader>
+              <CardContent className="relative z-10 mt-1">
+                <div className="text-3xl font-extrabold text-purple-700 tracking-tight">{totalOrders}</div>
+                <p className="text-xs text-purple-500 font-semibold mt-1">Total orders received</p>
+              </CardContent>
+            </Card>
+          </section>
 
-                {/* Recent Activity Feed */}
-                <Card className="shadow-sm border-slate-200">
-                  <CardHeader>
-                    <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-slate-500" />
-                      Recent Orders
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {vendorOrders.length === 0 ? (
-                        <p className="text-sm text-slate-500 text-center py-4">No orders yet.</p>
-                      ) : (
-                        vendorOrders.map((order) => (
-                          <div key={order.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 last:pb-0">
-                            <div>
-                              <p className="text-sm font-medium text-slate-900">
-                                Order from <span className="text-indigo-600">{order.user.name}</span>
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                {new Date(order.createdAt).toLocaleDateString()} • {order.status}
-                              </p>
-                            </div>
-                            <div className="text-sm font-bold text-slate-900">
-                              ₹{order.totalAmount.toLocaleString()}
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-            </section>
+          {/* Section 2: Split columns */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Left Area: Activity Feed (8 cols) */}
+            <div className="lg:col-span-8 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-extrabold text-slate-900 tracking-tight">Recent Rental Requests</h3>
+                <Link href="/dashboard/vendor/orders" className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 hover:underline">
+                  All Rental Orders <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
 
-            {/* Section 3: Quick Actions Sidebar */}
-            <section className="space-y-6">
-                <h2 className="text-lg font-semibold text-slate-900 tracking-tight">Quick Actions</h2>
-                
-                <div className="space-y-4">
-                    <Card className="overflow-hidden border-slate-200 shadow-sm hover:border-slate-300 transition-all group">
-                        <div className="h-1 bg-slate-900 w-full transition-all group-hover:h-1.5" />
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-base">
-                                <Plus className="w-4 h-4 text-slate-500 group-hover:text-slate-900 transition-colors" /> 
-                                Add Product
-                            </CardTitle>
-                            <CardDescription className="text-xs">
-                                Create a new product listing for your inventory.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Link href="/dashboard/vendor/products/new">
-                                <Button variant="outline" className="w-full text-xs font-medium" size="sm">
-                                    Create Product
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
-
-                    <div className="bg-slate-100 rounded-xl p-4 border border-slate-200">
-                      <h3 className="text-sm font-semibold text-slate-900 mb-2">Account Status</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-slate-500">Products Listed</span>
-                          <span className="text-slate-700 font-medium">{totalProducts}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-slate-500">Total Orders</span>
-                          <span className="text-slate-700 font-medium">{totalOrders}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-slate-500">Status</span>
-                          <span className="text-emerald-600 font-medium">● Active</span>
-                        </div>
+              <Card className="shadow-sm border-slate-200 rounded-xl overflow-hidden bg-white">
+                <CardContent className="p-0">
+                  {vendorOrders.length === 0 ? (
+                    <div className="p-16 text-center space-y-4">
+                      <div className="h-12 w-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-200">
+                        <ShoppingCart className="w-5 h-5 text-slate-400" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-slate-900 text-sm">No orders yet</h4>
+                        <p className="text-xs text-slate-500">Quotations matching your listings will appear here once requested.</p>
                       </div>
                     </div>
-                </div>
-            </section>
+                  ) : (
+                    <div className="divide-y divide-slate-100">
+                      {vendorOrders.map((order) => (
+                        <div key={order.id} className="p-4 hover:bg-slate-50/50 transition-colors flex items-center justify-between group">
+                          <div className="flex items-center gap-4">
+                            <div className={`p-2.5 rounded-lg border ${getStatusColor(order.status)} shrink-0`}>
+                              {getStatusIcon(order.status)}
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-950 flex items-center gap-1.5">
+                                Order from <span className="text-indigo-600">{order.user.name}</span>
+                                <span className="text-[10px] text-slate-400 font-semibold">
+                                  #{order.id.slice(0, 8).toUpperCase()}
+                                </span>
+                              </p>
+                              <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
+                                {new Date(order.createdAt).toLocaleDateString("en-US", {
+                                  month: "short", day: "numeric", year: "numeric"
+                                })} • Status: <span className="uppercase text-slate-600 font-bold">{order.status}</span>
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right space-y-1">
+                            <p className="text-sm font-bold text-slate-950">₹{order.totalAmount.toLocaleString()}</p>
+                            <span className={`inline-flex items-center text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase ${getStatusBadgeClass(order.status)}`}>
+                              {order.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Area: SaaS Sidecards (4 cols) */}
+            <div className="lg:col-span-4 space-y-6">
+              <h3 className="text-base font-extrabold text-slate-900 tracking-tight">Quick Actions</h3>
+              
+              <div className="space-y-4">
+                {/* Add Product Card */}
+                <Card className="overflow-hidden border-slate-200 shadow-sm hover:border-indigo-300 transition-all rounded-xl bg-white group">
+                  <div className="h-1.5 bg-slate-900 w-full group-hover:bg-indigo-600 transition-colors" />
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+                      <PackagePlus className="w-4 h-4 text-slate-600" /> Create Listing
+                    </CardTitle>
+                    <CardDescription className="text-xs leading-relaxed text-slate-500">
+                      Upload specifications, pictures, daily pricing, and quantity levels for renting.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Link href="/dashboard/vendor/products/new">
+                      <Button className="w-full bg-slate-900 hover:bg-indigo-600 text-white text-xs font-extrabold rounded-lg h-9">
+                        Add New Item
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+
+                {/* Account details info */}
+                <Card className="border-slate-200 shadow-sm rounded-xl bg-white">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
+                      <Store className="w-4 h-4 text-slate-500" /> Catalog Settings
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Link href="/dashboard/vendor/products" className="block w-full">
+                      <Button variant="outline" className="w-full justify-between text-xs font-semibold h-9 rounded-lg hover:bg-slate-50 border-slate-200 text-slate-700">
+                        <span>Listings Inventory</span>
+                        <ExternalLink className="w-3 h-3 text-slate-400" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+          </div>
+
         </div>
-      </div>
       </div>
     </div>
   );
 }
 
-// --- Sub-Components for cleaner code ---
+// --- Status Formatting Utilities ---
 
-function StatCard({ title, value, icon, subtext, bgClass }: any) {
-  return (
-    <Card className="shadow-sm hover:shadow-md transition-all hover:-translate-y-1 duration-200">
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-sm font-medium text-slate-600">{title}</CardTitle>
-        <div className={`h-8 w-8 rounded-full ${bgClass} flex items-center justify-center`}>
-          {icon}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-slate-900">{value}</div>
-        <p className="text-xs text-slate-500 mt-1">{subtext}</p>
-      </CardContent>
-    </Card>
-  )
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'QUOTATION': return 'bg-amber-50 border-amber-100 text-amber-600';
+    case 'CONFIRMED': return 'bg-blue-50 border-blue-100 text-blue-600';
+    case 'PICKED_UP': return 'bg-indigo-50 border-indigo-100 text-indigo-600';
+    case 'RETURNED': return 'bg-emerald-50 border-emerald-100 text-emerald-600';
+    default: return 'bg-slate-50 border-slate-100 text-slate-600';
+  }
 }
 
-function ManagementCard({ title, description, icon, href, color }: any) {
-    const bgColors: any = {
-        indigo: "bg-indigo-50 group-hover:bg-indigo-100",
-        rose: "bg-rose-50 group-hover:bg-rose-100",
-        amber: "bg-amber-50 group-hover:bg-amber-100",
-        teal: "bg-teal-50 group-hover:bg-teal-100",
-    }
-    
-    return (
-        <Link href={href} className="group block h-full">
-            <Card className="h-full transition-all duration-200 hover:shadow-md hover:border-slate-300 border-slate-200">
-                <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className={`p-2.5 rounded-xl transition-colors ${bgColors[color]}`}>
-                            {icon}
-                        </div>
-                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-slate-600 transition-colors -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100" />
-                    </div>
-                    <CardTitle className="text-base font-bold text-slate-900">{title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-slate-500 leading-relaxed">
-                        {description}
-                    </p>
-                </CardContent>
-            </Card>
-        </Link>
-    )
+function getStatusIcon(status: string) {
+  switch (status) {
+    case 'QUOTATION': return <Clock className="w-4 h-4" />;
+    case 'CONFIRMED': return <CheckCircle2 className="w-4 h-4" />;
+    case 'PICKED_UP': return <Package className="w-4 h-4" />;
+    case 'RETURNED': return <History className="w-4 h-4" />;
+    default: return <Clock className="w-4 h-4" />;
+  }
+}
+
+function getStatusBadgeClass(status: string) {
+  switch (status) {
+    case 'QUOTATION': return 'bg-amber-50 text-amber-700 border-amber-100';
+    case 'CONFIRMED': return 'bg-blue-50 text-blue-700 border-blue-100';
+    case 'PICKED_UP': return 'bg-indigo-50 text-indigo-700 border-indigo-100';
+    case 'RETURNED': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+    default: return 'bg-slate-50 text-slate-700 border-slate-200';
+  }
 }

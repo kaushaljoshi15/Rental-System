@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { addDays, differenceInDays, format } from "date-fns"
-import { Calendar as CalendarIcon, Loader2, ShoppingCart, Info, Edit2 } from "lucide-react"
+import { Calendar as CalendarIcon, Loader2, ShoppingCart, Info, Edit2, Lock } from "lucide-react"
 import { DateRange } from "react-day-picker"
 import { toast } from "sonner"
 
@@ -151,27 +151,33 @@ export function BookingWidget({ product }: { product: any }) {
       {/* Main Action Button */}
       <Button 
         size="lg" 
-        className="w-full bg-slate-900 hover:bg-indigo-600 text-white shadow-md h-12 text-base transition-all"
+        className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md h-12 text-sm font-extrabold rounded-xl transition-all duration-200"
         onClick={handleRent}
         disabled={isPending || product.totalStock === 0}
       >
         {isPending ? (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Updating...
+            <Loader2 className="w-4 h-4 mr-2 animate-spin text-slate-950" />
+            Processing...
           </>
         ) : (
           <>
-            <ShoppingCart className="w-4 h-4 mr-2" />
+            <ShoppingCart className="w-4 h-4 mr-2 text-slate-950" />
             {product.totalStock > 0 ? "Add to Quotation" : "Out of Stock"}
           </>
         )}
       </Button>
       
-      {/* Stock Info */}
-      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
-        <Info className="w-3.5 h-3.5 text-emerald-600" />
-        <span className="font-medium text-emerald-700">{product.totalStock} units available</span> for these dates
+      {/* Stock & Security Info */}
+      <div className="space-y-2.5 mt-4 pt-2 border-t border-slate-100">
+        <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500">
+          <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span><span className="font-bold text-emerald-700">{product.totalStock} units available</span> for these dates</span>
+        </div>
+        <div className="flex items-center justify-center gap-1 text-[11px] text-slate-400 font-medium">
+          <Lock className="w-3 h-3 text-slate-400 shrink-0" />
+          <span>100% Secure Transaction</span>
+        </div>
       </div>
     </Card>
   )

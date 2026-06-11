@@ -1,142 +1,281 @@
-  // prisma/schema.prisma
+// prisma/schema.prisma
 
-  generator client {
-    provider = "prisma-client-js"
-    binaryTargets = ["native"] 
-  }
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
 
-  datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-  }
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
 
-  // ==========================================
-  // 1. USER & AUTHENTICATION
-  // ==========================================
-  model User {
-    id                String   @id @default(uuid())
-    name              String
-    email             String   @unique
-    password          String
-    
-    // ROLES: "CUSTOMER", "VENDOR", "ADMIN"
-    role              String   @default("CUSTOMER")
-    
-    // PROFILE FIELDS
-    phoneNumber       String?  
-    companyName       String?  // For Vendors/Business Customers
-    gstin             String?  // Mandatory for B2B/Vendors
-    address           String?  
-    
-    // SECURITY
-    emailVerified     DateTime?
-    verificationToken String?   @unique
-    resetToken        String?   @unique
-    resetTokenExpiry  DateTime?
-    
-    // TIMESTAMPS (Fixes your error)
-    createdAt         DateTime  @default(now())
-    updatedAt         DateTime  @updatedAt
+// ==========================================
+// 1. USER & AUTHENTICATION (SaaS Multi-tenant)
+// ==========================================
+model User {
+  id                String    @id @default(uuid())
+  name              String
+  email             String    @unique
+  password          String
+  
+  // ROLES: "CUSTOMER", "VENDOR", "ADMIN"
+  role              String    @default("CUSTOMER")
+  
+  // PROFILE & SAAS VENDOR CONFIG
+  phoneNumber       String?  
+  companyName       String?   // For Vendors/Business Customers
+  gstin             String?   // Mandatory for B2B/Vendors
+  address           String?  
+  isVerifiedVendor  Boolean   @default(false)
+  commissionRate    Float     @default(10.0) // Platform percentage cut (e.g., 10%)
+  
+  // SECURITY
+  emailVerified     DateTime?
+  verificationToken String?   @unique
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-    // RELATIONS
-    orders            RentalOrder[] // Orders placed by this user
-    products          Product[]     // Products owned by this user (Vendor)
-  }
+  // RELATIONS
+  orders            RentalOrder[] 
+  products          Product[]     // Vendor's Halls/Products
+  reviews           Review[]      // Reviews left by this user
+  auditLogs         AuditLog[]
+}
 
-  // ==========================================
-  // 2. PRODUCT MANAGEMENT
-  // ==========================================
-  model Category {
-    id          String    @id @default(uuid())
-    name        String    @unique
-    slug        String    @unique
-    description String?
-    image       String?   
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-    products    Product[] 
-  }
+// ==========================================
+// 2. VENUE & HALL MANAGEMENT (Product base)
+// ==========================================
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  image       String?   
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[] 
+}
 
-  model Product {
-    id          String   @id @default(uuid())
-    
-    // VENDOR LINK
-    vendorId    String?  
-    vendor      User?    @relation(fields: [vendorId], references: [id])
+model Product {
+  id              String   @id @default(uuid())
+  
+  // VENDOR LINK (Tenant)
+  vendorId        String?  
+  vendor          User?    @relation(fields: [vendorId], references: [id])
 
-    name        String
-    description String?
-    
-    categoryId  String?  
-    category    Category? @relation(fields: [categoryId], references: [id])
+  name            String
+  description     String?
+  
+  categoryId      String?  
+  category        Category? @relation(fields: [categoryId], references: [id])
 
-    // RENTAL PRICING
-    priceHourly Float    @default(0)
-    priceDaily  Float    @default(0) // Primary rate
-    priceWeekly Float    @default(0)
-    
-    // INVENTORY
-    totalStock  Int      @default(1)
-    isRentable  Boolean  @default(true)
-    image       String?
-    
-    // TIMESTAMPS (Good practice to add here too)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    
-    lines       OrderLine[]
-  }
+  // RENTAL PRICING
+  priceHourly     Float    @default(0)
+  priceDaily      Float    @default(0) // Primary rate
+  priceWeekly     Float    @default(0)
+  securityDeposit Float    @default(0)
+  
+  // HALL-SPECIFIC SPECS (Professional Grade)
+  capacity        Int      @default(50)  // Max guests
+  amenities       String[]               // e.g. ["AC", "Stage", "AV System", "Valet Parking"]
+  address         String?
+  city            String?
+  state           String?
+  zipCode         String?
+  latitude        Float?
+  longitude       Float?
+  rules           String?                // Booking guidelines/rules
+  
+  // STATUS & VERIFICATION
+  isApproved      Boolean  @default(false) // Admin approval
+  isRentable      Boolean  @default(true)
+  totalStock      Int      @default(1)
+  image           String?                // Primary image
+  gallery         String[]               // Additional images
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // RELATIONS
+  lines           OrderLine[]
+  availabilities  HallAvailability[]
+  reviews         Review[]
+  addOns          AddOn[]
+}
 
-  // ==========================================
-  // 3. RENTAL ORDER FLOW
-  // ==========================================
-  model RentalOrder {
-    id            String      @id @default(uuid())
-    userId        String
-    user          User        @relation(fields: [userId], references: [id])
-    
-    // STATUS FLOW
-    status        String      @default("QUOTATION")
-    
-    // RENTAL PERIOD
-    startDate     DateTime
-    endDate       DateTime
-    
-    // FINANCIALS
-    totalAmount   Float
-    securityDeposit Float     @default(0) 
-    
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
-    
-    // INVOICE LINK
-    invoice       Invoice?
-    
-    lines         OrderLine[]
-  }
+// ==========================================
+// 3. HALL AVAILABILITY & LOCKS (Prevents Double Bookings)
+// ==========================================
+model HallAvailability {
+  id          String      @id @default(uuid())
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  bookingDate DateTime    // Specific date
+  timeSlot    String      @default("FULL_DAY") // "FULL_DAY", "MORNING", "EVENING"
+  status      String      @default("BLOCKED") // "BLOCKED", "MAINTENANCE"
+  
+  bookingId   String?     // Associated rental order
+  createdAt   DateTime    @default(now())
 
-  model OrderLine {
-    id          String      @id @default(uuid())
-    orderId     String
-    order       RentalOrder @relation(fields: [orderId], references: [id])
-    productId   String
-    product     Product     @relation(fields: [productId], references: [id])
-    
-    quantity    Int
-    price       Float       
-  }
+  // CRITICAL: Database-level constraint to prevent overlapping bookings
+  @@unique([productId, bookingDate, timeSlot])
+}
 
-  // ==========================================
-  // 4. INVOICING
-  // ==========================================
-  model Invoice {
-    id            String      @id @default(uuid())
-    orderId       String      @unique
-    order         RentalOrder @relation(fields: [orderId], references: [id])
-    
-    invoiceNumber String      @unique
-    amount        Float
-    status        String      @default("UNPAID")
-    paymentMethod String?
-    createdAt     DateTime    @default(now())
-  }
+// ==========================================
+// 4. RENTAL ORDER FLOW (Bookings)
+// ==========================================
+model RentalOrder {
+  id              String      @id @default(uuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  
+  // STATUS FLOW: "QUOTATION", "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"
+  status          String      @default("QUOTATION")
+  
+  // RENTAL PERIOD
+  startDate       DateTime
+  endDate         DateTime
+  
+  // FINANCIAL DETAILS
+  totalAmount     Float
+  securityDeposit Float       @default(0) 
+  
+  // SAAS COMMISSION FIELDS
+  platformFee     Float       @default(0) // Platform's share
+  vendorPayout    Float       @default(0) // Vendor's share
+  payoutStatus    String      @default("PENDING") // "PENDING", "PAID", "HOLD"
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // RELATIONS
+  invoice         Invoice?
+  lines           OrderLine[]
+  payments        Payment[]
+  bookingAddOns   BookingAddOn[]
+}
+
+model OrderLine {
+  id          String      @id @default(uuid())
+  orderId     String
+  order       RentalOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id])
+  
+  quantity    Int
+  price       Float       
+}
+
+// ==========================================
+// 5. SERVICES & ADD-ONS (Upselling)
+// ==========================================
+model AddOn {
+  id          String         @id @default(uuid())
+  productId   String
+  product     Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name        String         // e.g. "Catering per head", "Stage Decoration"
+  price       Float
+  description String?
+  createdAt   DateTime       @default(now())
+  
+  bookings    BookingAddOn[]
+}
+
+model BookingAddOn {
+  id        String      @id @default(uuid())
+  orderId   String
+  order     RentalOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  addOnId   String
+  addOn     AddOn       @relation(fields: [addOnId], references: [id])
+  quantity  Int         @default(1)
+  price     Float       // Snapshot of price at time of booking
+}
+
+// ==========================================
+// 6. PAYMENTS & AUDIT TRAILS (Flipkart/Amazon Level Ledger)
+// ==========================================
+model Invoice {
+  id            String      @id @default(uuid())
+  orderId       String      @unique
+  order         RentalOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  invoiceNumber String      @unique
+  amount        Float
+  status        String      @default("UNPAID") // "UNPAID", "PAID", "VOIDED"
+  paymentMethod String?
+  createdAt     DateTime    @default(now())
+}
+
+model Payment {
+  id             String      @id @default(uuid())
+  orderId        String
+  order          RentalOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  transactionId  String      @unique // Gateway Transaction Ref (Stripe, Razorpay, etc.)
+  gateway        String      // "STRIPE", "RAZORPAY", "PAYPAL", "CASH"
+  amount         Float
+  currency       String      @default("INR")
+  status         String      @default("PENDING") // "PENDING", "SUCCESS", "FAILED", "REFUNDED"
+  errorMessage   String?
+  metadata       Json?       // Raw JSON from Gateway
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  refunds        Refund[]
+}
+
+model Refund {
+  id              String   @id @default(uuid())
+  paymentId       String
+  payment         Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  
+  amount          Float
+  reason          String?
+  status          String   @default("PENDING") // "PENDING", "SUCCESS", "FAILED"
+  gatewayRefundId String?  @unique
+  
+  createdAt       DateTime @default(now())
+}
+
+// ==========================================
+// 7. RATINGS & REVIEWS (Amazon/Flipkart Style)
+// ==========================================
+model Review {
+  id          String   @id @default(uuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  rating      Int      // 1 to 5 Stars
+  comment     String
+  isVerified  Boolean  @default(false) // Checked true if customer rented this hall
+  images      String[] // Customer review photos
+  
+  createdAt   DateTime @default(now())
+  
+  @@unique([productId, userId]) // One review per user per hall
+}
+
+// ==========================================
+// 8. SECURITY AUDIT LOGS
+// ==========================================
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String   // e.g. "APPROVED_HALL", "UPDATE_PRICE", "CANCEL_BOOKING"
+  entityType  String   // e.g. "Product", "RentalOrder"
+  entityId    String
+  oldValues   Json?
+  newValues   Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}

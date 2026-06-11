@@ -21,17 +21,15 @@ import {
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
-// 🔒 SECURITY: Only this specific email can see the Admin Dashboard
-const RESERVED_ADMIN_EMAIL = "kaushaldj1515@gmail.com";
+// 🔒 SECURITY: Only this specific email is the Master Admin
+const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
 
 export default async function AdminDashboard() {
   // 1. Check Role & Security
-  await requireRole(["ADMIN"]);
+  const user = await requireRole(["ADMIN"]);
   
   const session = await getServerSession(authOptions);
-  if (session?.user?.email?.toLowerCase() !== RESERVED_ADMIN_EMAIL.toLowerCase()) {
-    redirect("/");
-  }
+  const isMasterAdmin = session?.user?.email?.toLowerCase() === RESERVED_ADMIN_EMAIL.toLowerCase();
 
   // 2. Fetch Data (Optimized with Promise.all for speed)
   const [
@@ -76,12 +74,14 @@ export default async function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/dashboard/admin/create-admin">
-              <Button size="sm" variant="outline" className="hidden sm:flex items-center gap-2 border-slate-300 hover:bg-slate-50">
-                <UserPlus className="w-4 h-4" />
-                <span>New Admin</span>
-              </Button>
-            </Link>
+            {isMasterAdmin && (
+              <Link href="/dashboard/admin/create-admin">
+                <Button size="sm" variant="outline" className="hidden sm:flex items-center gap-2 border-slate-300 hover:bg-slate-50">
+                  <UserPlus className="w-4 h-4" />
+                  <span>New Admin</span>
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>

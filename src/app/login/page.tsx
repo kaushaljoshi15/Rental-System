@@ -1,16 +1,24 @@
 // src/app/login/page.tsx
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
 import Link from "next/link"
+import { 
+  ShoppingCart, 
+  ShieldCheck, 
+  Truck, 
+  RotateCcw, 
+  Mail, 
+  Lock 
+} from "lucide-react"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
@@ -39,8 +47,6 @@ export default function LoginPage() {
        toast.error(result.error)
     } else {
        toast.success("Welcome back!")
-       // Redirect to role-specific dashboard
-       // Get role from session after login
        setTimeout(() => {
          router.push("/dashboard")
          router.refresh()
@@ -49,71 +55,142 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]">
-      
-      <Card className="w-full max-w-md mx-4 shadow-2xl border-slate-800 bg-slate-900/60 backdrop-blur-md text-slate-100">
-        <CardHeader className="space-y-1 text-center pb-8 pt-10">
-          <div className="mx-auto w-12 h-12 bg-slate-100 rounded-xl mb-4 flex items-center justify-center shadow-lg shadow-slate-500/20">
-            <svg className="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-          </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-white">
-            Welcome back
-          </CardTitle>
-          <CardDescription className="text-slate-400 text-base">
-            Access your rental dashboard
-          </CardDescription>
-        </CardHeader>
+    <div className="min-h-screen w-full flex bg-slate-50">
+      {/* Left Column: SaaS Promo split screen (hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 text-white flex-col justify-between p-12 relative overflow-hidden bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]">
+        <div className="absolute top-0 right-0 h-96 w-96 bg-amber-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300 ml-1">Email Address</label>
-              <Input 
-                placeholder="name@example.com" 
-                type="email" 
-                className="h-11 bg-slate-950 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-slate-500"
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
-                <Link href="/forgot-password" className="text-xs font-medium text-slate-400 hover:text-white transition-colors hover:underline">
-                  Forgot password?
-                </Link>
-              </div>
-              <Input 
-                placeholder="••••••••" 
-                type="password" 
-                className="h-11 bg-slate-950 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-slate-500"
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required
-              />
-            </div>
+        {/* Brand */}
+        <Link href="/" className="flex items-center gap-2 shrink-0 group">
+          <div className="bg-amber-500 p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
+            <ShoppingCart className="w-5 h-5" />
+          </div>
+          <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
+            Rent<span className="text-amber-500">Kart</span>
+          </span>
+        </Link>
 
-            <Button 
-              type="submit" 
-              className="w-full h-11 text-base font-medium mt-2 bg-slate-100 text-slate-900 hover:bg-slate-200 transition-all duration-200" 
-              disabled={loading}
-            >
-              {loading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-
-          <div className="mt-8 text-center text-sm text-slate-500">
-            <p>
-              New here?{" "}
-              <Link href="/register" className="font-semibold text-white hover:underline underline-offset-4">
-                Create an account
-              </Link>
+        {/* Dynamic SaaS details */}
+        <div className="space-y-8 max-w-md my-auto">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-extrabold tracking-tight">
+              Scale Your Rental Business Effortlessly.
+            </h2>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Log in to list premium gear as a vendor or request active equipment rentals. Experience the combined marketplace trust of Amazon, Flipkart, and Meesho.
             </p>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="space-y-4 pt-4">
+            <div className="flex gap-3">
+              <ShieldCheck className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-sm text-slate-100">Quality Assured</h4>
+                <p className="text-xs text-slate-400 mt-0.5">Strict quality tests on all products before handover.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Truck className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-sm text-slate-100">Quick Logistics</h4>
+                <p className="text-xs text-slate-400 mt-0.5">Same-day pickup or prompt shipping directly to your place.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <RotateCcw className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-sm text-slate-100">Easy Returns</h4>
+                <p className="text-xs text-slate-400 mt-0.5">Automated return logs and responsive security deposit refunds.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-xs text-slate-500">
+          © {new Date().getFullYear()} RentKart Portal. Fully Secure SaaS Infrastructure.
+        </div>
+      </div>
+
+      {/* Right Column: Form Container */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12">
+        <Card className="w-full max-w-md shadow-xl border-slate-200 bg-white rounded-2xl overflow-hidden">
+          <CardContent className="p-8 space-y-6">
+            <div className="space-y-2 text-center lg:text-left">
+              <div className="mx-auto lg:mx-0 w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center border border-amber-100 mb-4">
+                <Lock className="w-5 h-5 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-bold tracking-tight text-slate-900">Sign In</h3>
+              <p className="text-sm text-slate-500">Access your rent/sell manager portal</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    placeholder="name@example.com" 
+                    type="email" 
+                    className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Password</label>
+                  <Link href="/forgot-password" className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    placeholder="••••••••" 
+                    type="password" 
+                    className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    required
+                  />
+                </div>
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-11 text-sm font-extrabold mt-4 bg-slate-900 hover:bg-indigo-600 text-white transition-all duration-200 rounded-lg shadow-sm" 
+                disabled={loading}
+              >
+                {loading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+
+            <div className="text-center text-sm text-slate-500 pt-2 border-t border-slate-100">
+              <p>
+                Don't have an account?{" "}
+                <Link href="/register" className="font-bold text-indigo-600 hover:underline">
+                  Create an account
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-50">
+        <div className="text-slate-500 font-semibold">Loading portal...</div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

@@ -1,11 +1,10 @@
 'use client'
 
 import { useTransition } from "react"
-import { Trash2, CalendarDays } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { removeCartItem } from "@/actions/cart"
 import { toast } from "sonner"
-import { format } from "date-fns"
 
 interface CartItemProps {
   line: any
@@ -24,13 +23,13 @@ export function CartItem({ line, startDate, endDate }: CartItemProps) {
     })
   }
 
-  // Calculate duration for display
   const duration = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))
 
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-white rounded-lg border border-slate-100 shadow-sm">
-      {/* Image */}
-      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-slate-200 bg-slate-50 relative">
+    <div className="flex flex-col sm:flex-row items-center gap-6 p-5 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300">
+      
+      {/* Product Image */}
+      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 relative shadow-sm">
         {line.product.image ? (
           <img 
             src={line.product.image} 
@@ -38,27 +37,31 @@ export function CartItem({ line, startDate, endDate }: CartItemProps) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-xs text-slate-400">No Img</div>
+          <div className="flex h-full items-center justify-center text-[10px] text-slate-400 font-bold">NO IMG</div>
         )}
       </div>
 
-      {/* Details */}
+      {/* Description and rate details */}
       <div className="flex-1 text-center sm:text-left space-y-1">
-        <h4 className="font-semibold text-slate-900">{line.product.name}</h4>
-        <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-slate-500">
-            <span className="bg-slate-100 px-2 py-0.5 rounded">Daily Rate: ₹{line.price.toLocaleString()}</span>
-            <span>x {duration} Days</span>
+        <h4 className="font-extrabold text-slate-900 text-sm leading-tight">{line.product.name}</h4>
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+          <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200/50 px-2 py-0.5 rounded-md">
+            Rate: ₹{line.price.toLocaleString()} / day
+          </span>
+          <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
+            {duration} days rental
+          </span>
         </div>
       </div>
 
-      {/* Quantity Display */}
-      <div className="text-sm font-medium text-slate-600">
+      {/* Quantity Indicator */}
+      <div className="text-xs font-bold text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1 rounded-lg shrink-0">
         Qty: {line.quantity}
       </div>
 
-      {/* Total & Action */}
-      <div className="flex flex-col sm:items-end gap-2 min-w-[100px]">
-        <span className="text-lg font-bold text-slate-900">
+      {/* Pricing and Action buttons */}
+      <div className="flex flex-col sm:items-end gap-1.5 min-w-[120px] text-center sm:text-right shrink-0">
+        <span className="text-base font-extrabold text-slate-950">
           ₹{(line.price * line.quantity * duration).toLocaleString()}
         </span>
         <Button 
@@ -66,11 +69,12 @@ export function CartItem({ line, startDate, endDate }: CartItemProps) {
           size="sm" 
           onClick={handleRemove} 
           disabled={isPending}
-          className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2"
+          className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2.5 rounded-lg text-xs font-bold"
         >
-          <Trash2 className="w-4 h-4 mr-1" /> Remove
+          <Trash2 className="w-3.5 h-3.5 mr-1 shrink-0" /> Remove Item
         </Button>
       </div>
+
     </div>
   )
 }
