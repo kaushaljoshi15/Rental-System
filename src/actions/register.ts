@@ -15,6 +15,19 @@ export async function registerUser(formData: FormData) {
 
   if (!email || !password) return { error: "Missing fields" };
 
+  // Password Complexity Validation
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+
+  if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar) {
+    return { 
+      error: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character." 
+    };
+  }
+
   // ADMIN RESTRICTION: Only reserved email can create admin accounts
   const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
   const targetRole = email.toLowerCase() === RESERVED_ADMIN_EMAIL.toLowerCase() ? "ADMIN" : role;
@@ -76,11 +89,12 @@ export async function registerUser(formData: FormData) {
       message: `Verification email sent to ${email}. Please check your inbox.`
     };
 
-  } catch (e: any) {
-    console.error("❌ REGISTRATION ERROR:", e.message);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("❌ REGISTRATION ERROR:", message);
     
     // Specific error handling for the Network Block
-    if (e.message.includes("Can't reach database server")) {
+    if (message.includes("Can't reach database server")) {
       return { error: "NETWORK ERROR: Your WiFi is blocking the database. Please switch to Mobile Hotspot." };
     }
 

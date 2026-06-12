@@ -17,7 +17,7 @@ export async function deleteUser(userId: string) {
     
     revalidatePath("/dashboard/admin/users")
     return { success: true, message: "User deleted successfully." }
-  } catch (error) {
+  } catch {
     return { success: false, message: "Failed to delete user. Check for active orders." }
   }
 }

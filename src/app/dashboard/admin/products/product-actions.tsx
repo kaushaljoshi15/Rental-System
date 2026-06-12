@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import { deleteProduct } from "@/actions/product-management"
 import { Button } from "@/components/ui/button"
 import { 
@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash2, Edit, Eye, Archive } from "lucide-react"
+import { MoreHorizontal, Trash2, Edit, Eye } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 

@@ -1,7 +1,5 @@
 import { requireRole } from "@/lib/middleware";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,10 +21,6 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 export default async function AddVendorProductPage() {
   await requireRole(["VENDOR"]);
   
-  const session = await getServerSession(authOptions);
-  const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email! },
-  });
   
   const categories = await prisma.category.findMany();
 

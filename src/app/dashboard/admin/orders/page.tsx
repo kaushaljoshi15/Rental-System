@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/middleware";
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -120,8 +120,28 @@ export default async function AdminOrderCentralPage() {
   );
 }
 
+interface AdminOrder {
+  id: string;
+  status: string;
+  totalAmount: number;
+  createdAt: Date;
+  startDate: Date;
+  endDate: Date;
+  user: {
+    name: string | null;
+    email: string;
+  };
+  lines: {
+    id: string;
+    quantity: number;
+    product: {
+      name: string;
+    };
+  }[];
+}
+
 // --- Component: Admin Order Card ---
-function AdminOrderCard({ order }: { order: any }) {
+function AdminOrderCard({ order }: { order: AdminOrder }) {
   return (
     <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all group overflow-hidden">
       <CardHeader className="p-5 pb-4 bg-slate-50/50 border-b border-slate-100 flex flex-row items-start justify-between space-y-0">
@@ -146,7 +166,7 @@ function AdminOrderCard({ order }: { order: any }) {
       <CardContent className="p-5">
         {/* Item Preview */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {order.lines.map((line: any) => (
+          {order.lines.map((line) => (
             <Badge key={line.id} variant="secondary" className="bg-slate-100 text-slate-600 font-normal border-slate-200">
               {line.quantity}x {line.product.name}
             </Badge>
@@ -172,7 +192,7 @@ function AdminOrderCard({ order }: { order: any }) {
 }
 
 // --- Component: Stats Card ---
-function StatsCard({ title, value, icon, color }: { title: string, value: number, icon: any, color: string }) {
+function StatsCard({ title, value, icon, color }: { title: string, value: number, icon: React.ReactNode, color: string }) {
   return (
     <Card className="border-slate-200 bg-white">
       <CardContent className="p-6 flex items-center justify-between">
@@ -200,7 +220,7 @@ function EmptyState({ message }: { message: string }) {
 
 // --- Helper: Status Badge ---
 function StatusBadge({ status }: { status: string }) {
-  const styles: any = {
+  const styles: Record<string, string> = {
     PENDING: "bg-amber-100 text-amber-700 border-amber-200",
     CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
     PICKED_UP: "bg-purple-50 text-purple-700 border-purple-200",

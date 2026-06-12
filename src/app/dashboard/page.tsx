@@ -10,7 +10,7 @@ export default async function DashboardRedirect() {
     redirect("/login");
   }
 
-  const role = (session.user as any).role || "CUSTOMER";
+  const role = (session.user as { role?: string }).role || "CUSTOMER";
   const dashboardRoute = getDashboardRoute(role);
   
   redirect(dashboardRoute);

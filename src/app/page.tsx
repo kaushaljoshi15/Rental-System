@@ -14,38 +14,45 @@ import {
   Star, 
   ShieldCheck, 
   Truck, 
-  Clock, 
-  Calendar, 
-  Heart,
   ChevronRight,
-  TrendingUp,
   RotateCcw
 } from "lucide-react";
+import { unstable_cache } from "next/cache";
+
+// Cache homepage categories and featured products for 60 seconds
+const getCachedHomeData = unstable_cache(
+  async () => {
+    const [categories, products] = await Promise.all([
+      prisma.category.findMany({
+        take: 8,
+        orderBy: { name: "asc" }
+      }),
+      prisma.product.findMany({
+        where: { isRentable: true },
+        take: 8,
+        include: { category: true },
+        orderBy: { createdAt: "desc" }
+      })
+    ]);
+    return { categories, products };
+  },
+  ["homepage-storefront-data"],
+  { revalidate: 60, tags: ["homepage"] }
+);
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
   
   // Redirect VENDOR and ADMIN to their dashboard portals immediately
   if (session?.user) {
-    const role = (session.user as any).role || "CUSTOMER";
+    const role = (session.user as { role?: string }).role || "CUSTOMER";
     if (role === "ADMIN" || role === "VENDOR") {
       redirect(getDashboardRoute(role));
     }
   }
 
-  // Fetch categories and featured products from the database for the storefront
-  const [categories, products] = await Promise.all([
-    prisma.category.findMany({
-      take: 8,
-      orderBy: { name: "asc" }
-    }),
-    prisma.product.findMany({
-      where: { isRentable: true },
-      take: 8,
-      include: { category: true },
-      orderBy: { createdAt: "desc" }
-    })
-  ]);
+  // Fetch categories and featured products from the database for the storefront via Cache
+  const { categories, products } = await getCachedHomeData();
 
   const isLoggedIn = !!session?.user;
   const userName = session?.user?.name || "Guest";
@@ -361,7 +368,7 @@ export default async function Home() {
           <div className="space-y-4">
             <span className="text-lg font-extrabold text-white">RentKart</span>
             <p className="text-xs text-slate-500 leading-relaxed">
-              India's premier equipment renting marketplace. Cameras, laptops, construction tools, and more.
+              India&apos;s premier equipment renting marketplace. Cameras, laptops, construction tools, and more.
             </p>
           </div>
           <div>

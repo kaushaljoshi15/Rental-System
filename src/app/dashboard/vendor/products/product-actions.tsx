@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import { deleteProduct } from "@/actions/product-management"
 import { Button } from "@/components/ui/button"
 import { 

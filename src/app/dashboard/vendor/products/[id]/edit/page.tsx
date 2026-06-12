@@ -30,7 +30,7 @@ export default async function EditVendorProductPage({
   const { id } = await params;
   const session = await getServerSession(authOptions);
   const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email! },
+    where: { email: session?.user?.email || "" },
   });
 
   const product = await prisma.product.findUnique({

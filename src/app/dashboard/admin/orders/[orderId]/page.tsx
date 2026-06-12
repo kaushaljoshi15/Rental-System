@@ -161,7 +161,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-    const styles: any = {
+    const styles: Record<string, string> = {
       PENDING: "bg-amber-100 text-amber-700",
       CONFIRMED: "bg-blue-100 text-blue-700",
       PICKED_UP: "bg-purple-100 text-purple-700",

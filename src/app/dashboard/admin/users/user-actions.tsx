@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import { deleteUser } from "@/actions/user-management"
 import { Button } from "@/components/ui/button"
 import { 
@@ -17,10 +17,9 @@ import { toast } from "sonner"
 interface UserActionsProps {
   userId: string
   email: string
-  name: string
 }
 
-export function UserActionsMenu({ userId, email, name }: UserActionsProps) {
+export function UserActionsMenu({ userId, email }: UserActionsProps) {
   const [isPending, startTransition] = useTransition()
 
   const handleCopyEmail = () => {

@@ -6,22 +6,64 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
-// --- Existing Delete Function ---
+// Helper to get current session user
+async function getCurrentUser() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) return null
+  return await prisma.user.findUnique({
+    where: { email: session.user.email }
+  })
+}
+
+// --- Delete Function ---
 export async function deleteProduct(productId: string) {
   try {
+    const user = await getCurrentUser()
+    
+    // Fetch product to log its values
+    const product = await prisma.product.findUnique({
+      where: { id: productId }
+    })
+    
+    if (!product) {
+      return { success: false, message: "Product not found." }
+    }
+
     await prisma.product.delete({
       where: { id: productId },
     })
+
+    // Write Audit Log
+    if (user) {
+      await prisma.auditLog.create({
+        data: {
+          userId: user.id,
+          action: "DELETE_PRODUCT",
+          entityType: "Product",
+          entityId: productId,
+          oldValues: { name: product.name, priceDaily: product.priceDaily }
+        }
+      })
+    }
+
+    revalidatePath("/")
+    revalidatePath("/products")
+    revalidatePath(`/products/${productId}`)
     revalidatePath("/dashboard/admin/products")
     revalidatePath("/dashboard/vendor/products")
     return { success: true, message: "Product removed from inventory." }
-  } catch (error) {
+  } catch {
     return { success: false, message: "Cannot delete product. It might be in an active order." }
   }
 }
 
 // --- Admin Create Function ---
 export async function createProduct(formData: FormData) {
+  const user = await getCurrentUser()
+  if (!user || user.role !== "ADMIN") {
+    return { success: false, message: "Unauthorized." }
+  }
+
   const name = formData.get("name") as string
   const description = formData.get("description") as string
   const priceDaily = parseFloat(formData.get("priceDaily") as string)
@@ -34,8 +76,9 @@ export async function createProduct(formData: FormData) {
     return { success: false, message: "Please fill in all required fields correctly." }
   }
 
+  let createdProduct
   try {
-    await prisma.product.create({
+    createdProduct = await prisma.product.create({
       data: {
         name,
         description,
@@ -44,28 +87,35 @@ export async function createProduct(formData: FormData) {
         categoryId,
         image,
         isRentable: true,
+        isApproved: true, // Admin creations are pre-approved
       }
     })
+
+    // Write Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: "CREATE_PRODUCT",
+        entityType: "Product",
+        entityId: createdProduct.id,
+        newValues: { name, priceDaily, totalStock, categoryId }
+      }
+    })
+
   } catch (error) {
     console.error("Create Product Error:", error)
     return { success: false, message: "Failed to create product." }
   }
 
+  revalidatePath("/")
+  revalidatePath("/products")
   revalidatePath("/dashboard/admin/products")
   redirect("/dashboard/admin/products")
 }
 
 // --- Vendor Create Function ---
 export async function createVendorProduct(formData: FormData) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.email) {
-    return { success: false, message: "Unauthorized" }
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  })
-
+  const user = await getCurrentUser()
   if (!user || user.role !== "VENDOR") {
     return { success: false, message: "Unauthorized" }
   }
@@ -82,8 +132,9 @@ export async function createVendorProduct(formData: FormData) {
     return { success: false, message: "Please fill in all required fields correctly." }
   }
 
+  let createdProduct
   try {
-    await prisma.product.create({
+    createdProduct = await prisma.product.create({
       data: {
         name,
         description,
@@ -92,20 +143,40 @@ export async function createVendorProduct(formData: FormData) {
         categoryId,
         image,
         isRentable: true,
+        isApproved: false, // Vendor creations require admin approval
         vendorId: user.id,
       }
     })
+
+    // Write Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: "CREATE_VENDOR_PRODUCT",
+        entityType: "Product",
+        entityId: createdProduct.id,
+        newValues: { name, priceDaily, totalStock, categoryId, vendorId: user.id }
+      }
+    })
+
   } catch (error) {
     console.error("Create Vendor Product Error:", error)
     return { success: false, message: "Failed to create product." }
   }
 
+  revalidatePath("/")
+  revalidatePath("/products")
   revalidatePath("/dashboard/vendor/products")
   redirect("/dashboard/vendor/products")
 }
 
 // --- Update Product Function ---
 export async function updateProduct(productId: string, formData: FormData) {
+  const user = await getCurrentUser()
+  if (!user || (user.role !== "ADMIN" && user.role !== "VENDOR")) {
+    return { success: false, message: "Unauthorized." }
+  }
+
   const name = formData.get("name") as string
   const description = formData.get("description") as string
   const priceDaily = parseFloat(formData.get("priceDaily") as string)
@@ -119,6 +190,19 @@ export async function updateProduct(productId: string, formData: FormData) {
   }
 
   try {
+    const oldProduct = await prisma.product.findUnique({
+      where: { id: productId }
+    })
+
+    if (!oldProduct) {
+      return { success: false, message: "Product not found." }
+    }
+
+    // Check ownership if vendor
+    if (user.role === "VENDOR" && oldProduct.vendorId !== user.id) {
+      return { success: false, message: "Unauthorized to update this product." }
+    }
+
     await prisma.product.update({
       where: { id: productId },
       data: {
@@ -131,11 +215,27 @@ export async function updateProduct(productId: string, formData: FormData) {
         isRentable,
       }
     })
+
+    // Write Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: "UPDATE_PRODUCT",
+        entityType: "Product",
+        entityId: productId,
+        oldValues: { name: oldProduct.name, priceDaily: oldProduct.priceDaily, totalStock: oldProduct.totalStock, isRentable: oldProduct.isRentable },
+        newValues: { name, priceDaily, totalStock, isRentable }
+      }
+    })
+
   } catch (error) {
     console.error("Update Product Error:", error)
     return { success: false, message: "Failed to update product." }
   }
 
+  revalidatePath("/")
+  revalidatePath("/products")
+  revalidatePath(`/products/${productId}`)
   revalidatePath("/dashboard/admin/products")
   revalidatePath("/dashboard/vendor/products")
   return { success: true, message: "Product updated successfully." }

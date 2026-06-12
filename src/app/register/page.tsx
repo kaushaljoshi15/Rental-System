@@ -13,26 +13,38 @@ import Link from "next/link"
 import { 
   ShoppingCart, 
   ShieldCheck, 
-  Truck, 
-  RotateCcw, 
   Mail, 
   Lock,
   User,
   Sparkles,
-  Building
+  Eye,
+  EyeOff
 } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [role, setRole] = useState("CUSTOMER") 
-
+  const [showPassword, setShowPassword] = useState(false)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
     formData.set("role", role) 
+
+    const password = formData.get("password") as string
+    const hasMinLength = password.length >= 8;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+
+    if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar) {
+      toast.error("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.")
+      setLoading(false)
+      return
+    }
 
     const result = await registerUser(formData)
 
@@ -74,7 +86,7 @@ export default function RegisterPage() {
         <div className="space-y-8 max-w-md my-auto">
           <div className="space-y-4">
             <h2 className="text-3xl font-extrabold tracking-tight">
-              Join India's Top Rental Grid.
+              Join India&apos;s Top Rental Grid.
             </h2>
             <p className="text-slate-400 text-sm leading-relaxed">
               Create an account in minutes. List gear to start earning passive income, or rent high-fidelity equipment with verified security waivers.
@@ -151,11 +163,18 @@ export default function RegisterPage() {
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
                     name="password" 
-                    type="password" 
+                    type={showPassword ? "text" : "password"} 
                     placeholder="••••••••" 
                     required 
-                    className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
+                    className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
               

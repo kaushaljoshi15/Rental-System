@@ -21,37 +21,49 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { VendorCharts } from "./vendor-charts";
 
 export default async function VendorDashboard() {
   await requireRole(["VENDOR"]);
   
   const session = await getServerSession(authOptions);
   const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email! },
+    where: { email: session?.user?.email || "" },
     include: {
       products: true,
-      orders: { 
-        include: { 
-          lines: { include: { product: true } },
-          user: true
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 5
-      },
     },
   });
 
-  const totalProducts = user?.products.length || 0;
-  const totalOrders = user?.orders.length || 0;
-  const totalRevenue = user?.orders.reduce((sum, order) => sum + order.totalAmount, 0) || 0;
+  if (!user) return null;
 
-  // Get orders for vendor's products
+  // Get all orders for the vendor's products to calculate metrics correctly
+  const allVendorOrders = await prisma.rentalOrder.findMany({
+    where: {
+      lines: {
+        some: {
+          product: {
+            vendorId: user.id
+          }
+        }
+      },
+      status: { notIn: ["QUOTATION", "CANCELLED"] }
+    },
+    select: {
+      totalAmount: true
+    }
+  });
+
+  const totalProducts = user.products.length;
+  const totalOrders = allVendorOrders.length;
+  const totalRevenue = allVendorOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+  // Get orders for vendor's products for live feed
   const vendorOrders = await prisma.rentalOrder.findMany({
     where: {
       lines: {
         some: {
           product: {
-            vendorId: user?.id
+            vendorId: user.id
           }
         }
       },
@@ -63,6 +75,34 @@ export default async function VendorDashboard() {
     },
     orderBy: { createdAt: 'desc' },
     take: 5
+  });
+
+  // Calculate rental popularity metrics for Recharts
+  const productsWithRentals = await prisma.product.findMany({
+    where: { vendorId: user.id },
+    select: {
+      id: true,
+      name: true,
+      lines: {
+        where: {
+          order: {
+            status: { notIn: ["QUOTATION", "CANCELLED"] }
+          }
+        },
+        select: {
+          quantity: true
+        }
+      }
+    }
+  });
+
+  const chartData = productsWithRentals.map(prod => {
+    const totalRentals = prod.lines.reduce((sum, line) => sum + line.quantity, 0);
+    return {
+      name: prod.name.length > 12 ? prod.name.substring(0, 12) + "..." : prod.name,
+      fullName: prod.name,
+      rentals: totalRentals
+    };
   });
 
   return (
@@ -84,8 +124,8 @@ export default async function VendorDashboard() {
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden md:flex flex-col items-end text-right">
-                <span className="text-sm font-bold text-slate-900 leading-none">{user?.name}</span>
-                <span className="text-[10px] text-slate-400 font-semibold mt-0.5">{user?.email}</span>
+                <span className="text-sm font-bold text-slate-900 leading-none">{user.name}</span>
+                <span className="text-[10px] text-slate-400 font-semibold mt-0.5">{user.email}</span>
               </div>
               <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 shadow-sm">
                 <User className="w-4 h-4 text-slate-600" />
@@ -99,7 +139,7 @@ export default async function VendorDashboard() {
           {/* Welcome Seller Banner */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm bg-gradient-to-r from-white via-indigo-50/10 to-indigo-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h2 className="text-xl font-extrabold text-slate-950">Welcome back, {user?.name}!</h2>
+              <h2 className="text-xl font-extrabold text-slate-950">Welcome back, {user.name}!</h2>
               <p className="text-slate-500 text-sm mt-0.5">List products, manage incoming rental requests, and verify returned equipment.</p>
             </div>
             <Link href="/dashboard/vendor/products/new">
@@ -160,7 +200,12 @@ export default async function VendorDashboard() {
             </Card>
           </section>
 
-          {/* Section 2: Split columns */}
+          {/* Section 2: Visual Charts Analysis */}
+          <section>
+            <VendorCharts data={chartData} />
+          </section>
+
+          {/* Section 3: Split columns */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             {/* Left Area: Activity Feed (8 cols) */}

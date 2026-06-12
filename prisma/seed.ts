@@ -25,7 +25,7 @@ async function main() {
   // 2. CREATE SYSTEM USERS
   // ===============================================================
   // A. Master Admin
-  const masterAdmin = await prisma.user.create({
+  await prisma.user.create({
     data: {
       name: "System Admin",
       email: "joshikaushald1596@gmail.com",
@@ -53,7 +53,7 @@ async function main() {
   console.log(`  ✓ Created Test VENDOR: vendor@rental.com`)
 
   // C. Test Customer
-  const testCustomer = await prisma.user.create({
+  await prisma.user.create({
     data: {
       name: "Customer Account",
       email: "customer@rental.com",
@@ -236,6 +236,20 @@ async function main() {
   }
 
   console.log(`  ✓ Seeded ${productsData.length} Rentable Products.`)
+
+  // ===============================================================
+  // 5. SEED COUPONS
+  // ===============================================================
+  console.log("🌱 Seeding Promo Coupons...")
+  await prisma.coupon.createMany({
+    data: [
+      { code: "WELCOME10", discountType: "PERCENTAGE", discountValue: 10, isActive: true },
+      { code: "HALFOFF", discountType: "PERCENTAGE", discountValue: 50, isActive: true },
+      { code: "FLAT500", discountType: "FIXED", discountValue: 500, isActive: true },
+    ]
+  })
+  console.log("  ✓ Seeded promo coupons.")
+
   console.log("✅ Database Seeding Complete!")
 }
 

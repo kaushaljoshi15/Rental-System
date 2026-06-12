@@ -6,10 +6,20 @@ import { Button } from "@/components/ui/button"
 import { removeCartItem } from "@/actions/cart"
 import { toast } from "sonner"
 
+interface CartItemLine {
+  id: string;
+  price: number;
+  quantity: number;
+  product: {
+    name: string;
+    image: string | null;
+  };
+}
+
 interface CartItemProps {
-  line: any
-  startDate: Date
-  endDate: Date
+  line: CartItemLine;
+  startDate: Date;
+  endDate: Date;
 }
 
 export function CartItem({ line, startDate, endDate }: CartItemProps) {

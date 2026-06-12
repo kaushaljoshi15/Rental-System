@@ -50,8 +50,8 @@ async function main() {
       console.log(`   Email:       ${updatedUser.email}`)
       console.log(`   New Role:    ${updatedUser.role}`)
     }
-  } catch (error: any) {
-    console.error('❌ Error updating user role:', error.message)
+  } catch (error) {
+    console.error('❌ Error updating user role:', error instanceof Error ? error.message : error)
     process.exit(1)
   } finally {
     await prisma.$disconnect()

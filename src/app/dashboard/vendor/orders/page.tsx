@@ -5,8 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Clock, CheckCircle2, FileText, Calendar, User } from "lucide-react";
-import Link from "next/link";
+import { Package, Clock, CheckCircle2, Calendar, User } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
 export default async function VendorOrdersPage() {
@@ -14,7 +13,7 @@ export default async function VendorOrdersPage() {
   
   const session = await getServerSession(authOptions);
   const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email! },
+    where: { email: session?.user?.email || "" },
   });
 
   // Get orders that include vendor's products
@@ -173,20 +172,34 @@ export default async function VendorOrdersPage() {
   );
 }
 
-function OrderCard({ order }: { order: any }) {
-  const statusColors: any = {
+interface VendorOrderLine {
+  id: string;
+  quantity: number;
+  price: number;
+  product: {
+    name: string;
+    vendorId: string | null;
+  };
+}
+
+interface VendorOrder {
+  id: string;
+  status: string;
+  createdAt: Date;
+  totalAmount: number;
+  user: {
+    name: string | null;
+  };
+  lines: VendorOrderLine[];
+}
+
+function OrderCard({ order }: { order: VendorOrder }) {
+  const statusColors: Record<string, string> = {
     CONFIRMED: "bg-blue-100 text-blue-700 border-blue-200",
     PICKED_UP: "bg-purple-100 text-purple-700 border-purple-200",
     RETURNED: "bg-emerald-100 text-emerald-700 border-emerald-200",
   };
 
-  const statusIcons: any = {
-    CONFIRMED: Clock,
-    PICKED_UP: Package,
-    RETURNED: CheckCircle2,
-  };
-
-  const StatusIcon = statusIcons[order.status] || FileText;
 
   return (
     <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all">
@@ -220,7 +233,7 @@ function OrderCard({ order }: { order: any }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {order.lines.map((line: any) => (
+          {order.lines.map((line) => (
             <div key={line.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 bg-slate-100 rounded flex items-center justify-center">

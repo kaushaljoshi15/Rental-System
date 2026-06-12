@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
+import { calculateHallRent } from "@/lib/pricing"
 
 /**
  * Normalizes a date to midnight UTC to prevent time zone discrepancies in availability checks.
@@ -19,7 +20,7 @@ function normalizeDate(date: Date): Date {
  */
 function getDatesInRange(start: Date, end: Date): Date[] {
   const dates: Date[] = []
-  let current = normalizeDate(start)
+  const current = normalizeDate(start)
   const last = normalizeDate(end)
 
   while (current <= last) {
@@ -30,10 +31,14 @@ function getDatesInRange(start: Date, end: Date): Date[] {
 }
 
 /**
- * Confirms a booking with strict transactional validation to prevent double bookings.
- * This runs an atomic PostgreSQL transaction (ACID compliant).
+ * Confirms a booking with strict transactional validation, coupon discounts, wallet checks,
+ * and direct vendor payout routing.
  */
-export async function confirmBooking(orderId: string, paymentMethod: string = "CREDIT_CARD") {
+export async function confirmBooking(
+  orderId: string,
+  paymentMethod: string = "CREDIT_CARD",
+  couponCode?: string
+) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in to complete checkout." }
@@ -113,9 +118,12 @@ export async function confirmBooking(orderId: string, paymentMethod: string = "C
       }
 
       // Calculate platform commission and vendor payouts (SaaS logic)
-      // Standard commission is based on vendor's commission rate or default 10%
       let totalPlatformFee = 0
       let totalVendorPayout = 0
+      let dynamicOrderTotal = 0
+
+      // Map to track payouts per vendor to update their wallet balances
+      const vendorPayoutMap = new Map<string, number>()
 
       for (const line of order.lines) {
         const vendorId = line.product.vendorId
@@ -128,10 +136,107 @@ export async function confirmBooking(orderId: string, paymentMethod: string = "C
           }
         }
 
-        const lineTotal = line.price * line.quantity
+        // Calculate dynamic pricing based on dates
+        const pricingBreakdown = calculateHallRent(line.price, order.startDate, order.endDate)
+        const lineTotal = pricingBreakdown.total * line.quantity
+        dynamicOrderTotal += lineTotal
+
         const platformCut = lineTotal * (commissionRate / 100)
+        const vendorCut = lineTotal - platformCut
         totalPlatformFee += platformCut
-        totalVendorPayout += (lineTotal - platformCut)
+        totalVendorPayout += vendorCut
+
+        if (vendorId) {
+          vendorPayoutMap.set(vendorId, (vendorPayoutMap.get(vendorId) || 0) + vendorCut)
+        }
+      }
+
+      // Apply Coupon discount
+      let discountAmount = 0
+      if (couponCode) {
+        const coupon = await tx.coupon.findUnique({
+          where: { code: couponCode.toUpperCase().trim() }
+        })
+        if (!coupon || !coupon.isActive) {
+          throw new Error("The coupon is either invalid or inactive.")
+        }
+        if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date()) {
+          throw new Error("The coupon code has expired.")
+        }
+        
+        if (coupon.discountType === "PERCENTAGE") {
+          discountAmount = Math.round((coupon.discountValue / 100) * dynamicOrderTotal * 100) / 100
+        } else if (coupon.discountType === "FIXED") {
+          discountAmount = Math.min(dynamicOrderTotal, coupon.discountValue)
+        }
+      }
+
+      const discountedRentalSubtotal = Math.max(0, dynamicOrderTotal - discountAmount)
+      const taxAmount = Math.round(discountedRentalSubtotal * 0.18 * 100) / 100
+      const finalRentalTotal = Math.round((discountedRentalSubtotal + taxAmount) * 100) / 100
+
+      // Calculate total security deposit
+      let totalSecurityDeposit = 0
+      for (const line of order.lines) {
+        totalSecurityDeposit += (line.product.securityDeposit || 0) * line.quantity
+      }
+
+      const grandTotalAmount = finalRentalTotal + totalSecurityDeposit
+
+      // Wallet deduction check (for Customer)
+      if (paymentMethod === "WALLET") {
+        if (user.walletBalance < grandTotalAmount) {
+          throw new Error(`Insufficient wallet balance. Total required: ₹${grandTotalAmount.toLocaleString()}, Available: ₹${user.walletBalance.toLocaleString()}`)
+        }
+
+        // Deduct from customer
+        await tx.user.update({
+          where: { id: user.id },
+          data: {
+            walletBalance: {
+              decrement: grandTotalAmount
+            }
+          }
+        })
+
+        // Create transaction ledger entry for customer
+        await tx.walletTransaction.create({
+          data: {
+            userId: user.id,
+            amount: grandTotalAmount,
+            type: "DEBIT",
+            description: `Payment for booking order #${order.id.substring(0, 8).toUpperCase()}`
+          }
+        })
+      }
+
+      // Pro-rate the payouts to vendors/platform based on discount
+      const discountRatio = dynamicOrderTotal > 0 ? discountedRentalSubtotal / dynamicOrderTotal : 0
+      const platformFeeFinal = totalPlatformFee * discountRatio
+      const vendorPayoutFinal = totalVendorPayout * discountRatio
+
+      // Route the payouts directly to each Vendor's wallet balance
+      for (const [vendorId, rawPayout] of vendorPayoutMap.entries()) {
+        const finalPayout = Math.round(rawPayout * discountRatio * 100) / 100
+        if (finalPayout > 0) {
+          await tx.user.update({
+            where: { id: vendorId },
+            data: {
+              walletBalance: {
+                increment: finalPayout
+              }
+            }
+          })
+
+          await tx.walletTransaction.create({
+            data: {
+              userId: vendorId,
+              amount: finalPayout,
+              type: "CREDIT",
+              description: `Earnings from order #${order.id.substring(0, 8).toUpperCase()} (Customer: ${user.name}, Paid via ${paymentMethod.replace("_", " ")})`
+            }
+          })
+        }
       }
 
       // Update the Order status to CONFIRMED
@@ -139,8 +244,13 @@ export async function confirmBooking(orderId: string, paymentMethod: string = "C
         where: { id: order.id },
         data: {
           status: "CONFIRMED",
-          platformFee: totalPlatformFee,
-          vendorPayout: totalVendorPayout,
+          totalAmount: grandTotalAmount,
+          securityDeposit: totalSecurityDeposit,
+          paymentMethod: paymentMethod,
+          couponCode: couponCode || null,
+          discountAmount: discountAmount,
+          platformFee: platformFeeFinal,
+          vendorPayout: vendorPayoutFinal,
           payoutStatus: "PENDING"
         }
       })
@@ -151,8 +261,8 @@ export async function confirmBooking(orderId: string, paymentMethod: string = "C
         data: {
           orderId: order.id,
           invoiceNumber: invoiceNumber,
-          amount: order.totalAmount,
-          status: "PAID",
+          amount: grandTotalAmount,
+          status: paymentMethod === "CASH_ON_DELIVERY" ? "UNPAID" : "PAID",
           paymentMethod: paymentMethod
         }
       })
@@ -165,9 +275,13 @@ export async function confirmBooking(orderId: string, paymentMethod: string = "C
           entityType: "RentalOrder",
           entityId: order.id,
           newValues: {
-            totalAmount: order.totalAmount,
-            platformFee: totalPlatformFee,
-            vendorPayout: totalVendorPayout
+            totalAmount: grandTotalAmount,
+            securityDeposit: totalSecurityDeposit,
+            paymentMethod: paymentMethod,
+            couponCode: couponCode || null,
+            discountAmount: discountAmount,
+            platformFee: platformFeeFinal,
+            vendorPayout: vendorPayoutFinal
           }
         }
       })
@@ -176,11 +290,215 @@ export async function confirmBooking(orderId: string, paymentMethod: string = "C
     })
 
     revalidatePath("/dashboard/customer/cart")
+    revalidatePath("/dashboard/customer/orders")
     revalidatePath("/dashboard/customer/invoices")
-    return { success: true, message: "Booking confirmed and locked successfully!", order: result }
+    revalidatePath("/dashboard/customer/settings")
+    return { success: true, message: "Booking confirmed successfully!", order: result }
 
-  } catch (error: any) {
-    console.error("Booking Transaction Failed:", error.message)
-    return { success: false, message: error.message || "An unexpected error occurred during checkout." }
+  } catch (error) {
+    console.error("Booking Transaction Failed:", error instanceof Error ? error.message : error)
+    return { success: false, message: error instanceof Error ? error.message : "An unexpected error occurred during checkout." }
+  }
+}
+
+/**
+ * Cancels a booking, releases availability locks, refunds to customer's wallet balance,
+ * and debits the refunded earnings share from vendor balances.
+ */
+export async function cancelBookingAndRefund(orderId: string) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized. Please log in." }
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    })
+    if (!user) {
+      return { success: false, message: "User not found." }
+    }
+
+    const order = await prisma.rentalOrder.findUnique({
+      where: { id: orderId },
+      include: {
+        user: true,
+        lines: {
+          include: { product: true }
+        }
+      }
+    })
+
+    if (!order) {
+      return { success: false, message: "Booking order not found." }
+    }
+
+    // Authorization check: Only the customer who ordered or an ADMIN can cancel
+    if (order.userId !== user.id && user.role !== "ADMIN") {
+      return { success: false, message: "Unauthorized to cancel this booking." }
+    }
+
+    if (order.status === "CANCELLED") {
+      return { success: false, message: "Booking is already cancelled." }
+    }
+
+    // Calculate refund based on dates
+    const now = new Date()
+    const startDate = new Date(order.startDate)
+    const diffInMs = startDate.getTime() - now.getTime()
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24))
+
+    let refundPercentage = 0
+    let refundPolicyNotes = ""
+
+    if (diffInDays >= 7) {
+      refundPercentage = 1.0 // 100%
+      refundPolicyNotes = "Full refund (100%) applied for cancellation at least 7 days before event."
+    } else if (diffInDays >= 2) {
+      refundPercentage = 0.5 // 50%
+      refundPolicyNotes = "Partial refund (50%) applied for cancellation between 2 to 6 days before event."
+    } else {
+      refundPercentage = 0.0 // 0%
+      refundPolicyNotes = "No refund (0%) applied for cancellation within 48 hours of event."
+    }
+
+    // Rent component of the order is totalAmount - securityDeposit
+    const rentalChargePaid = Math.max(0, order.totalAmount - order.securityDeposit)
+    const refundRentAmount = rentalChargePaid * refundPercentage
+    const refundDepositAmount = order.securityDeposit // 100% security deposit is always refunded
+    const totalRefund = Math.round((refundRentAmount + refundDepositAmount) * 100) / 100
+
+    // Recalculate each vendor's payout share to debit accordingly
+    const vendorPayoutDebits = new Map<string, number>()
+    const originalSubtotal = order.lines.reduce((acc, line) => {
+      const breakdown = calculateHallRent(line.product.priceDaily, order.startDate, order.endDate)
+      return acc + (breakdown.total * line.quantity)
+    }, 0)
+
+    const discountAmount = order.discountAmount || 0
+    const discountedRentalSubtotal = Math.max(0, originalSubtotal - discountAmount)
+    const discountRatio = originalSubtotal > 0 ? discountedRentalSubtotal / originalSubtotal : 0
+
+    for (const line of order.lines) {
+      const vendorId = line.product.vendorId
+      if (vendorId) {
+        let commissionRate = 10.0
+        const vendor = await prisma.user.findUnique({ where: { id: vendorId } })
+        if (vendor) {
+          commissionRate = vendor.commissionRate
+        }
+        const breakdown = calculateHallRent(line.product.priceDaily, order.startDate, order.endDate)
+        const lineTotalOriginal = breakdown.total * line.quantity
+        const platformCut = lineTotalOriginal * (commissionRate / 100)
+        const vendorCutOriginal = lineTotalOriginal - platformCut
+        const finalVendorCut = vendorCutOriginal * discountRatio
+        
+        // Debit quantity is proportional to the refund percentage sent back to customer
+        const debitAmount = Math.round(finalVendorCut * refundPercentage * 100) / 100
+        if (debitAmount > 0) {
+          vendorPayoutDebits.set(vendorId, (vendorPayoutDebits.get(vendorId) || 0) + debitAmount)
+        }
+      }
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Release availability slots
+      await tx.hallAvailability.deleteMany({
+        where: { bookingId: order.id }
+      })
+
+      // 2. Update order status to CANCELLED and zero out payouts
+      const updatedOrder = await tx.rentalOrder.update({
+        where: { id: order.id },
+        data: {
+          status: "CANCELLED",
+          vendorPayout: 0,
+          platformFee: 0,
+        }
+      })
+
+      // 3. If refund amount is > 0, credit customer's wallet
+      if (totalRefund > 0) {
+        await tx.user.update({
+          where: { id: order.userId },
+          data: {
+            walletBalance: {
+              increment: totalRefund
+            }
+          }
+        })
+
+        // Create transaction history record for customer
+        await tx.walletTransaction.create({
+          data: {
+            userId: order.userId,
+            amount: totalRefund,
+            type: "CREDIT",
+            description: `Refund for cancellation of Order #${order.id.substring(0, 8).toUpperCase()}. ${refundPolicyNotes}`
+          }
+        })
+      }
+
+      // 4. Debit the refunded earnings share from vendor balances
+      for (const [vendorId, debitAmount] of vendorPayoutDebits.entries()) {
+        await tx.user.update({
+          where: { id: vendorId },
+          data: {
+            walletBalance: {
+              decrement: debitAmount
+            }
+          }
+        })
+
+        await tx.walletTransaction.create({
+          data: {
+            userId: vendorId,
+            amount: debitAmount,
+            type: "DEBIT",
+            description: `Earnings deduction due to cancellation of Order #${order.id.substring(0, 8).toUpperCase()} (${Math.round(refundPercentage * 100)}% refund)`
+          }
+        })
+      }
+
+      // 5. Update Invoice status to CANCELLED
+      await tx.invoice.updateMany({
+        where: { orderId: order.id },
+        data: { status: "CANCELLED" }
+      })
+
+      // 6. Add audit log
+      await tx.auditLog.create({
+        data: {
+          userId: user.id,
+          action: "CANCEL_BOOKING",
+          entityType: "RentalOrder",
+          entityId: order.id,
+          newValues: {
+            status: "CANCELLED",
+            refundAmount: totalRefund,
+            refundPercentage: refundPercentage * 100,
+            policyNotes: refundPolicyNotes,
+            vendorPayoutDebits: Array.from(vendorPayoutDebits.entries())
+          }
+        }
+      })
+
+      return { updatedOrder, totalRefund, refundPolicyNotes }
+    })
+
+    revalidatePath("/dashboard/customer/orders")
+    revalidatePath("/dashboard/customer/invoices")
+    revalidatePath("/dashboard/customer/settings")
+    revalidatePath("/dashboard/vendor/orders")
+    
+    return {
+      success: true,
+      message: `Booking cancelled successfully. Refunded ₹${result.totalRefund.toLocaleString()} to customer.`,
+      refundAmount: result.totalRefund
+    }
+
+  } catch (error) {
+    console.error("Booking cancellation error:", error)
+    return { success: false, message: (error instanceof Error ? error.message : "") || "Failed to cancel booking." }
   }
 }

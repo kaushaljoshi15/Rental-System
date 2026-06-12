@@ -30,6 +30,8 @@ model User {
   address           String?  
   isVerifiedVendor  Boolean   @default(false)
   commissionRate    Float     @default(10.0) // Platform percentage cut (e.g., 10%)
+  image             String?
+  walletBalance     Float     @default(0.0)
   
   // SECURITY
   emailVerified     DateTime?
@@ -45,6 +47,7 @@ model User {
   products          Product[]     // Vendor's Halls/Products
   reviews           Review[]      // Reviews left by this user
   auditLogs         AuditLog[]
+  walletTransactions WalletTransaction[]
 }
 
 // ==========================================
@@ -106,6 +109,12 @@ model Product {
   availabilities  HallAvailability[]
   reviews         Review[]
   addOns          AddOn[]
+
+  @@index([vendorId])
+  @@index([categoryId])
+  @@index([priceDaily])
+  @@index([isApproved, isRentable])
+  @@index([city])
 }
 
 // ==========================================
@@ -125,6 +134,7 @@ model HallAvailability {
 
   // CRITICAL: Database-level constraint to prevent overlapping bookings
   @@unique([productId, bookingDate, timeSlot])
+  @@index([productId, bookingDate])
 }
 
 // ==========================================
@@ -145,6 +155,9 @@ model RentalOrder {
   // FINANCIAL DETAILS
   totalAmount     Float
   securityDeposit Float       @default(0) 
+  paymentMethod   String      @default("CREDIT_CARD")
+  couponCode      String?
+  discountAmount  Float       @default(0)
   
   // SAAS COMMISSION FIELDS
   platformFee     Float       @default(0) // Platform's share
@@ -159,6 +172,9 @@ model RentalOrder {
   lines           OrderLine[]
   payments        Payment[]
   bookingAddOns   BookingAddOn[]
+
+  @@index([userId])
+  @@index([status])
 }
 
 model OrderLine {
@@ -229,6 +245,8 @@ model Payment {
   updatedAt      DateTime    @updatedAt
   
   refunds        Refund[]
+
+  @@index([orderId])
 }
 
 model Refund {
@@ -262,6 +280,7 @@ model Review {
   createdAt   DateTime @default(now())
   
   @@unique([productId, userId]) // One review per user per hall
+  @@index([productId])
 }
 
 // ==========================================
@@ -278,4 +297,34 @@ model AuditLog {
   newValues   Json?
   ipAddress   String?
   createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ==========================================
+// 9. PROMO COUPONS & GIFT CARDS
+// ==========================================
+model Coupon {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  discountType  String   // "PERCENTAGE" or "FIXED"
+  discountValue Float
+  isActive      Boolean  @default(true)
+  expiryDate    DateTime?
+  createdAt     DateTime @default(now())
+}
+
+// ==========================================
+// 10. VIRTUAL WALLET TRANSACTIONS
+// ==========================================
+model WalletTransaction {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Float
+  type        String   // "CREDIT" or "DEBIT"
+  description String
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
 }

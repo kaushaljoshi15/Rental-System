@@ -16,7 +16,13 @@ import {
 import { Card } from "@/components/ui/card"
 import { addToCart } from "@/actions/cart"
 
-export function BookingWidget({ product }: { product: any }) {
+interface ProductSummary {
+  id: string
+  priceDaily: number
+  totalStock: number
+}
+
+export function BookingWidget({ product }: { product: ProductSummary }) {
   // 1. State for the selected date range
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),

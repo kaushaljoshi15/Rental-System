@@ -1,0 +1,43 @@
+﻿
+E:\Rental-System\src\app\dashboard\admin\products\page.tsx
+  124:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+E:\Rental-System\src\app\dashboard\admin\settings\page.tsx
+    8:51  warning  'AlertTriangle' is defined but never used                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  146:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+E:\Rental-System\src\app\dashboard\admin\users\page.tsx
+  12:3  warning  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+  13:3  warning  'XCircle' is defined but never used       @typescript-eslint/no-unused-vars
+  24:3  warning  'searchParams' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\Rental-System\src\app\dashboard\admin\users\user-actions.tsx
+   3:10  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+  23:50  warning  'name' is defined but never used      @typescript-eslint/no-unused-vars
+
+E:\Rental-System\src\app\dashboard\customer\cart\cart-item.tsx
+  44:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+E:\Rental-System\src\app\dashboard\customer\orders\page.tsx
+  5:52  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  9:50  warning  'ArrowRight' is defined but never used       @typescript-eslint/no-unused-vars
+
+E:\Rental-System\src\app\dashboard\vendor\orders\page.tsx
+    8:40  warning  'FileText' is defined but never used              @typescript-eslint/no-unused-vars
+  203:9   warning  'statusIcons' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+E:\Rental-System\src\app\dashboard\vendor\products\page.tsx
+  100:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+E:\Rental-System\src\app\page.tsx
+  256:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+E:\Rental-System\src\app\products\[id]\page.tsx
+  69:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  88:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+E:\Rental-System\src\app\products\page.tsx
+  158:27  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+Γ£û 18 problems (0 errors, 18 warnings)
+

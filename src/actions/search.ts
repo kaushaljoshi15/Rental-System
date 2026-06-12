@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from "@/lib/prisma"
+import { Prisma } from "@prisma/client"
 
 interface SearchFilters {
   query?: string
@@ -27,7 +28,7 @@ function normalizeDate(date: Date): Date {
  */
 function getDatesInRange(start: Date, end: Date): Date[] {
   const dates: Date[] = []
-  let current = normalizeDate(start)
+  const current = normalizeDate(start)
   const last = normalizeDate(end)
 
   while (current <= last) {
@@ -76,26 +77,37 @@ export async function searchHalls(filters: SearchFilters) {
     }
 
     // 2. Build Prisma dynamic query filter
-    const whereConditions: any = {
+    const whereConditions: Prisma.ProductWhereInput = {
       isRentable: true,
       isApproved: true, // Only search approved halls
     }
 
-    // Filter out unavailable halls
-    if (unavailableProductIds.length > 0) {
-      whereConditions.id = {
-        notIn: unavailableProductIds
+    // Filter out unavailable halls and/or match search query
+    if (unavailableProductIds.length > 0 || query) {
+      const idFilter: Prisma.StringFilter = {}
+      if (unavailableProductIds.length > 0) {
+        idFilter.notIn = unavailableProductIds
       }
-    }
+      if (query) {
+        // Execute raw query for pg_trgm similarity matching
+        const matchingProducts = await prisma.$queryRaw<{ id: string }[]>`
+          SELECT id FROM "Product"
+          WHERE similarity(name, ${query}) > 0.25
+             OR similarity(description, ${query}) > 0.25
+             OR name ILIKE ${`%${query}%`}
+             OR description ILIKE ${`%${query}%`}
+             OR city ILIKE ${`%${query}%`}
+             OR address ILIKE ${`%${query}%`}
+        `
+        const trigramProductIds = matchingProducts.map((p) => p.id)
 
-    // Fuzzy query match across Name, Description, City, Address
-    if (query) {
-      whereConditions.OR = [
-        { name: { contains: query, mode: 'insensitive' } },
-        { description: { contains: query, mode: 'insensitive' } },
-        { city: { contains: query, mode: 'insensitive' } },
-        { address: { contains: query, mode: 'insensitive' } }
-      ]
+        if (trigramProductIds.length === 0) {
+          // If search query is provided but returns zero matches, return early with empty array
+          return { success: true, data: [] }
+        }
+        idFilter.in = trigramProductIds
+      }
+      whereConditions.id = idFilter
     }
 
     // Category Filter
@@ -105,13 +117,14 @@ export async function searchHalls(filters: SearchFilters) {
 
     // Price Filtering (daily rental rate)
     if (minPrice !== undefined || maxPrice !== undefined) {
-      whereConditions.priceDaily = {}
+      const priceFilter: Prisma.FloatFilter = {}
       if (minPrice !== undefined) {
-        whereConditions.priceDaily.gte = minPrice
+        priceFilter.gte = minPrice
       }
       if (maxPrice !== undefined) {
-        whereConditions.priceDaily.lte = maxPrice
+        priceFilter.lte = maxPrice
       }
+      whereConditions.priceDaily = priceFilter
     }
 
     // Capacity Filtering (Max Guests)
@@ -167,8 +180,8 @@ export async function searchHalls(filters: SearchFilters) {
 
     return { success: true, data: mappedHalls }
 
-  } catch (error: any) {
-    console.error("Hall Search Failed:", error.message)
-    return { success: false, message: error.message || "Failed to search halls." }
+  } catch (error) {
+    console.error("Hall Search Failed:", error instanceof Error ? error.message : error)
+    return { success: false, message: (error instanceof Error ? error.message : "") || "Failed to search halls." }
   }
 }

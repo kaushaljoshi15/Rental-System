@@ -8,23 +8,29 @@ import {
   Star, 
   Percent, 
   Award,
-  Heart,
-  Calendar,
   Info
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { unstable_cache } from "next/cache";
+
+// Cache individual product details for 60 seconds by ID to reduce direct DB hits under concurrent traffic
+const getCachedProduct = unstable_cache(
+  async (id: string) => {
+    return await prisma.product.findUnique({
+      where: { id },
+      include: { category: true, vendor: true }
+    });
+  },
+  ["product-detail"],
+  { revalidate: 60, tags: ["products"] }
+);
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  const product = await prisma.product.findUnique({
-    where: { id },
-    include: { category: true, vendor: true }
-  });
+  const product = await getCachedProduct(id);
 
   if (!product) notFound();
 

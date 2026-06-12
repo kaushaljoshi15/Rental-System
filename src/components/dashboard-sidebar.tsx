@@ -15,8 +15,7 @@ import {
   Plus,
   History,
   FileText,
-  Search,
-  LogOut
+  Search
 } from "lucide-react"
 import LogoutButton from "./logout-button"
 
@@ -60,6 +59,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
     { title: "My Cart", href: "/dashboard/customer/cart", icon: <ShoppingCart className="w-5 h-5" /> },
     { title: "My Orders", href: "/dashboard/customer/orders", icon: <History className="w-5 h-5" /> },
     { title: "Invoices", href: "/dashboard/customer/invoices", icon: <FileText className="w-5 h-5" /> },
+    { title: "Settings", href: "/dashboard/customer/settings", icon: <Settings className="w-5 h-5" /> },
   ]
 
   const items = role === "ADMIN" ? adminItems : role === "VENDOR" ? vendorItems : customerItems
@@ -92,7 +92,10 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
         {/* Navigation */}
         <nav className="flex-1 space-y-1.5 p-4">
           {items.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+            const isBaseDashboard = item.href === "/dashboard/admin" || item.href === "/dashboard/vendor" || item.href === "/dashboard/customer"
+            const isActive = isBaseDashboard 
+              ? pathname === item.href 
+              : pathname === item.href || pathname.startsWith(item.href + "/")
             return (
               <Link
                 key={item.href}

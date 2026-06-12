@@ -16,10 +16,10 @@ import {
   CheckCircle2, 
   ArrowRight,
   User,
-  ExternalLink,
-  ShieldAlert
+  ExternalLink
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { SupportBot } from "@/components/support-bot";
 
 export default async function CustomerDashboard() {
   // 1. Security Check
@@ -29,7 +29,7 @@ export default async function CustomerDashboard() {
   
   // 2. Fetch Customer Data with Orders
   const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email! },
+    where: { email: session?.user?.email || "" },
     include: {
       orders: {
         include: { 
@@ -167,7 +167,7 @@ export default async function CustomerDashboard() {
                       </div>
                       <div className="space-y-1">
                         <h4 className="font-bold text-slate-900 text-sm">No rentals recorded</h4>
-                        <p className="text-xs text-slate-500">You haven't requested any quotations or rented products yet.</p>
+                        <p className="text-xs text-slate-500">You haven&apos;t requested any quotations or rented products yet.</p>
                       </div>
                       <Link href="/products" className="inline-block pt-2">
                         <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs">
@@ -265,6 +265,7 @@ export default async function CustomerDashboard() {
 
         </div>
       </div>
+      <SupportBot />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { requireRole } from "@/lib/middleware";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,14 +21,14 @@ export default async function VendorProductsPage({
   
   const session = await getServerSession(authOptions);
   const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email! },
+    where: { email: session?.user?.email || "" },
   });
 
   const params = await searchParams;
   const searchQuery = params?.query;
 
   // Build filter for vendor's products
-  const whereClause: any = {
+  const whereClause: Prisma.ProductWhereInput = {
     vendorId: user?.id,
   };
 

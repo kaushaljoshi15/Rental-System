@@ -20,7 +20,7 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
     revalidatePath("/dashboard/admin/orders")
     
     return { success: true, message: `Order status updated to ${newStatus}` }
-  } catch (error) {
+  } catch {
     return { success: false, message: "Failed to update order status." }
   }
 }

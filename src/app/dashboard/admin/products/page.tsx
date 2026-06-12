@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +26,7 @@ export default async function ProductsPage({
   });
 
   // 2. Build Filter Logic
-  const whereClause: any = {
+  const whereClause: Prisma.ProductWhereInput = {
     isRentable: true, // Only show rentable items
   };
 

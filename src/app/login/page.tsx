@@ -15,7 +15,9 @@ import {
   Truck, 
   RotateCcw, 
   Mail, 
-  Lock 
+  Lock,
+  Eye,
+  EyeOff
 } from "lucide-react"
 
 function LoginForm() {
@@ -24,6 +26,7 @@ function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (searchParams.get('verified') === 'true') {
@@ -150,12 +153,19 @@ function LoginForm() {
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
                     placeholder="••••••••" 
-                    type="password" 
-                    className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
+                    type={showPassword ? "text" : "password"} 
+                    className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
@@ -170,7 +180,7 @@ function LoginForm() {
 
             <div className="text-center text-sm text-slate-500 pt-2 border-t border-slate-100">
               <p>
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Link href="/register" className="font-bold text-indigo-600 hover:underline">
                   Create an account
                 </Link>

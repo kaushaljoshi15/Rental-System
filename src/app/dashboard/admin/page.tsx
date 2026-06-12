@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/middleware";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -26,7 +26,7 @@ const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
 
 export default async function AdminDashboard() {
   // 1. Check Role & Security
-  const user = await requireRole(["ADMIN"]);
+  await requireRole(["ADMIN"]);
   
   const session = await getServerSession(authOptions);
   const isMasterAdmin = session?.user?.email?.toLowerCase() === RESERVED_ADMIN_EMAIL.toLowerCase();
@@ -261,7 +261,15 @@ export default async function AdminDashboard() {
 
 // --- Sub-Components for cleaner code ---
 
-function StatCard({ title, value, icon, subtext, bgClass }: any) {
+interface StatCardProps {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  subtext: string;
+  bgClass: string;
+}
+
+function StatCard({ title, value, icon, subtext, bgClass }: StatCardProps) {
   return (
     <Card className="shadow-sm hover:shadow-md transition-all hover:-translate-y-1 duration-200">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -278,8 +286,16 @@ function StatCard({ title, value, icon, subtext, bgClass }: any) {
   )
 }
 
-function ManagementCard({ title, description, icon, href, color }: any) {
-    const bgColors: any = {
+interface ManagementCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  href: string;
+  color: 'indigo' | 'rose' | 'amber' | 'teal';
+}
+
+function ManagementCard({ title, description, icon, href, color }: ManagementCardProps) {
+    const bgColors: Record<'indigo' | 'rose' | 'amber' | 'teal', string> = {
         indigo: "bg-indigo-50 group-hover:bg-indigo-100",
         rose: "bg-rose-50 group-hover:bg-rose-100",
         amber: "bg-amber-50 group-hover:bg-amber-100",

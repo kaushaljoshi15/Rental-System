@@ -5,12 +5,12 @@
  * Run with: node scripts/setup-env.js
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
 const envPath = path.join(process.cwd(), '.env.local');
-const envExamplePath = path.join(process.cwd(), '.env.example');
 
 // Generate a random secret for NEXTAUTH_SECRET
 function generateSecret() {

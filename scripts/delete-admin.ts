@@ -8,8 +8,8 @@ async function main() {
       where: { email: 'joshikaushald1596@gmail.com' }
     })
     console.log("✅ Seeded admin user 'joshikaushald1596@gmail.com' deleted successfully!")
-  } catch (error: any) {
-    console.log("❌ User was not found or already deleted:", error.message)
+  } catch (error) {
+    console.log("❌ User was not found or already deleted:", error instanceof Error ? error.message : error)
   } finally {
     await prisma.$disconnect()
   }

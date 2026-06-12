@@ -119,7 +119,7 @@ export async function removeCartItem(lineId: string) {
 
     revalidatePath("/dashboard/customer/cart")
     return { success: true, message: "Item removed" }
-  } catch (error) {
+  } catch {
     return { success: false, message: "Failed to remove item" }
   }
 }
@@ -133,7 +133,7 @@ export async function submitQuotation(orderId: string) {
     })
     revalidatePath("/dashboard/customer/cart")
     return { success: true, message: "Quotation requested successfully!" }
-  } catch (error) {
+  } catch {
     return { success: false, message: "Failed to submit quotation" }
   }
 }

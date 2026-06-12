@@ -112,18 +112,37 @@ export default async function CustomerInvoicesPage() {
   );
 }
 
-function InvoiceCard({ order }: { order: any }) {
+interface InvoiceOrder {
+  id: string;
+  invoice: {
+    id: string;
+    invoiceNumber: string;
+    status: string;
+    createdAt: Date;
+    amount: number;
+    paymentMethod: string | null;
+  } | null;
+  lines: {
+    id: string;
+    quantity: number;
+    product: {
+      name: string;
+    };
+  }[];
+}
+
+function InvoiceCard({ order }: { order: InvoiceOrder }) {
   const invoice = order.invoice;
   if (!invoice) return null;
 
-  const statusColors: any = {
+  const statusColors: Record<string, string> = {
     PAID: "bg-emerald-100 text-emerald-700 border-emerald-200",
     UNPAID: "bg-amber-100 text-amber-700 border-amber-200",
     PARTIALLY_PAID: "bg-blue-100 text-blue-700 border-blue-200",
     CANCELLED: "bg-red-100 text-red-700 border-red-200",
   };
 
-  const statusIcons: any = {
+  const statusIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     PAID: CheckCircle2,
     UNPAID: Clock,
     PARTIALLY_PAID: Clock,
@@ -170,7 +189,7 @@ function InvoiceCard({ order }: { order: any }) {
         <div className="space-y-2 mb-4">
           <p className="text-sm font-medium text-slate-900">Items:</p>
           <div className="flex flex-wrap gap-2">
-            {order.lines.map((line: any) => (
+            {order.lines.map((line) => (
               <Badge key={line.id} variant="secondary" className="bg-slate-100 text-slate-600 font-normal">
                 {line.quantity}x {line.product.name}
               </Badge>

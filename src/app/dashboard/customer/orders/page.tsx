@@ -2,11 +2,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Package, Clock, CheckCircle2, FileText, ArrowRight, Calendar } from "lucide-react";
+import { Package, Clock, CheckCircle2, FileText, Calendar } from "lucide-react";
 import Link from "next/link";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
@@ -95,8 +95,26 @@ export default async function OrderCentralPage() {
   );
 }
 
+import { CancelButton } from "./cancel-button";
+
+interface CustomerOrder {
+  id: string;
+  status: string;
+  totalAmount: number;
+  createdAt: Date;
+  startDate: Date;
+  endDate: Date;
+  lines: {
+    id: string;
+    quantity: number;
+    product: {
+      name: string;
+    };
+  }[];
+}
+
 // --- Component: Order Card ---
-function OrderCard({ order }: { order: any }) {
+function OrderCard({ order }: { order: CustomerOrder }) {
   return (
     <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all group">
       <CardHeader className="p-5 pb-3 flex flex-row items-center justify-between space-y-0">
@@ -126,13 +144,20 @@ function OrderCard({ order }: { order: any }) {
           </div>
         </div>
         
-        {/* Preview of Items */}
-        <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
-          {order.lines.map((line: any) => (
-            <Badge key={line.id} variant="secondary" className="bg-slate-100 text-slate-600 font-normal">
-              {line.quantity}x {line.product.name}
-            </Badge>
-          ))}
+        {/* Preview of Items & Cancel Action */}
+        <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-2">
+            {order.lines.map((line) => (
+              <Badge key={line.id} variant="secondary" className="bg-slate-100 text-slate-600 font-normal">
+                {line.quantity}x {line.product.name}
+              </Badge>
+            ))}
+          </div>
+          {["PENDING", "CONFIRMED"].includes(order.status) && (
+            <div className="shrink-0 flex justify-end w-full sm:w-auto">
+              <CancelButton orderId={order.id} />
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -140,7 +165,7 @@ function OrderCard({ order }: { order: any }) {
 }
 
 // --- Component: Stats Card ---
-function StatsCard({ title, value, icon }: { title: string, value: number, icon: any }) {
+function StatsCard({ title, value, icon }: { title: string, value: number, icon: React.ReactNode }) {
   return (
     <Card className="border-slate-200 bg-white">
       <CardContent className="p-6 flex items-center justify-between">
@@ -158,7 +183,7 @@ function StatsCard({ title, value, icon }: { title: string, value: number, icon:
 
 // --- Helper: Status Badge ---
 function StatusBadge({ status }: { status: string }) {
-  const styles: any = {
+  const styles: Record<string, string> = {
     PENDING: "bg-amber-50 text-amber-700 border-amber-200",
     CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
     PICKED_UP: "bg-purple-50 text-purple-700 border-purple-200",
@@ -180,7 +205,7 @@ function EmptyState() {
         <Package className="h-8 w-8 text-slate-300" />
       </div>
       <h3 className="text-lg font-semibold text-slate-900">No orders found</h3>
-      <p className="text-slate-500 mt-1 mb-6">You haven't placed any rental orders yet.</p>
+      <p className="text-slate-500 mt-1 mb-6">You haven&apos;t placed any rental orders yet.</p>
       <Link href="/products">
         <Button>Browse Equipment</Button>
       </Link>

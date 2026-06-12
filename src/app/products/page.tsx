@@ -3,7 +3,7 @@ import { searchHalls } from "@/actions/search";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, Tag, ImageOff, Star, Heart, Truck } from "lucide-react";
+import { Search, Filter, Tag, ImageOff, Star, Truck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
@@ -11,6 +11,18 @@ import { RentButton } from "@/components/rent-button";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { unstable_cache } from "next/cache";
+
+// Cache categories for 60 seconds to prevent DB reads on every catalog page load
+const getCachedCategories = unstable_cache(
+  async () => {
+    return await prisma.category.findMany({
+      orderBy: { name: 'asc' }
+    });
+  },
+  ["categories-list"],
+  { revalidate: 60, tags: ["categories"] }
+);
 
 export default async function ProductsPage({
   searchParams,
@@ -23,7 +35,7 @@ export default async function ProductsPage({
 
   // Check if user is logged in and is a customer
   const session = await getServerSession(authOptions);
-  const isCustomer = session?.user && (session.user as any).role === "CUSTOMER";
+  const isCustomer = session?.user && (session.user as { role?: string }).role === "CUSTOMER";
 
   // Simulated rating & MRP generators
   const getSimulatedRating = (id: string) => {
@@ -39,10 +51,8 @@ export default async function ProductsPage({
     return { mrp, discount };
   };
 
-  // 1. Fetch Categories for Sidebar
-  const categories = await prisma.category.findMany({
-    orderBy: { name: 'asc' }
-  });
+  // 1. Fetch Categories for Sidebar via Cache
+  const categories = await getCachedCategories();
 
   // 2. Fetch Products via searchHalls action
   const selectedCategory = categories.find(c => c.slug === categorySlug);
@@ -50,7 +60,7 @@ export default async function ProductsPage({
     query: searchQuery,
     categoryId: selectedCategory?.id,
   });
-  const products = searchResult.success ? (searchResult.data as any[]) : [];
+  const products = searchResult.success && searchResult.data ? searchResult.data : [];
 
   return (
     <div className={`min-h-screen bg-slate-50 ${isCustomer ? 'flex' : ''}`}>
@@ -126,7 +136,7 @@ export default async function ProductsPage({
                 </div>
                 <h3 className="text-lg font-semibold text-slate-900">No products found</h3>
                 <p className="text-slate-500 mt-1 mb-6 max-w-sm mx-auto text-sm">
-                  We couldn't find any items matching your filters. Try selecting a different category or clearing your search.
+                  We could not find any items matching your filters. Try selecting a different category or clearing your search.
                 </p>
                 <Link href="/products">
                   <Button variant="outline" className="border-slate-300">Clear All Filters</Button>
@@ -180,6 +190,14 @@ export default async function ProductsPage({
                           <span className="text-xs text-slate-500">({count})</span>
                           <span className="text-xs text-slate-300">•</span>
                           <span className="text-[11px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">Best Seller</span>
+                        </div>
+
+                        {/* Sold by / Vendor tag (Amazon/Flipkart Style) */}
+                        <div className="text-[11px] text-slate-500 mt-1.5 font-medium flex items-center gap-1">
+                          <span>Sold by:</span>
+                          <span className="text-indigo-600 font-bold hover:underline">
+                            {product.vendor?.companyName || product.vendor?.name || "Prime Partner"}
+                          </span>
                         </div>
 
                         <p className="text-xs text-slate-500 line-clamp-2 min-h-[32px] leading-relaxed mt-2">

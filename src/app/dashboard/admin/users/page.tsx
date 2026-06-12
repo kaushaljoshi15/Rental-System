@@ -9,8 +9,6 @@ import {
   ShieldCheck, 
   Store, 
   User, 
-  CheckCircle2, 
-  XCircle,
   UserPlus,
   Mail
 } from "lucide-react";
@@ -20,11 +18,7 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-export default async function UserManagementPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ query?: string }>;
-}) {
+export default async function UserManagementPage() {
   // 1. Security Check
   await requireRole(["ADMIN"]);
   
@@ -175,7 +169,6 @@ export default async function UserManagementPage({
                         <UserActionsMenu 
                           userId={user.id} 
                           email={user.email} 
-                          name={user.name} 
                         />
                       </td>
                     </tr>
