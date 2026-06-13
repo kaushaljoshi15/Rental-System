@@ -25,6 +25,68 @@ const getCachedCategories = unstable_cache(
   { revalidate: 60, tags: ["categories"] }
 );
 
+// Category grouping helper to classify catalog departments
+function getCategoryGroup(slug: string): string {
+  const s = slug.toLowerCase();
+  if (s.includes("lehenga") || s.includes("gown") || s.includes("sherwani") || s.includes("tuxedo") || s.includes("wedding-fashion")) {
+    return "👗 Clothes & Wedding";
+  }
+  if (
+    s.includes("camera") || 
+    s.includes("lens") || 
+    s.includes("drone") || 
+    s.includes("gimbal") || 
+    s.includes("microphone") || 
+    s.includes("mixer") || 
+    s.includes("speaker") || 
+    s.includes("headphone") || 
+    s.includes("audio") || 
+    s.includes("karaoke") || 
+    s.includes("laptop") || 
+    s.includes("tablet") || 
+    s.includes("monitor") || 
+    s.includes("vr-headset") || 
+    s.includes("gaming") || 
+    s.includes("projector") || 
+    s.includes("printer")
+  ) {
+    return "⚡ Electric Items & Tech";
+  }
+  if (
+    s.includes("chair") || 
+    s.includes("desk") || 
+    s.includes("table") || 
+    s.includes("sofa") || 
+    s.includes("bean-bag") || 
+    s.includes("bookshelf") || 
+    s.includes("lamp") || 
+    s.includes("event-infrastructure") || 
+    s.includes("generator")
+  ) {
+    return "🏛️ Event & Furniture";
+  }
+  if (
+    s.includes("tent") || 
+    s.includes("sleeping-bag") || 
+    s.includes("grill") || 
+    s.includes("canopy") || 
+    s.includes("cooler") || 
+    s.includes("fog-machine")
+  ) {
+    return "🏕️ Travel & Camping";
+  }
+  if (s.includes("medical")) {
+    return "🏥 Medical Care";
+  }
+  if (s.includes("fitness")) {
+    return "🏃 Fitness & Wellness";
+  }
+  if (s.includes("tool")) {
+    return "🔨 Heavy Tools & DIY";
+  }
+  return "📦 General Equipment";
+}
+
 export default async function ProductsPage({
   searchParams,
 }: {
@@ -64,6 +126,16 @@ export default async function ProductsPage({
 
   // 1. Fetch Categories for Sidebar via Cache
   const categories = await getCachedCategories();
+
+  // Dynamic grouping logic
+  const groupedCategories: Record<string, typeof categories> = {};
+  categories.forEach((cat) => {
+    const group = getCategoryGroup(cat.slug);
+    if (!groupedCategories[group]) {
+      groupedCategories[group] = [];
+    }
+    groupedCategories[group].push(cat);
+  });
 
   // 2. Fetch Products via searchHalls action
   const selectedCategory = categories.find(c => c.slug === categorySlug);
@@ -112,25 +184,33 @@ export default async function ProductsPage({
                   <Filter className="w-4 h-4" /> Categories
                 </h3>
               </div>
-              <ScrollArea className="h-[400px] lg:h-[calc(100vh-300px)]">
-                <div className="p-2 space-y-1">
+              <ScrollArea className="h-[400px] lg:h-[calc(100vh-500px)]">
+                <div className="p-2 space-y-3">
                   <Link href="/products">
                     <Button 
                       variant="ghost" 
-                      className={`w-full justify-start text-sm ${!categorySlug ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:text-slate-900"}`}
+                      className={`w-full justify-start text-xs h-8 ${!categorySlug ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:text-slate-900"}`}
                     >
                       All Products
                     </Button>
                   </Link>
-                  {categories.map((cat) => (
-                    <Link key={cat.id} href={`/products?category=${cat.slug}`}>
-                      <Button 
-                        variant="ghost" 
-                        className={`w-full justify-start text-sm ${categorySlug === cat.slug ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:text-slate-900"}`}
-                      >
-                        {cat.name}
-                      </Button>
-                    </Link>
+
+                  {Object.entries(groupedCategories).map(([groupName, groupCats]) => (
+                    <div key={groupName} className="space-y-1">
+                      <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-2 pt-2 pb-0.5 border-t border-slate-100 first:border-0">
+                        {groupName}
+                      </h4>
+                      {groupCats.map((cat) => (
+                        <Link key={cat.id} href={`/products?category=${cat.slug}`}>
+                          <Button 
+                            variant="ghost" 
+                            className={`w-full justify-start text-xs h-7 px-2.5 py-1 text-left ${categorySlug === cat.slug ? "bg-amber-100 text-amber-950 font-semibold" : "text-slate-600 hover:text-slate-950"}`}
+                          >
+                            <span className="truncate">{cat.name}</span>
+                          </Button>
+                        </Link>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </ScrollArea>

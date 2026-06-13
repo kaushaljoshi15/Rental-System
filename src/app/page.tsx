@@ -83,14 +83,81 @@ export default async function HomePage() {
     return { mrp, discount }
   }
 
-  // Preloaded category circles mock visuals for Myntra style shop categories
-  const categoryCircles = [
-    { name: "Banquet Hall", code: "AC", icon: <Building className="w-5 h-5 text-amber-500" /> },
-    { name: "Sound Systems", code: "AU", icon: <Mic className="w-5 h-5 text-indigo-500" /> },
-    { name: "Meeting Rooms", code: "MR", icon: <Layers className="w-5 h-5 text-emerald-500" /> },
-    { name: "Video Gear", code: "VD", icon: <Tv className="w-5 h-5 text-purple-500" /> },
-    { name: "Camera Kits", code: "CA", icon: <Camera className="w-5 h-5 text-sky-500" /> },
-    { name: "Stage Lighting", code: "LT", icon: <Sliders className="w-5 h-5 text-rose-500" /> }
+  // Preloaded category departments and subcategories (grouped by user preference)
+  const categoryGroups = [
+    {
+      title: "Clothes & Wedding Fashion",
+      description: "Bridal heavy lehengas, sherwanis, and gowns",
+      icon: "👗",
+      theme: "from-pink-500 to-rose-500",
+      categories: [
+        { name: "Bridal Lehenga", slug: "wedding-fashion", query: "lehenga", icon: "👑" },
+        { name: "Groom Sherwani", slug: "wedding-fashion", query: "sherwani", icon: "🤵" },
+        { name: "Reception Gown", slug: "wedding-fashion", query: "gown", icon: "💃" },
+        { name: "Tuxedo Suit", slug: "wedding-fashion", query: "tuxedo", icon: "👔" },
+        { name: "Bridal Jewelry", slug: "wedding-fashion", query: "jewelry", icon: "✨" },
+        { name: "Trail Dress", slug: "wedding-fashion", query: "trail", icon: "👗" }
+      ]
+    },
+    {
+      title: "Electric Items & Tech Gear",
+      description: "Cameras, laptops, audio systems, and gaming",
+      icon: "⚡",
+      theme: "from-blue-600 to-sky-500",
+      categories: [
+        { name: "Mirrorless Cams", slug: "mirrorless-cameras", query: "mirrorless", icon: "📷" },
+        { name: "DSLR Cameras", slug: "dslr-cameras", query: "dslr", icon: "📸" },
+        { name: "Laptops & Workstations", slug: "laptops", query: "macbook", icon: "💻" },
+        { name: "Gaming Consoles", slug: "gaming-consoles", query: "playstation", icon: "🎮" },
+        { name: "VR Headsets", slug: "vr-headsets", query: "quest", icon: "🥽" },
+        { name: "Projectors", slug: "projectors", query: "projector", icon: "📽️" },
+        { name: "Sound Systems", slug: "speakers", query: "sound", icon: "🔊" },
+        { name: "Karaoke Machines", slug: "karaoke-machines", query: "karaoke", icon: "🎤" },
+        { name: "Drones", slug: "drones", query: "drone", icon: "🛸" }
+      ]
+    },
+    {
+      title: "Event & Banquet Infrastructure",
+      description: "Stage lighting, banquet chairs, and generators",
+      icon: "🏛️",
+      theme: "from-amber-500 to-orange-500",
+      categories: [
+        { name: "Banquet Chairs", slug: "event-chairs", query: "chair", icon: "🪑" },
+        { name: "Tables", slug: "tables", query: "table", icon: "🪵" },
+        { name: "Stage Lighting", slug: "fog-machines", query: "lighting", icon: "💡" },
+        { name: "DJ Sound Setup", slug: "speakers", query: "sound", icon: "🎧" },
+        { name: "Special Effects", slug: "fog-machines", query: "fog", icon: "💨" },
+        { name: "Maharaja Couches", slug: "sofas", query: "couch", icon: "🛋️" },
+        { name: "Generators", slug: "generators", query: "generator", icon: "⚡" },
+        { name: "Buffet Warmers", slug: "event-infrastructure", query: "buffet", icon: "🍲" }
+      ]
+    },
+    {
+      title: "Travel & Camping Kits",
+      description: "High-altitude tents, sleeping bags, and action cams",
+      icon: "🏕️",
+      theme: "from-emerald-600 to-teal-500",
+      categories: [
+        { name: "Camping Tents", slug: "camping-tents", query: "tent", icon: "⛺" },
+        { name: "Sleeping Bags", slug: "sleeping-bags", query: "sleeping", icon: "🛌" },
+        { name: "Travel Rucksacks", slug: "camping-tents", query: "rucksack", icon: "🎒" },
+        { name: "GoPro Action Cams", slug: "action-cameras", query: "gopro", icon: "📹" },
+        { name: "Telescopes", slug: "camping-tents", query: "telescope", icon: "🔭" }
+      ]
+    },
+    {
+      title: "Medical, Gym & Heavy Tools",
+      description: "Oxygen concentrators, treadmills, and demolition hammers",
+      icon: "🏥",
+      theme: "from-purple-600 to-indigo-500",
+      categories: [
+        { name: "Oxygen Concentrator", slug: "medical-equipment", query: "oxygen", icon: "🫁" },
+        { name: "ICU Hospital Bed", slug: "medical-equipment", query: "bed", icon: "🏥" },
+        { name: "Treadmills & Fitness", slug: "fitness-gear", query: "treadmill", icon: "🏃" },
+        { name: "Demolition Hammers", slug: "heavy-tools", query: "hammer", icon: "🔨" },
+        { name: "Pressure Washers", slug: "heavy-tools", query: "washer", icon: "🌀" }
+      ]
+    }
   ]
 
   return (
@@ -241,32 +308,53 @@ export default async function HomePage() {
       {/* --- PUBLIC CUSTOMER INTERFACE MAIN CONTENT --- */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16">
         
-        {/* --- 1. CIRCLE CATEGORY LIST (MYNTRA/ZEPTO PARADIGM) --- */}
-        <section className="space-y-6">
+        {/* --- 1. GROUPED CATEGORIES (AMAZON / FLIPKART DEPARTMENT PARADIGM) --- */}
+        <section className="space-y-8">
           <div className="flex justify-between items-end border-b border-slate-200 pb-3">
             <div>
-              <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Shop By Category</h2>
-              <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Rent customized event solutions</p>
+              <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight font-sans">Browse by department</h2>
+              <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Explore grouped rental categories for easy access</p>
             </div>
-            <Link href="/products" className="text-xs font-extrabold text-[#F59E0B] hover:underline uppercase tracking-wider flex items-center gap-1">
+            <Link href="/products" className="text-xs font-extrabold text-amber-500 hover:underline uppercase tracking-wider flex items-center gap-1">
               See all <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="flex flex-wrap items-center justify-around gap-6 py-2">
-            {categoryCircles.map((cat, idx) => (
-              <Link 
-                key={idx} 
-                href={`/products?query=${encodeURIComponent(cat.name)}`}
-                className="group flex flex-col items-center gap-2 cursor-pointer text-center"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categoryGroups.map((group, groupIdx) => (
+              <div 
+                key={groupIdx} 
+                className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-all duration-200" 
+                style={{ boxShadow: PREMIUM_BOX_SHADOW }}
               >
-                <div className="w-14 h-14 rounded-full bg-white border border-slate-250/60 shadow-sm flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-hover:border-[#F59E0B] group-hover:shadow-md" style={{ boxShadow: PREMIUM_BOX_SHADOW }}>
-                  {cat.icon}
+                {/* Header Block */}
+                <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                  <div>
+                    <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 uppercase tracking-wide">
+                      <span className="text-base">{group.icon}</span>
+                      {group.title}
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{group.description}</p>
+                  </div>
+                  <span className={`w-2.5 h-2.5 rounded-full bg-gradient-to-r ${group.theme}`} />
                 </div>
-                <span className="text-[11px] font-extrabold text-[#0F172A] uppercase tracking-wide group-hover:text-[#F59E0B] transition-colors mt-1">
-                  {cat.name}
-                </span>
-              </Link>
+
+                {/* Categories List */}
+                <div className="p-4 flex-1 flex flex-wrap gap-2 content-start">
+                  {group.categories.map((cat, idx) => (
+                    <Link 
+                      key={idx} 
+                      href={cat.slug ? `/products?category=${cat.slug}${cat.query ? `&query=${encodeURIComponent(cat.query)}` : ''}` : `/products?query=${encodeURIComponent(cat.name)}`}
+                      className="group/tag flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-amber-500 hover:text-slate-950 border border-slate-200/60 rounded-xl transition-all duration-150"
+                    >
+                      <span className="text-xs group-hover/tag:scale-110 transition-transform">{cat.icon}</span>
+                      <span className="text-[11px] font-bold text-slate-650 group-hover/tag:text-slate-950 transition-colors uppercase tracking-wide">
+                        {cat.name}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </section>
