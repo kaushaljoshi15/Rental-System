@@ -64,7 +64,7 @@ export async function Navbar() {
             <div className="absolute inset-0 bg-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           <span className="text-xl font-extrabold tracking-tight select-none text-white group-hover:text-amber-400 transition-colors">
-            Rental<span className="text-[#F59E0B]">Kart</span>
+            Rent<span className="text-[#F59E0B]">Kart</span>
           </span>
         </Link>
 
