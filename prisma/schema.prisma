@@ -33,6 +33,12 @@ model User {
   image             String?
   walletBalance     Float     @default(0.0)
   
+  // KYC Database Fields
+  aadhaarNumber     String?
+  panNumber         String?
+  kycStatus         String    @default("PENDING") // "PENDING", "VERIFIED", "REJECTED"
+  kycDocUrl         String?
+  
   // SECURITY
   emailVerified     DateTime?
   verificationToken String?   @unique
@@ -327,4 +333,18 @@ model WalletTransaction {
   createdAt   DateTime @default(now())
 
   @@index([userId])
+}
+
+// ==========================================
+// 11. OTP VERIFICATION MODEL FOR VENDOR SIGNUP
+// ==========================================
+model OtpVerification {
+  id        String   @id @default(uuid())
+  type      String   // "EMAIL" or "PHONE"
+  value     String   // The email address or phone number
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([value])
 }

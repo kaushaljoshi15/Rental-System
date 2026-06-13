@@ -12,6 +12,7 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { unstable_cache } from "next/cache";
+import { redirect } from "next/navigation";
 
 // Cache categories for 60 seconds to prevent DB reads on every catalog page load
 const getCachedCategories = unstable_cache(
@@ -35,7 +36,17 @@ export default async function ProductsPage({
 
   // Check if user is logged in and is a customer
   const session = await getServerSession(authOptions);
-  const isCustomer = session?.user && (session.user as { role?: string }).role === "CUSTOMER";
+  let isCustomer = false;
+  if (session?.user) {
+    const role = (session.user as { role?: string }).role || "CUSTOMER";
+    if (role === "VENDOR") {
+      redirect("/dashboard/vendor");
+    }
+    if (role === "ADMIN") {
+      redirect("/dashboard/admin");
+    }
+    isCustomer = role === "CUSTOMER";
+  }
 
   // Simulated rating & MRP generators
   const getSimulatedRating = (id: string) => {

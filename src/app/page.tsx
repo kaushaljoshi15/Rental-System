@@ -1,12 +1,11 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { getDashboardRoute } from "@/lib/middleware";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
   Search, 
   ShoppingCart, 
@@ -15,80 +14,103 @@ import {
   ShieldCheck, 
   Truck, 
   ChevronRight,
-  RotateCcw
-} from "lucide-react";
-import { unstable_cache } from "next/cache";
+  RotateCcw,
+  Sparkles,
+  Building,
+  Camera,
+  Mic,
+  Tv,
+  Eye,
+  Sliders,
+  Layers,
+  Heart
+} from "lucide-react"
+import { RentButton } from "@/components/rent-button"
 
-// Cache homepage categories and featured products for 60 seconds
-const getCachedHomeData = unstable_cache(
-  async () => {
+// Cache helper for category lists & featured products
+async function getStorefrontData() {
+  try {
     const [categories, products] = await Promise.all([
       prisma.category.findMany({
         take: 8,
         orderBy: { name: "asc" }
       }),
       prisma.product.findMany({
-        where: { isRentable: true },
+        where: { isApproved: true, isRentable: true },
         take: 8,
-        include: { category: true },
+        include: { category: true, vendor: true },
         orderBy: { createdAt: "desc" }
       })
-    ]);
-    return { categories, products };
-  },
-  ["homepage-storefront-data"],
-  { revalidate: 60, tags: ["homepage"] }
-);
+    ])
+    return { categories, products }
+  } catch (e) {
+    console.error("Failed to load storefront data:", e)
+    // Return empty fallback arrays if database table is not seeded
+    return { categories: [], products: [] }
+  }
+}
 
-export default async function Home() {
-  const session = await getServerSession(authOptions);
+const PREMIUM_BOX_SHADOW = '0 1px 4px rgba(0,0,0,0.07)'
+
+export default async function HomePage() {
+  const session = await getServerSession(authOptions)
   
-  // Redirect VENDOR and ADMIN to their dashboard portals immediately
+  // If logged in as VENDOR or ADMIN, redirect them immediately to their portals
   if (session?.user) {
-    const role = (session.user as { role?: string }).role || "CUSTOMER";
-    if (role === "ADMIN" || role === "VENDOR") {
-      redirect(getDashboardRoute(role));
+    const role = (session.user as { role?: string }).role || "CUSTOMER"
+    if (role === "VENDOR") {
+      redirect("/dashboard/vendor")
+    } else if (role === "ADMIN") {
+      redirect("/dashboard/admin")
     }
   }
 
-  // Fetch categories and featured products from the database for the storefront via Cache
-  const { categories, products } = await getCachedHomeData();
+  const { categories, products } = await getStorefrontData()
+  const isLoggedIn = !!session?.user
+  const userName = session?.user?.name || "Guest"
 
-  const isLoggedIn = !!session?.user;
-  const userName = session?.user?.name || "Guest";
-
-  // Simulated reviews & original price helpers to create Amazon/Flipkart style elements
+  // Simulated reviews & original price helpers
   const getSimulatedRating = (id: string) => {
-    // Generate deterministic ratings based on product ID characters
-    const charCodeSum = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const rating = 4.0 + (charCodeSum % 10) * 0.1; // 4.0 - 4.9 range
-    const reviewsCount = 15 + (charCodeSum % 200);
-    return { rating: rating.toFixed(1), count: reviewsCount };
-  };
+    const charCodeSum = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    const rating = 4.0 + (charCodeSum % 10) * 0.1
+    const reviewsCount = 15 + (charCodeSum % 200)
+    return { rating: rating.toFixed(1), count: reviewsCount }
+  }
 
   const getSimulatedMRP = (price: number) => {
-    const mrp = Math.round(price * 1.35); // 35% markup
-    const discount = Math.round(((mrp - price) / mrp) * 100);
-    return { mrp, discount };
-  };
+    const mrp = Math.round(price * 1.35)
+    const discount = Math.round(((mrp - price) / mrp) * 100)
+    return { mrp, discount }
+  }
+
+  // Preloaded category circles mock visuals for Myntra style shop categories
+  const categoryCircles = [
+    { name: "Banquet Hall", code: "AC", icon: <Building className="w-5 h-5 text-amber-500" /> },
+    { name: "Sound Systems", code: "AU", icon: <Mic className="w-5 h-5 text-indigo-500" /> },
+    { name: "Meeting Rooms", code: "MR", icon: <Layers className="w-5 h-5 text-emerald-500" /> },
+    { name: "Video Gear", code: "VD", icon: <Tv className="w-5 h-5 text-purple-500" /> },
+    { name: "Camera Kits", code: "CA", icon: <Camera className="w-5 h-5 text-sky-500" /> },
+    { name: "Stage Lighting", code: "LT", icon: <Sliders className="w-5 h-5 text-rose-500" /> }
+  ]
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* --- PREMIUM AMAZON/FLIPKART STYLE NAVBAR --- */}
-      <header className="sticky top-0 z-50 bg-slate-900 text-white shadow-md">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900">
+      
+      {/* --- PREMIUM NAVBAR --- */}
+      <header className="sticky top-0 z-50 bg-[#0F172A] text-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4">
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
             <div className="bg-amber-500 p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-5 h-5 text-[#0F172A]" />
             </div>
             <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
               Rent<span className="text-amber-500">Kart</span>
             </span>
           </Link>
 
-          {/* Search Bar (Centered like Amazon/Flipkart) */}
+          {/* Search Bar (Centered like Myntra/Amazon) */}
           <div className="flex-1 max-w-2xl relative group hidden md:block">
             <form action="/products" method="GET">
               <div className="relative flex items-center">
@@ -96,8 +118,8 @@ export default async function Home() {
                 <input 
                   type="text" 
                   name="query" 
-                  placeholder="Search cameras, laptops, gaming consoles, camping tents..." 
-                  className="w-full bg-slate-800 border border-slate-700 text-sm rounded-lg pl-10 pr-20 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                  placeholder="Search banquet halls, sound systems, seminar spaces, lenses..." 
+                  className="w-full bg-slate-800 border border-slate-700 text-sm rounded-lg pl-10 pr-20 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-semibold"
                 />
                 <button 
                   type="submit" 
@@ -111,7 +133,7 @@ export default async function Home() {
 
           {/* User Controls */}
           <div className="flex items-center gap-4">
-            <Link href="/products" className="text-sm font-medium text-slate-300 hover:text-white hover:underline transition-all">
+            <Link href="/products" className="text-sm font-medium text-slate-350 hover:text-white hover:underline transition-all uppercase tracking-wider text-[11px] font-bold">
               All Products
             </Link>
 
@@ -124,14 +146,12 @@ export default async function Home() {
 
                 <div className="h-4 w-[1px] bg-slate-700 hidden sm:block" />
 
-                <div className="flex items-center gap-2 group relative">
-                  <Link href="/dashboard/customer" className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-all">
-                    <User className="w-4 h-4 text-amber-500" />
-                    <span className="text-sm font-semibold max-w-[100px] truncate">
-                      {userName}
-                    </span>
-                  </Link>
-                </div>
+                <Link href="/dashboard/customer" className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-all font-semibold">
+                  <User className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-semibold max-w-[100px] truncate">
+                    {userName}
+                  </span>
+                </Link>
 
                 <Link href="/api/auth/signout" className="text-xs font-semibold px-3 py-1.5 border border-slate-700 hover:border-slate-500 hover:bg-slate-800 rounded transition-all">
                   Sign Out
@@ -156,73 +176,94 @@ export default async function Home() {
       </header>
 
       {/* Mobile Search Bar (Only shown on mobile) */}
-      <div className="bg-slate-900 px-4 py-3 md:hidden border-t border-slate-800">
+      <div className="bg-[#0F172A] px-4 py-3 md:hidden border-t border-slate-850">
         <form action="/products" method="GET">
           <div className="relative flex items-center">
             <Search className="absolute left-3.5 h-4 w-4 text-slate-400" />
             <input 
               type="text" 
               name="query" 
-              placeholder="Search equipment to rent..." 
+              placeholder="Search equipment or halls to rent..." 
               className="w-full bg-slate-800 border border-slate-700 text-sm rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500"
             />
           </div>
         </form>
       </div>
 
-      {/* --- HERO BANNER SECTION (AMAZON/FLIPKART STYLE) --- */}
+      {/* --- PROMOTIONAL HERO BANNER (MYNTRA / AMAZON SLIDER PARADIGM) --- */}
       <section className="bg-slate-950 text-white relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]">
-        <div className="absolute top-0 right-0 h-96 w-96 bg-amber-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 h-96 w-96 bg-indigo-500/10 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none" />
+        <div className="absolute top-0 right-0 h-96 w-96 bg-[#F59E0B]/5 rounded-full blur-3xl pointer-events-none" />
         
-        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
-          <Badge className="bg-amber-500 text-slate-950 border-0 text-xs font-extrabold uppercase px-3 py-1 tracking-wider">
-            Premium Rental Platform
-          </Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-none">
-            Rent Professional Equipment. <span className="text-amber-500">Pay by the Day.</span>
-          </h1>
-          <p className="text-slate-400 text-base sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
-            Skip the heavy purchase costs. Access top-tier cameras, premium laptops, gimbals, camping tents, and audio gear instantly. Quality-inspected, insured, and delivered to you.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 pt-4">
-            <Link href="/products">
-              <Button className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold px-8 py-6 text-base shadow-lg shadow-amber-500/20 rounded-xl transition-all">
-                Browse Full Catalog <ChevronRight className="w-5 h-5 ml-1" />
-              </Button>
-            </Link>
-            {!isLoggedIn && (
-              <Link href="/register">
-                <Button variant="outline" className="border-slate-700 hover:border-slate-500 hover:bg-slate-900 text-white px-8 py-6 text-base rounded-xl transition-all">
-                  Join as Vendor
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          
+          {/* Banner Left Details */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <Badge className="bg-amber-500 text-slate-950 border-0 text-xs font-extrabold uppercase px-3 py-1 tracking-wider">
+              FLAT ₹500 OFF ON FIRST RENTAL
+            </Badge>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none">
+              SHOP SMART, <br />
+              <span className="text-amber-500 uppercase font-black">SAVE BIGGER ON VENUES</span>
+            </h1>
+            <p className="text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed font-semibold">
+              Browse professional marriage lawns, banquet halls, DJ systems, and photo cameras. Secure date checks and deposit escrow protection are integrated directly.
+            </p>
+            <div className="flex gap-4">
+              <Link href="/products">
+                <Button className="bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider px-8 py-5 rounded-xl shadow-lg shadow-amber-500/20">
+                  Browse Catalog
                 </Button>
               </Link>
-            )}
+            </div>
           </div>
+
+          {/* Banner Right Promo Graphic */}
+          <div className="lg:col-span-5 hidden lg:block">
+            <div className="bg-gradient-to-br from-[#F59E0B]/20 to-indigo-500/10 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">Active Store campaign</span>
+                <span className="text-[9px] bg-red-500 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider animate-pulse">Ends tomorrow</span>
+              </div>
+              <h3 className="text-lg font-black uppercase text-white tracking-wide">Premium Gear & Halls</h3>
+              <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
+                Unlock instant dynamic tiered rates: Rent camera gear and banquet packages for 4+ days and save up to 20% on booking quotations.
+              </p>
+              <div className="pt-2 border-t border-slate-850 flex justify-between items-center text-xs font-bold text-slate-350">
+                <span>Verified Handback Escrow</span>
+                <Sparkles className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: '4s' }} />
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
+      {/* --- PUBLIC CUSTOMER INTERFACE MAIN CONTENT --- */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16">
         
-        {/* --- CATEGORY SECTION --- */}
+        {/* --- 1. CIRCLE CATEGORY LIST (MYNTRA/ZEPTO PARADIGM) --- */}
         <section className="space-y-6">
-          <div className="flex justify-between items-end">
+          <div className="flex justify-between items-end border-b border-slate-200 pb-3">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Shop By Category</h2>
-              <p className="text-slate-500 text-sm mt-0.5">Explore renting from curated collections</p>
+              <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Shop By Category</h2>
+              <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Rent customized event solutions</p>
             </div>
-            <Link href="/products" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 hover:underline">
+            <Link href="/products" className="text-xs font-extrabold text-[#F59E0B] hover:underline uppercase tracking-wider flex items-center gap-1">
               See all <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-            {categories.map((cat) => (
-              <Link key={cat.id} href={`/products?category=${cat.slug}`} className="group bg-white border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-indigo-400 transition-all duration-300">
-                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-indigo-600 group-hover:bg-indigo-50 transition-colors">
-                  {cat.name.substring(0, 2).toUpperCase()}
+          <div className="flex flex-wrap items-center justify-around gap-6 py-2">
+            {categoryCircles.map((cat, idx) => (
+              <Link 
+                key={idx} 
+                href={`/products?query=${encodeURIComponent(cat.name)}`}
+                className="group flex flex-col items-center gap-2 cursor-pointer text-center"
+              >
+                <div className="w-14 h-14 rounded-full bg-white border border-slate-250/60 shadow-sm flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-hover:border-[#F59E0B] group-hover:shadow-md" style={{ boxShadow: PREMIUM_BOX_SHADOW }}>
+                  {cat.icon}
                 </div>
-                <span className="text-xs font-bold text-slate-800 mt-3 group-hover:text-indigo-600 line-clamp-2 leading-tight">
+                <span className="text-[11px] font-extrabold text-[#0F172A] uppercase tracking-wide group-hover:text-[#F59E0B] transition-colors mt-1">
                   {cat.name}
                 </span>
               </Link>
@@ -230,178 +271,156 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* --- DYNAMIC PRODUCTS GRID (AMAZON/FLIPKART CARDS) --- */}
+        {/* --- 2. DYNAMIC FEATURED RENTALS CATALOG --- */}
         <section className="space-y-6">
-          <div className="flex justify-between items-end">
+          <div className="flex justify-between items-end border-b border-slate-200 pb-3">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Featured Rentals</h2>
-              <p className="text-slate-500 text-sm mt-0.5">Top-rated equipment available for hire today</p>
+              <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Hot Trending Rentals</h2>
+              <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Top-rated venues and gear available today</p>
             </div>
-            <Link href="/products" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 hover:underline">
+            <Link href="/products" className="text-xs font-extrabold text-[#F59E0B] hover:underline uppercase tracking-wider flex items-center gap-1">
               View All <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product) => {
-              const { rating, count } = getSimulatedRating(product.id);
-              const { mrp, discount } = getSimulatedMRP(product.priceDaily);
+          {products.length === 0 ? (
+            /* Fallback empty scenario */
+            <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-200 p-8" style={{ boxShadow: PREMIUM_BOX_SHADOW }}>
+              <Building className="w-10 h-10 text-slate-300 mx-auto mb-3 animate-pulse" />
+              <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">No Products Seeding Found</h3>
+              <p className="text-[11px] text-slate-400 mt-1 font-semibold">Please run migrations and seeds or log in to Seller Hub to publish equipment listings.</p>
+            </div>
+          ) : (
+            /* Cards layout */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.map((product) => {
+                if (!product) return null
+                const { rating, count } = getSimulatedRating(product.id)
+                const { mrp, discount } = getSimulatedMRP(product.priceDaily)
 
-              return (
-                <Card key={product.id} className="group overflow-hidden border-slate-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white flex flex-col h-full relative">
-                  
-                  {/* Image with Tag */}
-                  <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
-                    {product.image && product.image.startsWith("http") ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                    ) : (
-                      <div className="text-slate-400 font-bold uppercase tracking-wider text-xs">No Image</div>
-                    )}
+                return (
+                  <Card 
+                    key={product.id} 
+                    className="group border border-slate-200/60 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-amber-500/50 transition-all duration-200 rounded-xl relative"
+                    style={{ boxShadow: PREMIUM_BOX_SHADOW }}
+                  >
                     
-                    {/* Category Overlay */}
-                    <Badge className="absolute top-3 right-3 bg-white/90 text-slate-800 shadow-sm border border-slate-200 hover:bg-white backdrop-blur-sm pointer-events-none">
-                      {product.category?.name || "General"}
-                    </Badge>
-                  </div>
+                    {/* Header Image */}
+                    <div className="aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                      {product.image && product.image.startsWith("http") ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        />
+                      ) : (
+                        <Building className="w-10 h-10 text-slate-300 animate-pulse" />
+                      )}
+                      
+                      {/* Favorite / wishlist heart overlay */}
+                      <button className="absolute top-3 left-3 h-7 w-7 rounded-full bg-white/80 hover:bg-white text-slate-400 hover:text-red-500 flex items-center justify-center shadow-sm transition-colors border border-slate-100">
+                        <Heart className="w-4 h-4" />
+                      </button>
 
-                  {/* Body Content */}
-                  <CardHeader className="p-4 pb-1 space-y-1 flex-1">
-                    <Link href={`/products/${product.id}`} className="block">
-                      <CardTitle className="text-sm font-bold text-slate-900 line-clamp-2 hover:text-indigo-600 transition-colors leading-snug">
-                        {product.name}
-                      </CardTitle>
-                    </Link>
-                    
-                    {/* Simulated Ratings (Amazon Style) */}
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <div className="flex items-center text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded text-[11px] font-bold border border-amber-200/50">
-                        <Star className="w-3.5 h-3.5 fill-current mr-0.5 shrink-0" />
-                        {rating}
+                      {/* Tag overlays */}
+                      <Badge className="absolute top-3 right-3 bg-white/95 text-slate-800 uppercase font-black text-[9px] border border-slate-200 select-none shadow-sm hover:bg-white pointer-events-none">
+                        {product.category?.name || "General"}
+                      </Badge>
+                    </div>
+
+                    {/* Content Body */}
+                    <CardHeader className="p-4 pb-2 space-y-1.5 flex-1">
+                      <Link href={`/products/${product.id}`} className="block">
+                        <h4 className="text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">
+                          {product.name}
+                        </h4>
+                      </Link>
+
+                      {/* Ratings stars */}
+                      <div className="flex items-center gap-1 select-none">
+                        <div className="flex items-center text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded text-[10px] font-extrabold border border-amber-200/40">
+                          <Star className="w-3 h-3 fill-current mr-0.5 shrink-0" />
+                          {rating}
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
                       </div>
-                      <span className="text-xs text-slate-500">({count} reviews)</span>
+
+                      {/* Store seller description info */}
+                      <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
+                        {product.description || "Premium equipment listed under platform safety guidelines."}
+                      </p>
+                    </CardHeader>
+
+                    {/* Price and rent triggers */}
+                    <div className="p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-4">
+                      
+                      <div className="flex items-baseline gap-1.5 flex-wrap select-text font-mono">
+                        <span className="text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
+                        <span className="text-[10px] text-slate-400 font-semibold">/day</span>
+                        <span className="text-[10px] text-slate-400 line-through">₹{mrp}</span>
+                        <span className="text-[10px] font-black text-emerald-600">({discount}% Off)</span>
+                      </div>
+
+                      <div className="select-none">
+                        <RentButton 
+                          productId={product.id} 
+                          price={product.priceDaily} 
+                          stock={product.totalStock} 
+                        />
+                      </div>
+
                     </div>
 
-                    <p className="text-xs text-slate-500 line-clamp-2 mt-2 leading-relaxed">
-                      {product.description || "Professional equipment fully serviced and tested for performance."}
-                    </p>
-                  </CardHeader>
-
-                  {/* Price Tag & Stock */}
-                  <CardContent className="p-4 pt-2 mt-auto border-t border-slate-100/50 bg-slate-50/30">
-                    <div className="flex items-baseline gap-1.5 flex-wrap">
-                      <span className="text-lg font-extrabold text-slate-900">₹{product.priceDaily.toLocaleString()}</span>
-                      <span className="text-xs text-slate-500">/day</span>
-                      <span className="text-xs text-slate-400 line-through">₹{mrp}</span>
-                      <span className="text-xs font-bold text-emerald-600">({discount}% Off)</span>
-                    </div>
-
-                    <div className="flex items-center justify-between gap-2 mt-3 pt-2">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${product.totalStock > 0 ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-red-50 text-red-700 border-red-100"}`}>
-                        {product.totalStock > 0 ? `In Stock (${product.totalStock})` : "Out of stock"}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-semibold">Min 1 day rental</span>
-                    </div>
-                  </CardContent>
-
-                  {/* Rent Action Button */}
-                  <div className="p-4 pt-0">
-                    <Link href={`/products/${product.id}`} className="block w-full">
-                      <Button className="w-full bg-slate-900 hover:bg-indigo-600 text-white text-xs font-extrabold h-9 rounded-lg">
-                        Rent Now
-                      </Button>
-                    </Link>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* --- VALUE PROPOSITION SECTION --- */}
-        <section className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex gap-4">
-            <div className="bg-indigo-50 p-3.5 rounded-2xl text-indigo-600 shrink-0 h-12 w-12 flex items-center justify-center">
-              <ShieldCheck className="w-6 h-6" />
+                  </Card>
+                )
+              })}
             </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-base">Fully Quality Checked</h3>
-              <p className="text-sm text-slate-500 mt-1 leading-relaxed">
-                All rental items undergo rigorous performance testing and cleaning before delivery.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="bg-amber-50 p-3.5 rounded-2xl text-amber-600 shrink-0 h-12 w-12 flex items-center justify-center">
-              <Truck className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-base">Express Shipping</h3>
-              <p className="text-sm text-slate-500 mt-1 leading-relaxed">
-                Choose flexible delivery methods or pick up from local vendors near you on same-day.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="bg-emerald-50 p-3.5 rounded-2xl text-emerald-600 shrink-0 h-12 w-12 flex items-center justify-center">
-              <RotateCcw className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-base">Instant Order Modification</h3>
-              <p className="text-sm text-slate-500 mt-1 leading-relaxed">
-                Adjust rental pick-up and return dates easily from your customer dashboard.
-              </p>
-            </div>
-          </div>
+          )}
         </section>
 
       </main>
 
-      {/* --- FOOTER --- */}
+      {/* --- PREMIUM FOOTER --- */}
       <footer className="bg-slate-900 text-slate-400 text-sm mt-auto border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 select-text">
+          <div className="space-y-4 select-none">
             <span className="text-lg font-extrabold text-white">RentKart</span>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              India&apos;s premier equipment renting marketplace. Cameras, laptops, construction tools, and more.
+            <p className="text-xs text-slate-550 leading-relaxed font-semibold">
+              India&apos;s premier equipment & wedding venues renting marketplace. Grand banquet halls, AV sets, and concert rigs.
             </p>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Rental Catalog</h4>
+            <h4 className="font-bold text-white mb-3 select-none">Rental Catalog</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link href="/products" className="hover:text-white">All Products</Link></li>
-              <li><Link href="/products?category=dslr-cameras" className="hover:text-white">DSLR Cameras</Link></li>
-              <li><Link href="/products?category=laptops" className="hover:text-white">Laptops</Link></li>
-              <li><Link href="/products?category=tripods-stands" className="hover:text-white">Tripods</Link></li>
+              <li><Link href="/products" className="hover:text-white font-semibold">All Catalog</Link></li>
+              <li><Link href="/products?query=Banquet" className="hover:text-white font-semibold">Banquet Halls</Link></li>
+              <li><Link href="/products?query=Sound" className="hover:text-white font-semibold">Sound Systems</Link></li>
+              <li><Link href="/products?query=Meeting" className="hover:text-white font-semibold">Meeting Spaces</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Portals</h4>
+            <h4 className="font-bold text-white mb-3 select-none">Portals Gateway</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link href="/login" className="hover:text-white">Customer Log In</Link></li>
-              <li><Link href="/register" className="hover:text-white">Seller Registration</Link></li>
-              <li><Link href="/dashboard" className="hover:text-white">My Account</Link></li>
+              <li><Link href="/login" className="hover:text-white font-semibold">Customer Sign In</Link></li>
+              <li><Link href="/register" className="hover:text-white font-semibold">Customer Registration</Link></li>
+              <li><Link href="/dashboard/customer" className="hover:text-white font-semibold">Customer Account</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Help & Policies</h4>
+            <h4 className="font-bold text-white mb-3 select-none">Partners Hub</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link href="#" className="hover:text-white">Rental Terms</Link></li>
-              <li><Link href="#" className="hover:text-white">Insurance Policy</Link></li>
-              <li><Link href="#" className="hover:text-white">Vendor Code of Conduct</Link></li>
-              <li><Link href="#" className="hover:text-white">Contact Support</Link></li>
+              {/* Subtle Seller landing link (Our pro seller central gateway) */}
+              <li><Link href="/seller-center" className="hover:text-amber-500 font-extrabold text-[#F59E0B] uppercase tracking-wider">Sell on RentKart</Link></li>
+              <li><Link href="#" className="hover:text-white font-semibold">Vendor Code of Conduct</Link></li>
+              <li><Link href="#" className="hover:text-white font-semibold">Insurance Policy</Link></li>
+              <li><Link href="#" className="hover:text-white font-semibold">Support Center</Link></li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-slate-800 py-6 text-center text-xs text-slate-600 bg-slate-950">
+        <div className="border-t border-slate-800 py-6 text-center text-xs text-slate-650 bg-slate-950 select-none">
           © {new Date().getFullYear()} RentKart. All rights reserved. Built with Next.js and Tailwind.
         </div>
       </footer>
     </div>
-  );
+  )
 }

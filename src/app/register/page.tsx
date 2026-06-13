@@ -178,18 +178,14 @@ export default function RegisterPage() {
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">I want to...</label>
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger className="h-11 bg-slate-50 border-slate-200 text-slate-900 focus:ring-indigo-500 focus:border-indigo-500 rounded-lg">
-                    <SelectValue placeholder="Select Role" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-slate-200 text-slate-800">
-                    <SelectItem value="CUSTOMER" className="focus:bg-slate-100 cursor-pointer">Rent Items (Customer)</SelectItem>
-                    <SelectItem value="VENDOR" className="focus:bg-slate-100 cursor-pointer">List Items (Vendor)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <input type="hidden" name="role" value={role} />
+              {/* Hidden role set to CUSTOMER since this is the customer-only page */}
+              <input type="hidden" name="role" value="CUSTOMER" />
+
+              <div className="text-center text-xs text-slate-500 py-1">
+                Are you a business owner?{" "}
+                <Link href="/register/vendor" className="font-bold text-amber-600 hover:text-amber-700 hover:underline">
+                  Register as a Seller
+                </Link>
               </div>
 
               <Button 

@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { addDays, differenceInDays, format } from "date-fns"
 import { Calendar as CalendarIcon, Loader2, ShoppingCart, Info, Edit2, Lock } from "lucide-react"
 import { DateRange } from "react-day-picker"
@@ -23,6 +24,7 @@ interface ProductSummary {
 }
 
 export function BookingWidget({ product }: { product: ProductSummary }) {
+  const router = useRouter()
   // 1. State for the selected date range
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
@@ -54,9 +56,22 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
       if (res.success) {
         toast.success("Schedule Confirmed!", {
           description: `Added for ${days} days rental.`,
+          action: {
+            label: "View Cart",
+            onClick: () => router.push("/dashboard/customer/cart")
+          }
         })
       } else {
-        toast.error(res.message)
+        if (res.code === "UNAUTHORIZED" || res.message.includes("log in")) {
+          toast.error("Login Required", {
+            action: {
+              label: "Login",
+              onClick: () => router.push("/login")
+            }
+          })
+        } else {
+          toast.error(res.message)
+        }
       }
     })
   }

@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getDashboardRoute } from "@/lib/middleware";
 
 export default async function DashboardRedirect() {
   const session = await getServerSession(authOptions);
@@ -11,8 +10,11 @@ export default async function DashboardRedirect() {
   }
 
   const role = (session.user as { role?: string }).role || "CUSTOMER";
-  const dashboardRoute = getDashboardRoute(role);
-  
-  redirect(dashboardRoute);
+  if (role === "VENDOR") {
+    redirect("/dashboard/vendor");
+  } else if (role === "ADMIN") {
+    redirect("/dashboard/admin");
+  } else {
+    redirect("/products");
+  }
 }
-

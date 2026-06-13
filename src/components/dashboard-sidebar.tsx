@@ -15,7 +15,10 @@ import {
   Plus,
   History,
   FileText,
-  Search
+  Search,
+  Calendar,
+  DollarSign,
+  Star
 } from "lucide-react"
 import LogoutButton from "./logout-button"
 
@@ -51,6 +54,10 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
     { title: "My Products", href: "/dashboard/vendor/products", icon: <Package className="w-5 h-5" /> },
     { title: "Add Product", href: "/dashboard/vendor/products/new", icon: <Plus className="w-5 h-5" /> },
     { title: "Orders", href: "/dashboard/vendor/orders", icon: <ShoppingCart className="w-5 h-5" /> },
+    { title: "Calendar", href: "/dashboard/vendor/calendar", icon: <Calendar className="w-5 h-5" /> },
+    { title: "Earnings", href: "/dashboard/vendor/earnings", icon: <DollarSign className="w-5 h-5" /> },
+    { title: "Reviews", href: "/dashboard/vendor/reviews", icon: <Star className="w-5 h-5" /> },
+    { title: "Settings", href: "/dashboard/vendor/settings", icon: <Settings className="w-5 h-5" /> },
   ]
 
   const customerItems: SidebarItem[] = [

@@ -178,11 +178,17 @@ function LoginForm() {
               </Button>
             </form>
 
-            <div className="text-center text-sm text-slate-500 pt-2 border-t border-slate-100">
+            <div className="text-center text-sm text-slate-500 pt-2 border-t border-slate-100 space-y-2">
               <p>
                 Don&apos;t have an account?{" "}
                 <Link href="/register" className="font-bold text-indigo-600 hover:underline">
                   Create an account
+                </Link>
+              </p>
+              <p className="text-xs text-slate-400">
+                Are you a seller?{" "}
+                <Link href="/login/vendor" className="font-bold text-amber-600 hover:text-amber-700 hover:underline">
+                  Login to Seller Hub
                 </Link>
               </p>
             </div>
