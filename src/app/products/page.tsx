@@ -209,7 +209,7 @@ export default async function ProductsPage({
   const products = searchResult.success && searchResult.data ? searchResult.data : [];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-tr from-[#EEF2F6] via-[#F8FAFC] to-[#FCF8F2] flex flex-col">
       <Navbar />
       <div className={`flex-grow ${isCustomer ? 'flex' : ''}`}>
         {isCustomer && <DashboardSidebar role="CUSTOMER" />}
@@ -453,7 +453,7 @@ export default async function ProductsPage({
                       {/* Content Section */}
                       <CardHeader className="p-4 pb-2 space-y-1">
                         <Link href={`/products/${product.id}`} className="block">
-                          <CardTitle className="text-base font-bold text-slate-900 line-clamp-1 leading-tight hover:text-indigo-600 transition-colors" title={product.name}>
+                          <CardTitle className="text-base font-bold text-slate-900 line-clamp-1 leading-tight hover:text-amber-500 transition-colors" title={product.name}>
                             {product.name}
                           </CardTitle>
                         </Link>
@@ -472,7 +472,7 @@ export default async function ProductsPage({
                         {/* Sold by / Vendor tag (Amazon/Flipkart Style) */}
                         <div className="text-[11px] text-slate-500 mt-1.5 font-medium flex items-center gap-1">
                           <span>Sold by:</span>
-                          <span className="text-indigo-600 font-bold hover:underline">
+                          <span className="text-amber-500 font-bold hover:underline">
                             {product.vendor?.companyName || product.vendor?.name || "Prime Partner"}
                           </span>
                         </div>

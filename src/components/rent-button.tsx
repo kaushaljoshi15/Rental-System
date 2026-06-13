@@ -87,12 +87,12 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
           >
             <span className="grid grid-cols-2 gap-2 w-full">
               {/* Pick-Up Box */}
-              <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-indigo-400 hover:ring-1 hover:ring-indigo-100 transition-all group cursor-pointer relative block h-full">
+              <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
                 <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                   Pick-up Date
                 </span>
                 <span className="font-semibold text-slate-900 flex items-center gap-1.5 text-xs">
-                  <CalendarIcon className="w-3 h-3 text-indigo-600 group-hover:scale-110 transition-transform shrink-0" />
+                  <CalendarIcon className="w-3 h-3 text-amber-500 group-hover:scale-110 transition-transform shrink-0" />
                   <span className="truncate">
                     {date?.from ? format(date.from, "MMM dd") : "Select"}
                   </span>
@@ -100,7 +100,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
               </span>
 
               {/* Return Box */}
-              <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-indigo-400 hover:ring-1 hover:ring-indigo-100 transition-all group cursor-pointer relative block h-full">
+              <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
                 <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                   Return Date
                 </span>
@@ -139,7 +139,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
         className={`w-full transition-all duration-300 shadow-sm ${
           isAdded 
             ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
-            : "bg-slate-900 hover:bg-indigo-600 text-white"
+            : "bg-slate-900 hover:bg-amber-500 text-white"
         }`}
       >
         {isPending ? (

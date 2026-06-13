@@ -59,14 +59,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-tr from-[#EEF2F6] via-[#F8FAFC] to-[#FCF8F2] flex flex-col">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
         
         {/* --- Breadcrumbs / Back navigation --- */}
         <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
           <Link href="/products">
-            <Button variant="ghost" className="pl-0 hover:bg-transparent text-slate-600 hover:text-indigo-600 font-semibold transition-colors">
+            <Button variant="ghost" className="pl-0 hover:bg-transparent text-slate-600 hover:text-amber-500 font-semibold transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" /> Back to Products Catalog
             </Button>
           </Link>
@@ -101,7 +101,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {/* Simulated Additional Images (Thumbnails for premium look) */}
             <div className="grid grid-cols-4 gap-4">
               {[1, 2, 3, 4].map((num) => (
-                <div key={num} className="aspect-square bg-white rounded-lg border border-slate-200 overflow-hidden cursor-pointer hover:border-indigo-500 transition-colors flex items-center justify-center p-1">
+                <div key={num} className="aspect-square bg-white rounded-lg border border-slate-200 overflow-hidden cursor-pointer hover:border-amber-500 transition-colors flex items-center justify-center p-1">
                   {product.image && product.image.startsWith("http") ? (
                     <img 
                       src={product.image} 
@@ -118,14 +118,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {/* Quality Checks & Deliverables */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-indigo-600 mt-0.5 shrink-0" />
+                <ShieldCheck className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
                 <div>
                   <h4 className="font-bold text-slate-900 text-sm">Quality Certified</h4>
                   <p className="text-xs text-slate-500 mt-0.5">Inspected, cleaned, and testing-certified before delivery.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Truck className="w-5 h-5 text-indigo-600 mt-0.5 shrink-0" />
+                <Truck className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
                 <div>
                   <h4 className="font-bold text-slate-900 text-sm">Express Shipping Available</h4>
                   <p className="text-xs text-slate-500 mt-0.5">Choose local pickup or standard doorstep dispatch.</p>
@@ -142,7 +142,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+                  <span className="text-xs font-bold text-amber-500 uppercase tracking-widest">
                     {product.category?.name || "General Category"}
                   </span>
                   <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">{product.name}</h1>
@@ -161,7 +161,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   <Star className="w-4 h-4 fill-current mr-0.5 shrink-0" />
                   {rating}
                 </div>
-                <span className="text-xs text-indigo-600 font-semibold hover:underline cursor-pointer">
+                <span className="text-xs text-amber-500 font-semibold hover:underline cursor-pointer">
                   {reviewsCount} reviews & ratings
                 </span>
                 <span className="text-xs text-slate-300">|</span>
@@ -184,9 +184,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <BookingWidget product={product} />
 
             {/* Promo Offers Card (Amazon style) */}
-            <div className="bg-white rounded-2xl p-6 border border-indigo-100 shadow-sm bg-gradient-to-br from-indigo-50/20 via-white to-white space-y-4">
+            <div className="bg-white rounded-2xl p-6 border border-amber-100 shadow-sm bg-gradient-to-br from-amber-50/20 via-white to-white space-y-4">
               <h3 className="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
-                <Percent className="w-4 h-4 text-indigo-600" /> Special Offers & Promos
+                <Percent className="w-4 h-4 text-amber-500" /> Special Offers & Promos
               </h3>
               <div className="space-y-3 text-xs">
                 <div className="flex gap-2">
@@ -196,7 +196,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                  <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold text-slate-900">Damage Protection:</span> Opt-in during approval for zero-liability coverage.
                   </div>
@@ -220,7 +220,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     </tr>
                     <tr className="bg-slate-50 border-b border-slate-100">
                       <td className="px-4 py-2.5 font-bold text-slate-500">Vendor</td>
-                      <td className="px-4 py-2.5 text-slate-800 font-medium text-indigo-600">
+                      <td className="px-4 py-2.5 text-slate-800 font-medium text-amber-500">
                         {product.vendor?.companyName || product.vendor?.name || "Prime Partner"}
                       </td>
                     </tr>

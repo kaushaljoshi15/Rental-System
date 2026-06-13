@@ -18,11 +18,10 @@ import {
   Search,
   Calendar,
   DollarSign,
-  Star
+  Star,
+  LogOut
 } from "lucide-react"
-import LogoutButton from "./logout-button"
-
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 
 interface SidebarItem {
   title: string
@@ -72,27 +71,22 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
   const items = role === "ADMIN" ? adminItems : role === "VENDOR" ? vendorItems : customerItems
 
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-slate-200 bg-white transition-transform">
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-slate-800 bg-[#0F172A] text-slate-200 transition-transform">
       <div className="flex h-full flex-col">
         {/* Logo/Header */}
-        <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-6">
-          <div className={cn(
-            "p-2 rounded-lg shadow-md",
-            role === "ADMIN" && "bg-slate-900",
-            role === "VENDOR" && "bg-slate-900",
-            role === "CUSTOMER" && "bg-indigo-600"
-          )}>
-            {role === "ADMIN" && <Settings className="w-5 h-5 text-white" />}
-            {role === "VENDOR" && <Store className="w-5 h-5 text-white" />}
-            {role === "CUSTOMER" && <ShoppingCart className="w-5 h-5 text-white" />}
+        <div className="flex h-16 items-center gap-3 border-b border-slate-800 px-6">
+          <div className="p-2 rounded-lg shadow-md shrink-0 bg-[#F59E0B] text-[#0F172A]">
+            {role === "ADMIN" && <Settings className="w-5 h-5" />}
+            {role === "VENDOR" && <Store className="w-5 h-5" />}
+            {role === "CUSTOMER" && <ShoppingCart className="w-5 h-5" />}
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900">
-              {role === "ADMIN" && "Admin"}
-              {role === "VENDOR" && "Vendor"}
-              {role === "CUSTOMER" && "Customer"}
+            <h2 className="text-sm font-extrabold text-white tracking-tight uppercase">
+              {role === "ADMIN" && "Admin Hub"}
+              {role === "VENDOR" && "Seller Hub"}
+              {role === "CUSTOMER" && "Client Hub"}
             </h2>
-            <p className="text-xs text-slate-500">Portal</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Console Portal</p>
           </div>
         </div>
 
@@ -110,13 +104,13 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
                 className={cn(
                   "group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-200",
                   isActive
-                    ? "bg-slate-900 text-white shadow-md border border-slate-800"
-                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                    ? "bg-[#F59E0B] text-[#0F172A] shadow-lg font-extrabold"
+                    : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
                 )}
               >
                 <span className={cn(
-                  "transition-transform group-hover:scale-105 duration-200 shrink-0",
-                  isActive ? "text-amber-500" : "text-slate-400 group-hover:text-slate-600"
+                  "transition-transform group-hover:scale-110 shrink-0",
+                  isActive ? "text-[#0F172A]" : "text-slate-400 group-hover:text-amber-500"
                 )}>
                   {item.icon}
                 </span>
@@ -127,8 +121,14 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-slate-200 p-4">
-          <LogoutButton />
+        <div className="border-t border-slate-800 p-4">
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 hover:bg-red-950/20 hover:text-red-400 transition-colors"
+          >
+            <LogOut className="w-5 h-5 text-slate-400 group-hover:text-red-400 shrink-0" />
+            <span>Logout Portal</span>
+          </button>
         </div>
       </div>
     </aside>

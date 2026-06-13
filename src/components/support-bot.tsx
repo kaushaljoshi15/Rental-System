@@ -102,7 +102,7 @@ export function SupportBot() {
       {!isOpen && (
         <Button 
           onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center p-0 border border-indigo-400"
+          className="h-14 w-14 rounded-full bg-amber-500 hover:bg-amber-600 text-white shadow-xl hover:scale-105 transition-all duration-300 flex items-center justify-center p-0 border border-amber-400"
         >
           <MessageSquare className="w-6 h-6 animate-pulse" />
         </Button>
@@ -113,23 +113,23 @@ export function SupportBot() {
         <Card className="w-80 sm:w-96 h-[480px] border-slate-200/80 shadow-2xl flex flex-col bg-white overflow-hidden rounded-2xl animate-in slide-in-from-bottom-6 fade-in duration-300">
           
           {/* Header */}
-          <div className="bg-indigo-600 p-4 flex justify-between items-center text-white shrink-0 border-b border-indigo-500 shadow-sm">
+          <div className="bg-amber-500 p-4 flex justify-between items-center text-white shrink-0 border-b border-amber-500 shadow-sm">
             <div className="flex items-center gap-2.5">
-              <div className="bg-indigo-500 p-1.5 rounded-lg border border-indigo-400">
+              <div className="bg-amber-500 p-1.5 rounded-lg border border-amber-400">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h4 className="font-extrabold text-xs tracking-wide uppercase">RentalKart Helpdesk</h4>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <div className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping" />
-                  <span className="text-[10px] text-indigo-100 font-bold">Online & Ready</span>
+                  <span className="text-[10px] text-amber-100 font-bold">Online & Ready</span>
                 </div>
               </div>
             </div>
             <Button 
               variant="ghost" 
               onClick={() => setIsOpen(false)}
-              className="text-indigo-100 hover:text-white hover:bg-indigo-700 h-8 w-8 p-0 rounded-lg"
+              className="text-amber-100 hover:text-white hover:bg-amber-600 h-8 w-8 p-0 rounded-lg"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -144,12 +144,12 @@ export function SupportBot() {
                   className={`flex gap-2.5 items-start ${msg.sender === "user" ? "flex-row-reverse" : ""}`}
                 >
                   {/* Sender Avatar */}
-                  <div className={`h-7 w-7 rounded-lg border shrink-0 flex items-center justify-center shadow-sm ${msg.sender === "bot" ? "bg-indigo-50 border-indigo-100 text-indigo-600" : "bg-slate-100 border-slate-200 text-slate-600"}`}>
+                  <div className={`h-7 w-7 rounded-lg border shrink-0 flex items-center justify-center shadow-sm ${msg.sender === "bot" ? "bg-amber-50 border-amber-100 text-amber-500" : "bg-slate-100 border-slate-200 text-slate-600"}`}>
                     {msg.sender === "bot" ? <Bot className="w-3.5 h-3.5" /> : <User className="w-3.5 h-3.5" />}
                   </div>
 
                   {/* Message bubble */}
-                  <div className={`p-3 rounded-2xl max-w-[78%] shadow-sm border ${msg.sender === "bot" ? "bg-white border-slate-100 rounded-tl-none text-slate-800" : "bg-indigo-600 border-indigo-500 rounded-tr-none text-white"}`}>
+                  <div className={`p-3 rounded-2xl max-w-[78%] shadow-sm border ${msg.sender === "bot" ? "bg-white border-slate-100 rounded-tl-none text-slate-800" : "bg-amber-500 border-amber-500 rounded-tr-none text-white"}`}>
                     {msg.sender === "bot" ? (
                       renderMessageText(msg.text)
                     ) : (
@@ -162,11 +162,11 @@ export function SupportBot() {
               {/* Typing State Indicator */}
               {isTyping && (
                 <div className="flex gap-2.5 items-start">
-                  <div className="h-7 w-7 rounded-lg border bg-indigo-50 border-indigo-100 text-indigo-600 flex items-center justify-center shadow-sm">
+                  <div className="h-7 w-7 rounded-lg border bg-amber-50 border-amber-100 text-amber-500 flex items-center justify-center shadow-sm">
                     <Bot className="w-3.5 h-3.5" />
                   </div>
                   <div className="p-3 rounded-2xl bg-white border border-slate-100 rounded-tl-none shadow-sm flex items-center gap-1.5">
-                    <Loader2 className="w-3 h-3 text-indigo-600 animate-spin" />
+                    <Loader2 className="w-3 h-3 text-amber-500 animate-spin" />
                     <span className="text-[10px] text-slate-400 font-bold">Bot is writing...</span>
                   </div>
                 </div>
@@ -183,7 +183,7 @@ export function SupportBot() {
                 <button
                   key={prompt}
                   onClick={() => handleSend(prompt)}
-                  className="text-[10px] font-bold text-indigo-600 bg-indigo-50/50 hover:bg-indigo-100/60 border border-indigo-100/50 px-2 py-1 rounded-md transition-all shrink-0 flex items-center gap-1"
+                  className="text-[10px] font-bold text-amber-500 bg-amber-50/50 hover:bg-amber-100/60 border border-amber-100/50 px-2 py-1 rounded-md transition-all shrink-0 flex items-center gap-1"
                 >
                   {prompt} <ArrowRight className="w-2.5 h-2.5" />
                 </button>
@@ -198,11 +198,11 @@ export function SupportBot() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything..."
               onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
-              className="flex-1 bg-white border-slate-200 focus-visible:ring-indigo-500 text-xs rounded-xl h-9"
+              className="flex-1 bg-white border-slate-200 focus-visible:ring-amber-500 text-xs rounded-xl h-9"
             />
             <Button 
               onClick={() => handleSend(input)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-9 px-3 shrink-0"
+              className="bg-amber-500 hover:bg-amber-600 text-white rounded-xl h-9 px-3 shrink-0"
             >
               <Send className="w-3.5 h-3.5" />
             </Button>

@@ -238,7 +238,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
       title: "Medical, Gym & Heavy Tools",
       description: "Oxygen concentrators, treadmills, and demolition hammers",
       icon: "🏥",
-      theme: "from-purple-600 to-indigo-500",
+      theme: "from-purple-600 to-amber-500",
       categories: [
         { name: "Oxygen Concentrator", slug: "medical-equipment", query: "oxygen", icon: "🫁" },
         { name: "ICU Hospital Bed", slug: "medical-equipment", query: "bed", icon: "🏥" },
@@ -250,7 +250,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
   ]
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900">
+    <div className="min-h-screen bg-gradient-to-tr from-[#EEF2F6] via-[#F8FAFC] to-[#FCF8F2] flex flex-col font-sans select-none text-slate-900">
       <Navbar />
 
       {isLoggedIn && activeTab && customerData?.user ? (
@@ -258,35 +258,35 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Left Sidebar Navigation Card */}
-            <aside className="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-6">
+            <aside className="lg:col-span-3 bg-[#0F172A] border border-slate-800 rounded-2xl p-5 shadow-lg space-y-6 text-slate-200">
               
               {/* Profile Card Summary */}
-              <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3 pb-4 border-b border-slate-850">
                 <div className="relative">
                   <img
                     src={customerData.user.image || "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix"}
                     alt="Profile Avatar"
-                    className="w-12 h-12 rounded-full border-2 border-indigo-100 shadow-sm bg-slate-50 object-cover"
+                    className="w-12 h-12 rounded-full border-2 border-[#F59E0B] shadow-sm shadow-amber-500/10 bg-slate-800 object-cover"
                   />
-                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white" />
+                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-[#0F172A]" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Welcome back,</p>
-                  <p className="text-sm font-black text-slate-900 truncate">{customerData.user.name}</p>
+                  <p className="text-sm font-black text-slate-100 truncate">{customerData.user.name}</p>
                 </div>
               </div>
 
               {/* Navigation Links */}
               <nav className="space-y-5">
                 <div>
-                  <p className="px-3 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">My Workspace</p>
+                  <p className="px-3 text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">My Workspace</p>
                   <div className="space-y-1">
                     <Link
                       href="/?tab=orders"
                       className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "orders"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <span className="flex items-center gap-2.5">
@@ -295,7 +295,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       </span>
                       {customerData.user.orders?.length > 0 && (
                         <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          activeTab === "orders" ? "bg-slate-800 text-slate-200" : "bg-slate-100 text-slate-600 font-bold"
+                          activeTab === "orders" ? "bg-amber-600 text-amber-50" : "bg-slate-800 text-slate-300 font-bold"
                         }`}>
                           {customerData.user.orders.length}
                         </span>
@@ -306,8 +306,8 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       href="/?tab=wishlist"
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "wishlist"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <Heart className="w-4 h-4 shrink-0" />
@@ -318,8 +318,8 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       href="/?tab=notifications"
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "notifications"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <Bell className="w-4 h-4 shrink-0" />
@@ -330,8 +330,8 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       href="/?tab=invoices"
                       className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "invoices"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <span className="flex items-center gap-2.5">
@@ -340,7 +340,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       </span>
                       {customerData.user.orders.filter((o: any) => o.invoice !== null).length > 0 && (
                         <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          activeTab === "invoices" ? "bg-slate-800 text-slate-200" : "bg-slate-100 text-slate-600 font-bold"
+                          activeTab === "invoices" ? "bg-amber-600 text-amber-50" : "bg-slate-800 text-slate-300 font-bold"
                         }`}>
                           {customerData.user.orders.filter((o: any) => o.invoice !== null).length}
                         </span>
@@ -350,14 +350,14 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                 </div>
 
                 <div>
-                  <p className="px-3 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Account Settings</p>
+                  <p className="px-3 text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Account Settings</p>
                   <div className="space-y-1">
                     <Link
                       href="/?tab=profile"
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "profile"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <User className="w-4 h-4 shrink-0" />
@@ -368,8 +368,8 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       href="/?tab=addresses"
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "addresses"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <MapPin className="w-4 h-4 shrink-0" />
@@ -379,14 +379,14 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                 </div>
 
                 <div>
-                  <p className="px-3 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Payments & Perks</p>
+                  <p className="px-3 text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Payments & Perks</p>
                   <div className="space-y-1">
                     <Link
                       href="/?tab=wallet"
                       className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "wallet"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <span className="flex items-center gap-2.5">
@@ -394,7 +394,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                         Wallet & Ledger
                       </span>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        activeTab === "wallet" ? "bg-slate-800 text-slate-200" : "bg-indigo-50 text-indigo-750 font-bold"
+                        activeTab === "wallet" ? "bg-amber-600 text-amber-50" : "bg-slate-800 text-[#F59E0B] font-bold"
                       }`}>
                         ₹{customerData.user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                       </span>
@@ -404,8 +404,8 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       href="/?tab=coupons"
                       className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                         activeTab === "coupons"
-                          ? "bg-slate-900 text-white shadow-md"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
+                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                       }`}
                     >
                       <Ticket className="w-4 h-4 shrink-0" />
@@ -414,12 +414,12 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
+                <div className="pt-4 border-t border-slate-850">
                   <Link
                     href="/api/auth/signout"
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wide text-rose-600 hover:bg-rose-50 transition-colors"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wide text-rose-450 hover:bg-rose-950/20 transition-colors"
                   >
-                    <LogOut className="w-4 h-4 shrink-0 text-rose-600" />
+                    <LogOut className="w-4 h-4 shrink-0 text-rose-450" />
                     Sign Out Account
                   </Link>
                 </div>
@@ -478,7 +478,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                               <p className="text-xs text-slate-500 max-w-xs mx-auto">Browse through our professional collections of halls and event spaces.</p>
                             </div>
                             <Link href="/products" className="inline-block pt-2">
-                              <Button className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs rounded-xl px-6">
+                              <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs rounded-xl px-6">
                                 Browse Catalog
                               </Button>
                             </Link>
@@ -486,20 +486,20 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                         ) : (
                           <div className="space-y-4">
                             {/* Schedule Summary Banner */}
-                            <div className="bg-gradient-to-r from-indigo-50/50 via-white to-white border border-indigo-100 p-4 rounded-xl flex items-center justify-between shadow-sm">
+                            <div className="bg-gradient-to-r from-amber-50/50 via-white to-white border border-amber-100 p-4 rounded-xl flex items-center justify-between shadow-sm">
                               <div className="flex items-center gap-3">
-                                <div className="bg-indigo-50 p-2 rounded-lg text-indigo-600 shrink-0">
+                                <div className="bg-amber-50 p-2 rounded-lg text-amber-500 shrink-0">
                                   <CalendarIcon className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <p className="text-xs font-bold text-slate-950 uppercase tracking-wider">Scheduled Rental Window</p>
-                                  <p className="text-xs text-indigo-700 font-semibold mt-0.5">
+                                  <p className="text-xs text-amber-600 font-semibold mt-0.5">
                                     {format(cartStartDate, "MMM dd")} - {format(cartEndDate, "MMM dd, yyyy")} ({cartDuration} Days duration)
                                   </p>
                                 </div>
                               </div>
                               <Link href="/products">
-                                <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 font-bold text-xs p-2 hover:bg-indigo-50">
+                                <Button variant="ghost" className="text-amber-500 hover:text-amber-600 font-bold text-xs p-2 hover:bg-amber-50">
                                   Edit Dates
                                 </Button>
                               </Link>
@@ -596,7 +596,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                         <h3 className="text-sm font-black text-slate-900 uppercase">No orders found</h3>
                         <p className="text-xs text-slate-500 mt-1 mb-6">You haven&apos;t placed any rental orders yet.</p>
                         <Link href="/products">
-                          <Button className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs rounded-xl px-6">Browse Equipment</Button>
+                          <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs rounded-xl px-6">Browse Equipment</Button>
                         </Link>
                       </div>
                     ) : (
@@ -690,7 +690,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                           </p>
                         </div>
                         <Link href="/products" className="inline-block pt-2">
-                          <Button className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs rounded-xl px-6">
+                          <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs rounded-xl px-6">
                             Browse Products
                           </Button>
                         </Link>
@@ -739,7 +739,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                                 {/* Product Info Column */}
                                 <div className="space-y-1.5 flex-1 min-w-0 text-center sm:text-left">
                                   <Link href={`/products/${product.id}`} className="inline-block max-w-full">
-                                    <h3 className="font-extrabold text-sm text-slate-900 hover:text-indigo-650 transition-colors uppercase tracking-wide truncate" title={product.name}>
+                                    <h3 className="font-extrabold text-sm text-slate-900 hover:text-amber-600 transition-colors uppercase tracking-wide truncate" title={product.name}>
                                       {product.name}
                                     </h3>
                                   </Link>
@@ -758,7 +758,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
 
                                   <p className="text-slate-500 text-[10px] font-extrabold uppercase flex items-center justify-center sm:justify-start gap-1">
                                     <span>Sold by:</span>
-                                    <span className="text-indigo-600 font-bold hover:underline cursor-pointer">
+                                    <span className="text-amber-500 font-bold hover:underline cursor-pointer">
                                       {product.vendor?.companyName || product.vendor?.name || "Prime Partner"}
                                     </span>
                                   </p>
@@ -780,7 +780,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                                   variant="trash" 
                                 />
                                 <Link href={`/products/${product.id}`} className="block w-full sm:w-auto">
-                                  <Button size="sm" className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs h-9 px-4 rounded-xl shadow-none hover:shadow-sm transition-all w-full sm:w-auto">
+                                  <Button size="sm" className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs h-9 px-4 rounded-xl shadow-none hover:shadow-sm transition-all w-full sm:w-auto">
                                     Rent Asset
                                   </Button>
                                 </Link>
@@ -850,7 +850,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                           <h3 className="text-sm font-black text-slate-900 uppercase">No invoices yet</h3>
                           <p className="text-xs text-slate-500 mb-6 font-semibold">Invoices will appear here once your orders are processed.</p>
                           <Link href="/products">
-                            <Button className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs rounded-xl px-6">Browse Products</Button>
+                            <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs rounded-xl px-6">Browse Products</Button>
                           </Link>
                         </CardContent>
                       </Card>
@@ -975,7 +975,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                           
                           <div className="mt-3 pl-[52px] space-y-3">
                             <p className="text-xs text-slate-650 leading-relaxed">
-                              Great news! The <strong>{product.name}</strong> listed by <span className="text-indigo-650 font-bold">{vendorName}</span> is currently running an exclusive price drop. Rent it now at only <strong className="text-emerald-700 font-mono text-sm">₹{product.priceDaily.toLocaleString()}</strong>/day (Original value: <span className="line-through text-slate-400">₹{mrp}</span>).
+                              Great news! The <strong>{product.name}</strong> listed by <span className="text-amber-600 font-bold">{vendorName}</span> is currently running an exclusive price drop. Rent it now at only <strong className="text-emerald-700 font-mono text-sm">₹{product.priceDaily.toLocaleString()}</strong>/day (Original value: <span className="line-through text-slate-400">₹{mrp}</span>).
                             </p>
                             <div className="flex items-center justify-between gap-4 pt-3 border-t border-slate-100">
                               <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider font-sans">Updated Just Now</span>
@@ -992,17 +992,17 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
 
                     {/* Tip block for empty/low wishlist alerts */}
                     {(!customerData?.wishlistItems || customerData.wishlistItems.length === 0) && (
-                      <div className="bg-gradient-to-br from-indigo-50/20 via-white to-white border border-indigo-100 rounded-2xl p-5 shadow-none flex gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+                      <div className="bg-gradient-to-br from-amber-50/20 via-white to-white border border-amber-100 rounded-2xl p-5 shadow-none flex gap-4">
+                        <div className="h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500 shrink-0">
                           <Heart className="w-5 h-5 fill-current animate-pulse" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-xs font-black uppercase text-indigo-950 tracking-wider">Get Price Drop & Deal Alerts</h4>
+                          <h4 className="text-xs font-black uppercase text-amber-950 tracking-wider">Get Price Drop & Deal Alerts</h4>
                           <p className="text-xs text-slate-650 leading-relaxed mt-1">
                             Add items to your wishlist using the **heart icon** on any product card or catalog page. If the vendor drops the price or launches a discount coupon, you will receive an instant alert here!
                           </p>
                           <Link href="/products" className="inline-block mt-2.5">
-                            <span className="text-[11px] text-indigo-600 hover:text-indigo-700 font-bold hover:underline">
+                            <span className="text-[11px] text-amber-500 hover:text-amber-600 font-bold hover:underline">
                               Browse Products Catalog &rarr;
                             </span>
                           </Link>
@@ -1014,11 +1014,11 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                     <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-350 transition-all duration-300">
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-650 shadow-sm shrink-0">
+                          <div className="h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shadow-sm shrink-0">
                             <Bell className="w-5 h-5" />
                           </div>
                           <div>
-                            <span className="text-[10px] text-indigo-650 font-black uppercase tracking-wider">System Announcement</span>
+                            <span className="text-[10px] text-amber-600 font-black uppercase tracking-wider">System Announcement</span>
                             <h3 className="text-sm font-extrabold text-slate-900 mt-0.5">Welcome to RentKart Central</h3>
                           </div>
                         </div>
@@ -1103,7 +1103,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                   <Card className="border-slate-200 shadow-sm rounded-xl">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2 uppercase">
-                        <MapPin className="w-4 h-4 text-indigo-650" /> Default Delivery Address
+                        <MapPin className="w-4 h-4 text-amber-600" /> Default Delivery Address
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -1118,7 +1118,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       )}
                       <div>
                         <Link href="/?tab=profile">
-                          <Button className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs h-9 rounded-lg">
+                          <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs h-9 rounded-lg">
                             Configure Address
                           </Button>
                         </Link>
@@ -1154,7 +1154,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      { code: "WELCOME10", desc: "Get 10% Off your total checkout amount with no upper limit.", type: "PERCENTAGE", val: 10, theme: "from-blue-50 to-indigo-50 border-blue-200/50" },
+                      { code: "WELCOME10", desc: "Get 10% Off your total checkout amount with no upper limit.", type: "PERCENTAGE", val: 10, theme: "from-blue-50 to-amber-50 border-blue-200/50" },
                       { code: "HALFOFF", desc: "Unlock 50% Off rental subtotal (applicable on selected gear).", type: "PERCENTAGE", val: 50, theme: "from-rose-50 to-pink-50 border-rose-200/50" },
                       { code: "FLAT500", desc: "Save flat ₹500 discount instantly on checkout checks above ₹2000.", type: "FIXED", val: 500, theme: "from-emerald-50 to-teal-50 border-emerald-200/50" }
                     ].map((coupon) => (
@@ -1173,7 +1173,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                         </div>
                         
                         <div className="mt-5 pt-3 border-t border-slate-200/30 flex justify-between items-center pl-2.5">
-                          <span className="text-xs font-black text-indigo-700">{coupon.type === "PERCENTAGE" ? `${coupon.val}% Off` : `Flat ₹${coupon.val}`}</span>
+                          <span className="text-xs font-black text-amber-600">{coupon.type === "PERCENTAGE" ? `${coupon.val}% Off` : `Flat ₹${coupon.val}`}</span>
                           <span className="text-[10px] text-slate-400 font-extrabold uppercase group-hover:underline">Copy Code At Checkout</span>
                         </div>
                       </div>
@@ -1244,7 +1244,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                 </div>
 
                 {/* Offer 3 */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-blue-450 transition-colors shadow-sm">
+                <div className="bg-gradient-to-br from-blue-50 to-amber-50 border border-blue-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-blue-450 transition-colors shadow-sm">
                   <div>
                     <span className="text-[9px] bg-blue-500 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">CREATOR SAVER</span>
                     <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">PRODUCTION BUNDLE</h4>
