@@ -293,6 +293,7 @@ export async function confirmBooking(
     revalidatePath("/dashboard/customer/orders")
     revalidatePath("/dashboard/customer/invoices")
     revalidatePath("/dashboard/customer/settings")
+    revalidatePath("/")
     return { success: true, message: "Booking confirmed successfully!", order: result }
 
   } catch (error) {
@@ -489,6 +490,7 @@ export async function cancelBookingAndRefund(orderId: string) {
     revalidatePath("/dashboard/customer/orders")
     revalidatePath("/dashboard/customer/invoices")
     revalidatePath("/dashboard/customer/settings")
+    revalidatePath("/")
     revalidatePath("/dashboard/vendor/orders")
     
     return {

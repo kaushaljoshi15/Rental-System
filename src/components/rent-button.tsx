@@ -53,7 +53,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
           description: `Added for ${days} days rental.`,
           action: {
             label: "View Cart",
-            onClick: () => router.push("/dashboard/customer/cart")
+            onClick: () => router.push("/?tab=cart")
           }
         })
         

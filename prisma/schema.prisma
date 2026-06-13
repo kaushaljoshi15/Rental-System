@@ -54,6 +54,7 @@ model User {
   reviews           Review[]      // Reviews left by this user
   auditLogs         AuditLog[]
   walletTransactions WalletTransaction[]
+  wishlist          WishlistItem[]
 }
 
 // ==========================================
@@ -115,6 +116,7 @@ model Product {
   availabilities  HallAvailability[]
   reviews         Review[]
   addOns          AddOn[]
+  wishlist        WishlistItem[]
 
   @@index([vendorId])
   @@index([categoryId])
@@ -347,4 +349,19 @@ model OtpVerification {
   createdAt DateTime @default(now())
 
   @@index([value])
+}
+
+// ==========================================
+// 12. WISHLIST ITEMS
+// ==========================================
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
 }

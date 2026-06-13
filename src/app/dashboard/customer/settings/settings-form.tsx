@@ -54,10 +54,11 @@ interface SettingsFormProps {
     description: string
     createdAt: Date
   }>
+  defaultTab?: "profile" | "wallet"
 }
 
-export function SettingsForm({ initialUser, transactions: initialTransactions }: SettingsFormProps) {
-  const [activeTab, setActiveTab] = useState<"profile" | "wallet">("profile")
+export function SettingsForm({ initialUser, transactions: initialTransactions, defaultTab }: SettingsFormProps) {
+  const [activeTab, setActiveTab] = useState<"profile" | "wallet">(defaultTab || "profile")
   
   // Profile State
   const [profile, setProfile] = useState({

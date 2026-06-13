@@ -33,7 +33,7 @@ export function getDashboardRoute(role: string): string {
     case "VENDOR":
       return "/dashboard/vendor";
     case "CUSTOMER":
-      return "/dashboard/customer";
+      return "/?tab=orders";
     default:
       return "/";
   }

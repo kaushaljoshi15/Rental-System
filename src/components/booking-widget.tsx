@@ -58,7 +58,7 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
           description: `Added for ${days} days rental.`,
           action: {
             label: "View Cart",
-            onClick: () => router.push("/dashboard/customer/cart")
+            onClick: () => router.push("/?tab=cart")
           }
         })
       } else {

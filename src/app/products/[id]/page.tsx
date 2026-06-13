@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
 import { Navbar } from "@/components/navbar";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { WishlistButton } from "@/components/wishlist-button";
 
 // Cache individual product details for 60 seconds by ID to reduce direct DB hits under concurrent traffic
 const getCachedProduct = unstable_cache(
@@ -41,6 +44,19 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const reviewsCount = 15 + (charCodeSum % 200);
   const mrp = Math.round(product.priceDaily * 1.35);
   const discount = Math.round(((mrp - product.priceDaily) / mrp) * 100);
+
+  // Check if current product is wishlisted
+  const session = await getServerSession(authOptions);
+  let isWishlisted = false;
+  if (session?.user?.email) {
+    const existing = await prisma.wishlistItem.findFirst({
+      where: {
+        productId: id,
+        user: { email: session.user.email }
+      }
+    });
+    isWishlisted = !!existing;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -124,12 +140,19 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             
             {/* Title, Brand, Ratings */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
-              <div>
-                <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
-                  {product.category?.name || "General Category"}
-                </span>
-                <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">{product.name}</h1>
-                <p className="text-xs text-slate-400 mt-1">Product ID: {product.id}</p>
+              <div className="flex justify-between items-start gap-4">
+                <div>
+                  <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">
+                    {product.category?.name || "General Category"}
+                  </span>
+                  <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">{product.name}</h1>
+                  <p className="text-xs text-slate-400 mt-1">Product ID: {product.id}</p>
+                </div>
+                <WishlistButton 
+                  productId={product.id} 
+                  initialIsWishlisted={isWishlisted} 
+                  variant="detail" 
+                />
               </div>
 
               {/* Ratings */}

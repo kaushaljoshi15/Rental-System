@@ -15,6 +15,7 @@ import { authOptions } from "@/lib/auth";
 import { unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
+import { WishlistButton } from "@/components/wishlist-button";
 
 // Cache categories for 60 seconds to prevent DB reads on every catalog page load
 const getCachedCategories = unstable_cache(
@@ -125,6 +126,18 @@ export default async function ProductsPage({
       redirect("/dashboard/admin");
     }
     isCustomer = role === "CUSTOMER";
+  }
+
+  // Load wishlist item IDs for the logged-in user
+  let userWishlistProductIds: string[] = [];
+  if (session?.user?.email) {
+    const userWishlist = await prisma.wishlistItem.findMany({
+      where: {
+        user: { email: session.user.email }
+      },
+      select: { productId: true }
+    });
+    userWishlistProductIds = userWishlist.map(item => item.productId);
   }
 
   // Simulated rating & MRP generators
@@ -404,6 +417,7 @@ export default async function ProductsPage({
                 {products.map((product) => {
                   const { rating, count } = getSimulatedRating(product.id);
                   const { mrp, discount } = getSimulatedMRP(product.priceDaily);
+                  const isWishlisted = userWishlistProductIds.includes(product.id);
 
                   return (
                     <Card key={product.id} className="group overflow-hidden border-slate-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white flex flex-col h-full">
@@ -422,6 +436,13 @@ export default async function ProductsPage({
                             <span className="text-[10px] font-medium uppercase tracking-wider">No Image</span>
                           </div>
                         )}
+                        
+                        {/* Wishlist Button */}
+                        <WishlistButton 
+                          productId={product.id} 
+                          initialIsWishlisted={isWishlisted} 
+                          variant="floating" 
+                        />
                         
                         {/* Category Badge */}
                         <Badge className="absolute top-3 right-3 bg-white/90 text-slate-700 shadow-sm hover:bg-white backdrop-blur-sm border border-slate-200/50 pointer-events-none">

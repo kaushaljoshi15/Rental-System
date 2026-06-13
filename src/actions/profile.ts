@@ -28,6 +28,7 @@ export async function updateProfile(data: {
     })
 
     revalidatePath("/dashboard/customer/settings")
+    revalidatePath("/")
     return { success: true, message: "Profile updated successfully.", user: {
       name: updatedUser.name,
       phoneNumber: updatedUser.phoneNumber,
@@ -83,6 +84,7 @@ export async function addMoneyToWallet(amount: number, paymentMethod: string) {
     })
 
     revalidatePath("/dashboard/customer/settings")
+    revalidatePath("/")
     return { success: true, message: `Successfully added ₹${amount} to wallet.`, balance: updatedUser.walletBalance }
   } catch (error) {
     console.error("Add money error:", error)

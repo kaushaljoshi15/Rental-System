@@ -119,15 +119,15 @@ export async function Navbar() {
                   <div className="p-2.5 divide-y divide-slate-100">
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">My Workspace</p>
-                      <Link href="/dashboard/customer" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <Package className="w-4 h-4 text-slate-400" />
                         <span>Orders & Bookings</span>
                       </Link>
-                      <Link href="/dashboard/customer" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <Heart className="w-4 h-4 text-slate-400" />
                         <span>My Wishlist</span>
                       </Link>
-                      <Link href="/dashboard/customer/settings" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <Bell className="w-4 h-4 text-slate-400" />
                         <span>Notifications</span>
                       </Link>
@@ -135,15 +135,15 @@ export async function Navbar() {
                     
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Settings & Payments</p>
-                      <Link href="/dashboard/customer/settings" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <User className="w-4 h-4 text-slate-400" />
                         <span>Personal Details</span>
                       </Link>
-                      <Link href="/dashboard/customer/settings" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>Cards & Checkout</span>
                       </Link>
-                      <Link href="/dashboard/customer/settings" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <MapPin className="w-4 h-4 text-slate-400" />
                         <span>Saved Addresses</span>
                       </Link>
@@ -151,11 +151,11 @@ export async function Navbar() {
 
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Rewards & Perks</p>
-                      <Link href="/dashboard/customer/cart" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <Ticket className="w-4 h-4 text-slate-400" />
                         <span>Available Coupons</span>
                       </Link>
-                      <Link href="#" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                         <Gift className="w-4 h-4 text-slate-400" />
                         <span>Claim Gift Cards</span>
                       </Link>
@@ -247,7 +247,7 @@ export async function Navbar() {
                     <Store className="w-4 h-4 text-slate-400" />
                     <span>Become a Seller</span>
                   </Link>
-                  <Link href="/dashboard/customer/settings" className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
+                  <Link href="/?tab=notifications" className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold text-slate-650">
                     <Bell className="w-4 h-4 text-slate-400" />
                     <span>Notification Settings</span>
                   </Link>
@@ -266,7 +266,7 @@ export async function Navbar() {
 
           {/* Persistent Cart Icon */}
           <Link 
-            href={isLoggedIn ? "/dashboard/customer/cart" : "/login"} 
+            href={isLoggedIn ? "/?tab=cart" : "/login"} 
             className="flex items-center gap-2 text-slate-700 hover:text-indigo-650 relative p-1.5 transition-all group font-bold text-sm"
           >
             <div className="relative">
