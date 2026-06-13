@@ -17,6 +17,7 @@ async function main() {
   await prisma.product.deleteMany()
   await prisma.category.deleteMany()
   await prisma.user.deleteMany()
+  await prisma.coupon.deleteMany()
   console.log("✓ Database cleared.")
 
   const password = await bcrypt.hash("password123", 10)
@@ -113,7 +114,14 @@ async function main() {
     { name: "Generators", description: "Portable power generators" },
     { name: "Event Canopies", description: "Party tents and canopies" },
     { name: "Coolers", description: "Portable coolers and ice chests" },
-    { name: "Fog Machines", description: "Event fog and smoke machines" }
+    { name: "Fog Machines", description: "Event fog and smoke machines" },
+
+    // --- New High-Demand Rental Categories ---
+    { name: "Wedding Fashion", description: "Bridal lehengas, sherwanis, and luxury wedding accessories" },
+    { name: "Event Infrastructure", description: "Lighting trusses, DJ sound systems, and special effects" },
+    { name: "Medical Equipment", description: "Oxygen concentrators, hospital beds, and home care rentals" },
+    { name: "Heavy Tools", description: "Demolition hammers, pressure washers, and power drills" },
+    { name: "Fitness Gear", description: "Treadmills, spin bikes, and home gym accessories" }
   ]
 
   console.log("🌱 Seeding Categories...")
@@ -213,6 +221,234 @@ async function main() {
       totalStock: 3,
       categorySlug: "vr-headsets",
       image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?auto=format&fit=crop&q=80&w=600"
+    },
+
+    // --- 1. Wedding & Luxury Fashion ---
+    {
+      name: "Bridal Sabyasachi-Style Heavy Lehenga",
+      description: "Premium velvet bridal lehenga with intricate hand-embroidered zari work, double dupatta drape setup, and traditional gold/crimson patterns. Includes canvas dust bag and premium hanger.",
+      priceDaily: 3499,
+      totalStock: 2,
+      categorySlug: "wedding-fashion",
+      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Designer Reception Gown",
+      description: "Indo-western pastel reception gown featuring a dramatic 1.5-meter trailing hemline, sequined embroidery, and premium georgette fabric. Ideal for premium wedding receptions.",
+      priceDaily: 2499,
+      totalStock: 2,
+      categorySlug: "wedding-fashion",
+      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Groom Premium Royal Sherwani",
+      description: "Handcrafted Lucknowi chikan embroidered sherwani in ivory white, complete with georgette stole, safa, and matching churidar pants. Perfect for the traditional royal groom attire.",
+      priceDaily: 1999,
+      totalStock: 2,
+      categorySlug: "wedding-fashion",
+      image: "https://images.unsplash.com/photo-1605001011156-cbf0b0f67a51?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Luxury Jodhpuri & Tuxedo Suit",
+      description: "Sleek, Italian-cut deep navy tuxedo with satin lapels, premium wool blend fabric, matching trousers, and silk bow tie. Tailored for groomsmen and corporate cocktail parties.",
+      priceDaily: 1499,
+      totalStock: 3,
+      categorySlug: "wedding-fashion",
+      image: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Premium Bridal Jewelry Set",
+      description: "Exquisite high-end replica necklace set in heavy gold plating with hand-cut Kundan and Polki stones. Complete with matching chandelier earrings and a heavy maang-tikka.",
+      priceDaily: 999,
+      totalStock: 4,
+      categorySlug: "wedding-fashion",
+      image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Pre-Wedding Flowing Trail Dress",
+      description: "Specialized 4-meter flowing satin trail dress designed specifically for dramatic pre-wedding couples photography. Creates stunning motion wind effects in outdoor environments.",
+      priceDaily: 799,
+      totalStock: 5,
+      categorySlug: "wedding-fashion",
+      image: "https://images.unsplash.com/photo-1518049362265-d55813e867af?auto=format&fit=crop&q=80&w=600"
+    },
+
+    // --- 2. Event Infrastructure & Banquet Assets ---
+    {
+      name: "Complete Stage Lighting Truss Setup",
+      description: "Professional stage truss assembly including 4x Sharpy moving head fixtures, 8x RGBW LED Par Cans, central DMX console controller, and heavy-duty steel safety support poles.",
+      priceDaily: 4999,
+      totalStock: 1,
+      categorySlug: "event-infrastructure",
+      image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Commercial Sound System (DJ Setup)",
+      description: "High-wattage JBL sound setup featuring 2x dual 18-inch subwoofers, 2x mid-tops, professional 12-channel audio mixer, dual wireless microphones, and high-power amplifiers.",
+      priceDaily: 5999,
+      totalStock: 2,
+      categorySlug: "event-infrastructure",
+      image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Special Effects Cold Fog & Confetti Machine",
+      description: "Heavy-duty 3000W cold dry-ice fog machine that keeps smoke hugging the stage floor for a dream-like cloud entry effect. Includes wireless remote trigger controls.",
+      priceDaily: 1499,
+      totalStock: 3,
+      categorySlug: "event-infrastructure",
+      image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "VIP Maharaja Bride-Groom Couch",
+      description: "Royal design Maharaja-style bride/groom wedding sofa set with golden hand-carved wood frame and rich crimson red velvet upholstery. Perfect for main wedding stage seating.",
+      priceDaily: 2999,
+      totalStock: 1,
+      categorySlug: "event-infrastructure",
+      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Industrial Silent Diesel Generator (25kVA)",
+      description: "Sound-proof industrial diesel generator (25kVA rating) providing reliable backup power for wedding lights, DJ consoles, and food counters. Includes delivery and basic fuel setup.",
+      priceDaily: 3999,
+      totalStock: 2,
+      categorySlug: "generators",
+      image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Premium Buffet Chafing Dishes (Set of 6)",
+      description: "Luxury set of 6 rose-gold stainless steel chafing dishes with roll-top lids, fuel holders, and water pans. Adds a highly premium aesthetic to luxury event catering setups.",
+      priceDaily: 1299,
+      totalStock: 5,
+      categorySlug: "event-infrastructure",
+      image: "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&q=80&w=600"
+    },
+
+    // --- 3. High-Value Media & Production Gear ---
+    {
+      name: "Sony FX3 Cinema Camera Kit",
+      description: "Full-frame cinema line camera featuring outstanding 4K high-frame-rate recording, XLR handle unit, S-Cinetone profile, and advanced cooling. Includes cage and v-mount base.",
+      priceDaily: 2999,
+      totalStock: 2,
+      categorySlug: "video-cameras",
+      image: "https://images.unsplash.com/photo-1495707902641-75cac588d2e9?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Cine Prime Lens Pack (24/35/50/85mm T1.5)",
+      description: "Specialized high-aperture cinema prime lenses with unified gear rings for follow-focus setups. Delivering rich cinematic bokeh and extreme sharpness for filmmakers.",
+      priceDaily: 3499,
+      totalStock: 2,
+      categorySlug: "camera-lenses",
+      image: "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Aputure LS 600d Pro Continuous LED Light",
+      description: "Extremely powerful continuous LED video fixture with specialized hyper-reflector, barn doors, and large dome softbox. Built for professional film sets and commercial shoots.",
+      priceDaily: 1799,
+      totalStock: 3,
+      categorySlug: "lighting-kits",
+      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "DJI Ronin RS4 Pro 3-Axis Gimbal",
+      description: "Professional handheld camera stabilizer supporting up to 4.5kg payload. Features automated axis locks, Carbon Fiber build, and active LiDAR focusing support integrations.",
+      priceDaily: 899,
+      totalStock: 4,
+      categorySlug: "gimbals",
+      image: "https://images.unsplash.com/photo-1584438784894-089d6a128f3e?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Rode Wireless PRO Dual Microphone Kit",
+      description: "Next-gen dual-channel wireless microphone set with 32-bit float on-board recording, timecode sync, and charging case. Ideal for vloggers, interviews, and content creators.",
+      priceDaily: 599,
+      totalStock: 6,
+      categorySlug: "wireless-audio",
+      image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=600"
+    },
+
+    // --- 4. Adventure, Travel & Camping Kits ---
+    {
+      name: "High-Altitude Waterproof 4-Person Tent",
+      description: "Professional windproof and double-layered dome tent rated for high-altitude environments. Features thermal lining and seam-taped rainfly. Ideal for Himalayan treks.",
+      priceDaily: 499,
+      totalStock: 10,
+      categorySlug: "camping-tents",
+      image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Deuter Aircontact 65L Travel Rucksack",
+      description: "Ergonomic heavy-duty multi-day trekking backpack with internal flexible aluminum frame, adjustable back padding, and rain cover. Optimized for long hiking expeditions.",
+      priceDaily: 149,
+      totalStock: 15,
+      categorySlug: "camping-tents",
+      image: "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Celestron Astromaster Star-Gazing Telescope",
+      description: "Refractor portable telescope featuring coated glass optics, dual slow-motion control knobs, and sturdy steel tripod. Perfect for remote starlight mountain camping trips.",
+      priceDaily: 799,
+      totalStock: 3,
+      categorySlug: "camping-tents",
+      image: "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?auto=format&fit=crop&q=80&w=600"
+    },
+
+    // --- 5. Corporate IT & Office Infrastructure ---
+    {
+      name: "Optoma 4K UHD High-Lumen Smart Projector",
+      description: "Ultra-bright 4000-lumen 4K projector with HDR10 support. Complete with a 100-inch portable motorized tripod screen. Perfect for hackathons, corporate seminars, and home theater events.",
+      priceDaily: 1199,
+      totalStock: 4,
+      categorySlug: "projectors",
+      image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&q=80&w=600"
+    },
+
+    // --- 6. Recommended Additions (100% Rental-Focused) ---
+    {
+      name: "Medical 10L/min Oxygen Concentrator",
+      description: "FDA-approved high-purity medical grade oxygen concentrator delivering up to 10 liters per minute flow rate. Essential for post-operative recovery or chronic respiratory support.",
+      priceDaily: 499,
+      totalStock: 5,
+      categorySlug: "medical-equipment",
+      image: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Motorized 3-Function ICU Hospital Bed",
+      description: "Fully electric 3-function homecare ICU hospital bed with remote-controlled height adjustments, backrest tilting, and leg elevation features. Includes waterproof mattress.",
+      priceDaily: 299,
+      totalStock: 6,
+      categorySlug: "medical-equipment",
+      image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Sony PlayStation 5 Console Bundle",
+      description: "Sony PS5 Disc Edition console bundle including 2x DualSense wireless controllers and preloaded top gaming titles. Perfect for weekend birthday parties or gaming events.",
+      priceDaily: 399,
+      totalStock: 8,
+      categorySlug: "gaming-consoles",
+      image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Heavy-Duty 1500W Demolition Jackhammer",
+      description: "Industrial power breaker jackhammer delivering 45 joules of impact energy. Ideal for breaking concrete slabs, brick walls, and heavy rock excavation DIY tasks.",
+      priceDaily: 499,
+      totalStock: 5,
+      categorySlug: "heavy-tools",
+      image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Karcher 150-Bar High-Pressure Washer",
+      description: "Professional high-pressure washer cleaner (150-bar rating) with foam jet nozzle, dirt blaster lance, and 8-meter high-pressure hose. Ideal for car detailing and wall washing.",
+      priceDaily: 249,
+      totalStock: 7,
+      categorySlug: "heavy-tools",
+      image: "https://images.unsplash.com/photo-1520340356584-f9917d1ecc6f?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      name: "Premium Motorized Foldable Treadmill",
+      description: "High-end fitness treadmill featuring a 3.0 HP continuous duty motor, digital incline levels, and integrated heart rate monitors. Folds easily for home gym setups.",
+      priceDaily: 399,
+      totalStock: 4,
+      categorySlug: "fitness-gear",
+      image: "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&q=80&w=600"
     }
   ]
 
