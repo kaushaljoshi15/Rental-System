@@ -9,10 +9,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { RentButton } from "@/components/rent-button";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { CatalogSortSelect } from "@/components/catalog-sort-select";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
+import { Navbar } from "@/components/navbar";
 
 // Cache categories for 60 seconds to prevent DB reads on every catalog page load
 const getCachedCategories = unstable_cache(
@@ -24,6 +26,8 @@ const getCachedCategories = unstable_cache(
   ["categories-list"],
   { revalidate: 60, tags: ["categories"] }
 );
+
+const PREMIUM_BOX_SHADOW = '0 1px 4px rgba(0,0,0,0.07)'
 
 // Category grouping helper to classify catalog departments
 function getCategoryGroup(slug: string): string {
@@ -90,11 +94,24 @@ function getCategoryGroup(slug: string): string {
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ category?: string; query?: string }>;
+  searchParams?: Promise<{ 
+    category?: string; 
+    query?: string;
+    sort?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    rating?: string;
+    vendorId?: string;
+  }>;
 }) {
   const params = await searchParams;
   const categorySlug = params?.category;
   const searchQuery = params?.query;
+  const sort = params?.sort;
+  const minPrice = params?.minPrice ? parseFloat(params.minPrice) : undefined;
+  const maxPrice = params?.maxPrice ? parseFloat(params.maxPrice) : undefined;
+  const rating = params?.rating ? parseFloat(params.rating) : undefined;
+  const vendorId = params?.vendorId;
 
   // Check if user is logged in and is a customer
   const session = await getServerSession(authOptions);
@@ -137,19 +154,53 @@ export default async function ProductsPage({
     groupedCategories[group].push(cat);
   });
 
+  // Fetch list of active vendors
+  const vendors = await prisma.user.findMany({
+    where: { role: "VENDOR" },
+    select: { id: true, name: true, companyName: true }
+  });
+
+  // Helper to build URL with preserved search parameters
+  const buildFilterUrl = (newParams: Record<string, string | null>) => {
+    const currentParams = new URLSearchParams();
+    if (categorySlug) currentParams.set('category', categorySlug);
+    if (searchQuery) currentParams.set('query', searchQuery);
+    if (sort) currentParams.set('sort', sort);
+    if (params?.minPrice) currentParams.set('minPrice', params.minPrice);
+    if (params?.maxPrice) currentParams.set('maxPrice', params.maxPrice);
+    if (params?.rating) currentParams.set('rating', params.rating);
+    if (vendorId) currentParams.set('vendorId', vendorId);
+
+    Object.entries(newParams).forEach(([key, val]) => {
+      if (val === null) {
+        currentParams.delete(key);
+      } else {
+        currentParams.set(key, val);
+      }
+    });
+
+    return `/products?${currentParams.toString()}`;
+  };
+
   // 2. Fetch Products via searchHalls action
   const selectedCategory = categories.find(c => c.slug === categorySlug);
   const searchResult = await searchHalls({
     query: searchQuery,
     categoryId: selectedCategory?.id,
+    minPrice,
+    maxPrice,
+    rating,
+    vendorId,
+    sort
   });
   const products = searchResult.success && searchResult.data ? searchResult.data : [];
 
   return (
-    <div className={`min-h-screen bg-slate-50 ${isCustomer ? 'flex' : ''}`}>
-      {isCustomer && <DashboardSidebar role="CUSTOMER" />}
-      <div className={`${isCustomer ? 'flex-1 ml-64' : ''}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <Navbar />
+      <div className={`flex-grow ${isCustomer ? 'flex' : ''}`}>
+        {isCustomer && <DashboardSidebar role="CUSTOMER" />}
+        <div className={`flex-1 ${isCustomer ? 'ml-64' : ''} max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full`}>
         
         {/* --- Page Header --- */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
@@ -176,17 +227,19 @@ export default async function ProductsPage({
 
         <div className="flex flex-col lg:flex-row gap-8">
           
-          {/* --- Sidebar (Categories) --- */}
-          <aside className="w-full lg:w-64 flex-shrink-0">
-            <Card className="sticky top-24 border-slate-200 shadow-sm bg-white overflow-hidden">
+          {/* --- Sidebar (Categories & Filters) --- */}
+          <aside className="w-full lg:w-64 flex-shrink-0 space-y-6">
+            
+            {/* Card 1: Categories scroll block */}
+            <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
               <div className="p-4 border-b border-slate-100 bg-slate-50/50">
                 <h3 className="font-semibold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wide">
                   <Filter className="w-4 h-4" /> Categories
                 </h3>
               </div>
-              <ScrollArea className="h-[400px] lg:h-[calc(100vh-500px)]">
+              <ScrollArea className="h-[320px] lg:h-[400px]">
                 <div className="p-2 space-y-3">
-                  <Link href="/products">
+                  <Link href={buildFilterUrl({ category: null })}>
                     <Button 
                       variant="ghost" 
                       className={`w-full justify-start text-xs h-8 ${!categorySlug ? "bg-slate-100 text-slate-900 font-semibold" : "text-slate-600 hover:text-slate-900"}`}
@@ -201,10 +254,10 @@ export default async function ProductsPage({
                         {groupName}
                       </h4>
                       {groupCats.map((cat) => (
-                        <Link key={cat.id} href={`/products?category=${cat.slug}`}>
+                        <Link key={cat.id} href={buildFilterUrl({ category: cat.slug })}>
                           <Button 
                             variant="ghost" 
-                            className={`w-full justify-start text-xs h-7 px-2.5 py-1 text-left ${categorySlug === cat.slug ? "bg-amber-100 text-amber-950 font-semibold" : "text-slate-600 hover:text-slate-950"}`}
+                            className={`w-full justify-start text-xs h-7 px-2.5 py-1 text-left ${categorySlug === cat.slug ? "bg-amber-100 text-amber-950 font-semibold" : "text-slate-650 hover:text-slate-950"}`}
                           >
                             <span className="truncate">{cat.name}</span>
                           </Button>
@@ -215,22 +268,134 @@ export default async function ProductsPage({
                 </div>
               </ScrollArea>
             </Card>
+
+            {/* Card 2: Refine Filters */}
+            <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
+              <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                <h3 className="font-semibold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wide">
+                  <Filter className="w-4 h-4" /> Refine Search
+                </h3>
+              </div>
+              
+              <div className="p-4 space-y-6">
+                
+                {/* A. Price Range */}
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Price Range (/day)</h4>
+                  <form action="/products" method="GET" className="space-y-2">
+                    {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
+                    {searchQuery && <input type="hidden" name="query" value={searchQuery} />}
+                    {sort && <input type="hidden" name="sort" value={sort} />}
+                    {params?.rating && <input type="hidden" name="rating" value={params.rating} />}
+                    {vendorId && <input type="hidden" name="vendorId" value={vendorId} />}
+                    
+                    <div className="flex gap-2 items-center">
+                      <Input 
+                        name="minPrice" 
+                        type="number"
+                        placeholder="Min" 
+                        defaultValue={params?.minPrice || ''}
+                        className="h-8 text-xs px-2 shadow-none border-slate-200"
+                      />
+                      <span className="text-slate-400 text-xs">-</span>
+                      <Input 
+                        name="maxPrice" 
+                        type="number"
+                        placeholder="Max" 
+                        defaultValue={params?.maxPrice || ''}
+                        className="h-8 text-xs px-2 shadow-none border-slate-200"
+                      />
+                      <Button type="submit" size="sm" className="h-8 px-2.5 bg-slate-800 hover:bg-slate-950 text-white text-xs border-0 rounded-lg shrink-0 font-bold">
+                        Go
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* B. Customer Reviews */}
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Customer Reviews</h4>
+                  <div className="space-y-1 flex flex-col">
+                    {[4, 3, 2].map((num) => (
+                      <Link 
+                        key={num} 
+                        href={buildFilterUrl({ rating: num.toString() })}
+                        className={`text-xs flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-slate-50 transition-colors ${rating === num ? 'bg-amber-50 text-amber-950 font-bold border border-amber-200/50' : 'text-slate-650 hover:text-slate-950'}`}
+                      >
+                        <div className="flex text-amber-500 shrink-0">
+                          {Array.from({ length: 5 }).map((_, idx) => (
+                            <Star 
+                              key={idx} 
+                              className={`w-3.5 h-3.5 ${idx < num ? 'fill-current' : 'text-slate-200'}`} 
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-bold">& Up</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* C. Vendors List */}
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Rental Vendors</h4>
+                  <div className="space-y-1 flex flex-col max-h-[200px] overflow-y-auto">
+                    {vendors.map((v) => {
+                      const isSelected = vendorId === v.id
+                      return (
+                        <Link 
+                          key={v.id} 
+                          href={buildFilterUrl({ vendorId: isSelected ? null : v.id })}
+                          className={`text-xs text-left py-1.5 px-2 rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-between gap-2 border ${isSelected ? 'bg-amber-50 border-amber-200/50 text-amber-950 font-bold' : 'border-transparent text-slate-650 hover:text-slate-950'}`}
+                        >
+                          <span className="truncate">
+                            {v.companyName || v.name || "Prime Partner"}
+                          </span>
+                          {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* D. Clear Filters Button */}
+                {(params?.minPrice || params?.maxPrice || params?.rating || params?.vendorId) && (
+                  <div className="pt-2 border-t border-slate-100">
+                    <Link href={`/products?${categorySlug ? `category=${categorySlug}` : ''}${searchQuery ? `&query=${encodeURIComponent(searchQuery)}` : ''}${sort ? `&sort=${sort}` : ''}`}>
+                      <Button variant="outline" className="w-full text-[10px] h-8 border-dashed border-slate-350 hover:bg-slate-50 text-slate-600 font-extrabold uppercase tracking-wider">
+                        Clear Filters
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+
+              </div>
+            </Card>
           </aside>
 
           {/* --- Main Product Grid --- */}
-          <div className="flex-1">
+          <div className="flex-1 space-y-4">
+            
+            {/* Grid Header & Sorting Controls */}
+            <div className="flex justify-between items-center bg-white border border-slate-200/80 rounded-xl px-4 py-3 shadow-sm" style={{ boxShadow: PREMIUM_BOX_SHADOW }}>
+              <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider font-sans">
+                Found {products.length} {products.length === 1 ? 'Rentable Asset' : 'Rentable Assets'}
+              </span>
+              <CatalogSortSelect />
+            </div>
+
             {products.length === 0 ? (
               // Empty State
-              <div className="text-center py-24 bg-white rounded-xl border border-dashed border-slate-300">
+              <div className="text-center py-24 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm">
                 <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Tag className="h-8 w-8 text-slate-300" />
                 </div>
-                <h3 className="text-lg font-semibold text-slate-900">No products found</h3>
-                <p className="text-slate-500 mt-1 mb-6 max-w-sm mx-auto text-sm">
-                  We could not find any items matching your filters. Try selecting a different category or clearing your search.
+                <h3 className="text-lg font-bold text-slate-900 font-sans">No rentable assets found</h3>
+                <p className="text-slate-500 mt-1 mb-6 max-w-sm mx-auto text-xs font-semibold leading-relaxed">
+                  We couldn't find any listings matching your active filters. Try resetting the filters or modifying your search query.
                 </p>
                 <Link href="/products">
-                  <Button variant="outline" className="border-slate-300">Clear All Filters</Button>
+                  <Button variant="outline" className="border-slate-300 font-bold text-xs uppercase tracking-wide px-6 py-2.5">Clear All Filters</Button>
                 </Link>
               </div>
             ) : (

@@ -14,6 +14,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
+import { Navbar } from "@/components/navbar";
 
 // Cache individual product details for 60 seconds by ID to reduce direct DB hits under concurrent traffic
 const getCachedProduct = unstable_cache(
@@ -42,8 +43,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const discount = Math.round(((mrp - product.priceDaily) / mrp) * 100);
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
         
         {/* --- Breadcrumbs / Back navigation --- */}
         <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">

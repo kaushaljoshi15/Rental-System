@@ -12,6 +12,9 @@ interface SearchFilters {
   amenities?: string[]
   startDate?: Date
   endDate?: Date
+  vendorId?: string
+  sort?: string
+  rating?: number
 }
 
 /**
@@ -51,7 +54,10 @@ export async function searchHalls(filters: SearchFilters) {
       minCapacity,
       amenities,
       startDate,
-      endDate
+      endDate,
+      vendorId,
+      sort,
+      rating
     } = filters
 
     // 1. Identify product IDs that are unavailable during the selected date range
@@ -110,6 +116,11 @@ export async function searchHalls(filters: SearchFilters) {
       whereConditions.id = idFilter
     }
 
+    // Vendor Filter
+    if (vendorId) {
+      whereConditions.vendorId = vendorId
+    }
+
     // Category Filter
     if (categoryId) {
       whereConditions.categoryId = categoryId
@@ -141,7 +152,15 @@ export async function searchHalls(filters: SearchFilters) {
       }
     }
 
-    // 3. Execute query with relations
+    // 3. Determine Sorting Order
+    let orderByCondition: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' }
+    if (sort === 'price_asc') {
+      orderByCondition = { priceDaily: 'asc' }
+    } else if (sort === 'price_desc') {
+      orderByCondition = { priceDaily: 'desc' }
+    }
+
+    // 4. Execute query with relations
     const halls = await prisma.product.findMany({
       where: whereConditions,
       include: {
@@ -159,13 +178,11 @@ export async function searchHalls(filters: SearchFilters) {
           }
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: orderByCondition
     })
 
-    // 4. Map average rating fields
-    const mappedHalls = halls.map(hall => {
+    // 5. Map average rating fields
+    let mappedHalls = halls.map(hall => {
       const totalReviews = hall.reviews.length
       const avgRating = totalReviews > 0
         ? hall.reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews
@@ -177,6 +194,16 @@ export async function searchHalls(filters: SearchFilters) {
         totalReviews
       }
     })
+
+    // 6. Filter by rating in-memory
+    if (rating !== undefined && rating > 0) {
+      mappedHalls = mappedHalls.filter(hall => hall.avgRating >= rating)
+    }
+
+    // 7. Sort by rating in-memory if specified
+    if (sort === 'rating_desc') {
+      mappedHalls.sort((a, b) => b.avgRating - a.avgRating)
+    }
 
     return { success: true, data: mappedHalls }
 

@@ -25,7 +25,9 @@ import {
   Layers,
   Heart
 } from "lucide-react"
+import { Navbar } from "@/components/navbar"
 import { RentButton } from "@/components/rent-button"
+import { HeroCarousel } from "@/components/hero-carousel"
 
 // Cache helper for category lists & featured products
 async function getStorefrontData() {
@@ -162,88 +164,10 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900">
-      
-      {/* --- PREMIUM NAVBAR --- */}
-      <header className="sticky top-0 z-50 bg-[#0F172A] text-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4">
-          
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <div className="bg-amber-500 p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
-              <ShoppingCart className="w-5 h-5 text-[#0F172A]" />
-            </div>
-            <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
-              Rent<span className="text-amber-500">Kart</span>
-            </span>
-          </Link>
-
-          {/* Search Bar (Centered like Myntra/Amazon) */}
-          <div className="flex-1 max-w-2xl relative group hidden md:block">
-            <form action="/products" method="GET">
-              <div className="relative flex items-center">
-                <Search className="absolute left-3.5 h-4 w-4 text-slate-400 group-focus-within:text-slate-200 transition-colors" />
-                <input 
-                  type="text" 
-                  name="query" 
-                  placeholder="Search banquet halls, sound systems, seminar spaces, lenses..." 
-                  className="w-full bg-slate-800 border border-slate-700 text-sm rounded-lg pl-10 pr-20 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-semibold"
-                />
-                <button 
-                  type="submit" 
-                  className="absolute right-1 px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded transition-colors"
-                >
-                  Search
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* User Controls */}
-          <div className="flex items-center gap-4">
-            <Link href="/products" className="text-sm font-medium text-slate-350 hover:text-white hover:underline transition-all uppercase tracking-wider text-[11px] font-bold">
-              All Products
-            </Link>
-
-            {isLoggedIn ? (
-              <>
-                <Link href="/dashboard/customer/cart" className="flex items-center gap-1.5 text-slate-300 hover:text-white relative p-1 transition-all group">
-                  <ShoppingCart className="w-5 h-5 group-hover:scale-105 transition-transform" />
-                  <span className="text-sm font-semibold hidden sm:inline">Cart</span>
-                </Link>
-
-                <div className="h-4 w-[1px] bg-slate-700 hidden sm:block" />
-
-                <Link href="/dashboard/customer" className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-all font-semibold">
-                  <User className="w-4 h-4 text-amber-500" />
-                  <span className="text-sm font-semibold max-w-[100px] truncate">
-                    {userName}
-                  </span>
-                </Link>
-
-                <Link href="/api/auth/signout" className="text-xs font-semibold px-3 py-1.5 border border-slate-700 hover:border-slate-500 hover:bg-slate-800 rounded transition-all">
-                  Sign Out
-                </Link>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/login">
-                  <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-slate-800 text-sm font-semibold">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button className="bg-amber-500 hover:bg-amber-600 text-slate-950 text-sm font-bold border-0 px-4">
-                    Register
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Mobile Search Bar (Only shown on mobile) */}
-      <div className="bg-[#0F172A] px-4 py-3 md:hidden border-t border-slate-850">
+      <div className="bg-white px-4 py-3 md:hidden border-b border-slate-200">
         <form action="/products" method="GET">
           <div className="relative flex items-center">
             <Search className="absolute left-3.5 h-4 w-4 text-slate-400" />
@@ -251,57 +175,80 @@ export default async function HomePage() {
               type="text" 
               name="query" 
               placeholder="Search equipment or halls to rent..." 
-              className="w-full bg-slate-800 border border-slate-700 text-sm rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500"
+              className="w-full bg-slate-50 border border-slate-200 text-sm rounded-lg pl-10 pr-4 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
             />
           </div>
         </form>
       </div>
 
-      {/* --- PROMOTIONAL HERO BANNER (MYNTRA / AMAZON SLIDER PARADIGM) --- */}
-      <section className="bg-slate-950 text-white relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px]">
-        <div className="absolute top-0 right-0 h-96 w-96 bg-[#F59E0B]/5 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-          
-          {/* Banner Left Details */}
-          <div className="lg:col-span-7 space-y-6 text-left">
-            <Badge className="bg-amber-500 text-slate-950 border-0 text-xs font-extrabold uppercase px-3 py-1 tracking-wider">
-              FLAT ₹500 OFF ON FIRST RENTAL
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none">
-              SHOP SMART, <br />
-              <span className="text-amber-500 uppercase font-black">SAVE BIGGER ON VENUES</span>
-            </h1>
-            <p className="text-slate-400 text-sm sm:text-base max-w-xl leading-relaxed font-semibold">
-              Browse professional marriage lawns, banquet halls, DJ systems, and photo cameras. Secure date checks and deposit escrow protection are integrated directly.
-            </p>
-            <div className="flex gap-4">
-              <Link href="/products">
-                <Button className="bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider px-8 py-5 rounded-xl shadow-lg shadow-amber-500/20">
-                  Browse Catalog
-                </Button>
-              </Link>
-            </div>
+      {/* --- TOP SLIDER CAROUSEL (MYNTRA/FLIPKART INTERFACE) --- */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <HeroCarousel />
+      </section>
+
+      {/* --- EXCLUSIVE OFFER TILES (FLIPKART/MYNTRA PROMO GRID) --- */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5" style={{ boxShadow: PREMIUM_BOX_SHADOW }}>
+          <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+            <span className="text-xs font-black text-slate-850 uppercase tracking-wider flex items-center gap-1.5 font-sans">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" /> Exclusive Coupons & Offers
+            </span>
+            <span className="text-[10px] text-slate-400 font-extrabold uppercase">Save up to 30%</span>
           </div>
 
-          {/* Banner Right Promo Graphic */}
-          <div className="lg:col-span-5 hidden lg:block">
-            <div className="bg-gradient-to-br from-[#F59E0B]/20 to-indigo-500/10 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">Active Store campaign</span>
-                <span className="text-[9px] bg-red-500 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider animate-pulse">Ends tomorrow</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Offer 1 */}
+            <div className="bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-rose-450 transition-colors shadow-sm">
+              <div>
+                <span className="text-[9px] bg-rose-500 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">SEASON SPECIAL</span>
+                <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">WEDDING APPAREL SALE</h4>
+                <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Rent premium velvet bridal lehengas or sherwanis for up to 30% off.</p>
               </div>
-              <h3 className="text-lg font-black uppercase text-white tracking-wide">Premium Gear & Halls</h3>
-              <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
-                Unlock instant dynamic tiered rates: Rent camera gear and banquet packages for 4+ days and save up to 20% on booking quotations.
-              </p>
-              <div className="pt-2 border-t border-slate-850 flex justify-between items-center text-xs font-bold text-slate-350">
-                <span>Verified Handback Escrow</span>
-                <Sparkles className="w-4 h-4 text-amber-500 animate-spin" style={{ animationDuration: '4s' }} />
+              <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
+                <span className="text-[10px] font-black text-rose-700 bg-rose-100 px-2 py-1 rounded border border-dashed border-rose-350">WEDDING30</span>
+                <Link href="/products?query=wedding" className="text-[10px] font-extrabold text-rose-600 uppercase hover:underline font-bold">Rent Now</Link>
+              </div>
+            </div>
+
+            {/* Offer 2 */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-amber-450 transition-colors shadow-sm">
+              <div>
+                <span className="text-[9px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-black uppercase tracking-wider">FIRST RENT DEAL</span>
+                <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">WELCOME BONUS</h4>
+                <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Get flat ₹500 off on your very first camera kit or equipment rental checkout.</p>
+              </div>
+              <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
+                <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-1 rounded border border-dashed border-amber-350">FLAT500</span>
+                <Link href="/products" className="text-[10px] font-extrabold text-amber-600 uppercase hover:underline font-bold">Claim</Link>
+              </div>
+            </div>
+
+            {/* Offer 3 */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-blue-450 transition-colors shadow-sm">
+              <div>
+                <span className="text-[9px] bg-blue-500 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">CREATOR SAVER</span>
+                <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">PRODUCTION BUNDLE</h4>
+                <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Rent FX3, prime lenses, and audio accessories together for 10% off.</p>
+              </div>
+              <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
+                <span className="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-1 rounded border border-dashed border-blue-350">CREATOR10</span>
+                <Link href="/products?query=camera" className="text-[10px] font-extrabold text-blue-600 uppercase hover:underline font-bold">Apply</Link>
+              </div>
+            </div>
+
+            {/* Offer 4 */}
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-emerald-450 transition-colors shadow-sm">
+              <div>
+                <span className="text-[9px] bg-emerald-500 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">LONG RENT DISCOUNT</span>
+                <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">4+ DAYS BOOKING</h4>
+                <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Unlock massive cumulative savings: Get 20% discount on longer hires.</p>
+              </div>
+              <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
+                <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-1 rounded border border-dashed border-emerald-350">WEEKLY20</span>
+                <Link href="/products" className="text-[10px] font-extrabold text-emerald-600 uppercase hover:underline font-bold">Explore</Link>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 

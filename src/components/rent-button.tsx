@@ -61,9 +61,9 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
         setTimeout(() => setIsAdded(false), 2000)
       } else {
         if (result.code === "UNAUTHORIZED") {
-          toast.error("Login Required", {
+          toast.error("Please login or register first to rent any item.", {
             action: {
-              label: "Login",
+              label: "Login / Register",
               onClick: () => router.push("/login")
             }
           })

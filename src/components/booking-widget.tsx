@@ -63,9 +63,9 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
         })
       } else {
         if (res.code === "UNAUTHORIZED" || res.message.includes("log in")) {
-          toast.error("Login Required", {
+          toast.error("Please login or register first to rent any item.", {
             action: {
-              label: "Login",
+              label: "Login / Register",
               onClick: () => router.push("/login")
             }
           })
