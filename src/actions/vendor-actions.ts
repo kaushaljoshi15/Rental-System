@@ -225,6 +225,8 @@ export async function updateVendorSettings(data: {
   gstin?: string
   address?: string
   phoneNumber?: string
+  signature?: string
+  bankDetails?: string
 }) {
   try {
     const user = await getCurrentUser()
@@ -239,6 +241,8 @@ export async function updateVendorSettings(data: {
         gstin: data.gstin || null,
         address: data.address || null,
         phoneNumber: data.phoneNumber || null,
+        signature: data.signature || null,
+        bankDetails: data.bankDetails || null,
       }
     })
 

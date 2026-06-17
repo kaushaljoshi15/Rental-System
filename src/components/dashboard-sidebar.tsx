@@ -64,7 +64,6 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
     { title: "Browse Products", href: "/products", icon: <Search className="w-5 h-5" /> },
     { title: "My Cart", href: "/dashboard/customer/cart", icon: <ShoppingCart className="w-5 h-5" /> },
     { title: "My Orders", href: "/dashboard/customer/orders", icon: <History className="w-5 h-5" /> },
-    { title: "Invoices", href: "/dashboard/customer/invoices", icon: <FileText className="w-5 h-5" /> },
     { title: "Settings", href: "/dashboard/customer/settings", icon: <Settings className="w-5 h-5" /> },
   ]
 

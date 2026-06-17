@@ -191,4 +191,256 @@ export async function deleteCategory(categoryId: string) {
   }
 }
 
+export async function approveProduct(productId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized. Please log in." };
+  }
+
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!currentUser || currentUser.role !== "ADMIN") {
+    return { success: false, message: "Only administrators can approve products." };
+  }
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: productId }
+    });
+
+    if (!product) {
+      return { success: false, message: "Product not found." };
+    }
+
+    // Update product to approved
+    await prisma.product.update({
+      where: { id: productId },
+      data: { isApproved: true }
+    });
+
+    // Notify vendor
+    if (product.vendorId) {
+      await prisma.notification.create({
+        data: {
+          userId: product.vendorId,
+          title: "Listing Approved! 🎉",
+          message: `Your product listing "${product.name}" has been approved by the administrator and is now live for customers to rent.`,
+          type: "SYSTEM"
+        }
+      });
+    }
+
+    // Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: currentUser.id,
+        action: "APPROVE_PRODUCT",
+        entityType: "Product",
+        entityId: productId,
+        newValues: { name: product.name, priceDaily: product.priceDaily }
+      }
+    });
+
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/dashboard/admin/products");
+    revalidatePath(`/products/${productId}`);
+    return { success: true, message: `Product "${product.name}" approved successfully!` };
+
+  } catch (error) {
+    console.error("Approve Product Error:", error);
+    return { success: false, message: "Failed to approve product." };
+  }
+}
+
+export async function rejectProduct(productId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized. Please log in." };
+  }
+
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!currentUser || currentUser.role !== "ADMIN") {
+    return { success: false, message: "Only administrators can reject products." };
+  }
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id: productId }
+    });
+
+    if (!product) {
+      return { success: false, message: "Product not found." };
+    }
+
+    // Notify vendor before deleting
+    if (product.vendorId) {
+      await prisma.notification.create({
+        data: {
+          userId: product.vendorId,
+          title: "Listing Rejected ❌",
+          message: `Your product listing "${product.name}" has been rejected by the administrator. Please review platform rules.`,
+          type: "SYSTEM"
+        }
+      });
+    }
+
+    // Delete product
+    await prisma.product.delete({
+      where: { id: productId }
+    });
+
+    // Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: currentUser.id,
+        action: "REJECT_PRODUCT",
+        entityType: "Product",
+        entityId: productId,
+        oldValues: { name: product.name, priceDaily: product.priceDaily }
+      }
+    });
+
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/dashboard/admin/products");
+    return { success: true, message: `Product "${product.name}" rejected and deleted.` };
+
+  } catch (error) {
+    console.error("Reject Product Error:", error);
+    return { success: false, message: "Failed to reject product." };
+  }
+}
+
+export async function approveVendor(vendorId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized. Please log in." };
+  }
+
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!currentUser || currentUser.role !== "ADMIN") {
+    return { success: false, message: "Only administrators can approve vendors." };
+  }
+
+  try {
+    const vendor = await prisma.user.findUnique({
+      where: { id: vendorId }
+    });
+
+    if (!vendor) {
+      return { success: false, message: "Vendor not found." };
+    }
+
+    // Update vendor to verified
+    await prisma.user.update({
+      where: { id: vendorId },
+      data: { 
+        isVerifiedVendor: true,
+        kycStatus: "VERIFIED"
+      }
+    });
+
+    // Notify vendor
+    await prisma.notification.create({
+      data: {
+        userId: vendorId,
+        title: "Store Approved! 🎉",
+        message: `Your vendor account and store "${vendor.companyName || vendor.name}" have been approved by the marketplace administrator. You can now sell and manage bookings.`,
+        type: "SYSTEM"
+      }
+    });
+
+    // Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: currentUser.id,
+        action: "APPROVE_VENDOR",
+        entityType: "User",
+        entityId: vendorId,
+        newValues: { name: vendor.name, companyName: vendor.companyName }
+      }
+    });
+
+    revalidatePath("/dashboard/admin/users");
+    revalidatePath("/dashboard/admin");
+    return { success: true, message: `Vendor "${vendor.companyName || vendor.name}" approved successfully!` };
+
+  } catch (error) {
+    console.error("Approve Vendor Error:", error);
+    return { success: false, message: "Failed to approve vendor." };
+  }
+}
+
+export async function rejectVendor(vendorId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized. Please log in." };
+  }
+
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!currentUser || currentUser.role !== "ADMIN") {
+    return { success: false, message: "Only administrators can reject vendors." };
+  }
+
+  try {
+    const vendor = await prisma.user.findUnique({
+      where: { id: vendorId }
+    });
+
+    if (!vendor) {
+      return { success: false, message: "Vendor not found." };
+    }
+
+    // Update vendor to rejected
+    await prisma.user.update({
+      where: { id: vendorId },
+      data: { 
+        isVerifiedVendor: false,
+        kycStatus: "REJECTED"
+      }
+    });
+
+    // Notify vendor
+    await prisma.notification.create({
+      data: {
+        userId: vendorId,
+        title: "Onboarding Rejected ❌",
+        message: `Your vendor onboarding request has been rejected by the administrator. Please review your credentials/signature and re-submit.`,
+        type: "SYSTEM"
+      }
+    });
+
+    // Audit Log
+    await prisma.auditLog.create({
+      data: {
+        userId: currentUser.id,
+        action: "REJECT_VENDOR",
+        entityType: "User",
+        entityId: vendorId,
+        newValues: { name: vendor.name, companyName: vendor.companyName }
+      }
+    });
+
+    revalidatePath("/dashboard/admin/users");
+    revalidatePath("/dashboard/admin");
+    return { success: true, message: `Vendor "${vendor.companyName || vendor.name}" rejected.` };
+
+  } catch (error) {
+    console.error("Reject Vendor Error:", error);
+    return { success: false, message: "Failed to reject vendor." };
+  }
+}
+
 

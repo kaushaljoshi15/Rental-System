@@ -22,7 +22,9 @@ export default async function VendorSettingsPage() {
       aadhaarNumber: true,
       panNumber: true,
       kycStatus: true,
-      kycDocUrl: true
+      kycDocUrl: true,
+      signature: true,
+      bankDetails: true
     }
   })
 

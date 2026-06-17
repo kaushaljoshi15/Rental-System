@@ -224,8 +224,9 @@ export async function registerVendorStep2(
         companyName: companyName.trim(),
         gstin: gstin.trim().toUpperCase(),
         address: address.trim(),
-        isVerifiedVendor: true,
-        kycStatus: "VERIFIED" // Instantly verifies upon entering GSTIN and signing
+        signature: signature.trim(),
+        isVerifiedVendor: false,
+        kycStatus: "PENDING" // Requires admin validation/approval to go live
       }
     })
 

@@ -36,6 +36,16 @@ export default async function UserManagementPage() {
       companyName: true,
       emailVerified: true,
       createdAt: true,
+      isVerifiedVendor: true,
+      kycStatus: true,
+      aadhaarNumber: true,
+      panNumber: true,
+      kycDocUrl: true,
+      gstin: true,
+      signature: true,
+      bankDetails: true,
+      phoneNumber: true,
+      address: true,
     }
   });
 
@@ -167,8 +177,7 @@ export default async function UserManagementPage() {
                       {/* Actions */}
                       <td className="px-6 py-4 text-right">
                         <UserActionsMenu 
-                          userId={user.id} 
-                          email={user.email} 
+                          user={user} 
                         />
                       </td>
                     </tr>

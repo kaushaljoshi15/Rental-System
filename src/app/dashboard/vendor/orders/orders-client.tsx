@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input"
 import { updateVendorOrderStatus } from '@/actions/vendor-actions'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { generateInvoiceHTML } from '@/lib/invoice-template'
 
 interface OrderLine {
   id: string
@@ -36,6 +37,7 @@ interface OrderLine {
   price: number
   product: {
     name: string
+    securityDeposit?: number | null
   }
 }
 
@@ -56,15 +58,28 @@ interface Order {
     name: string
     email: string
     phoneNumber: string | null
+    address?: string | null
   }
+  invoiceNumber: string
+  vendorDiscountAmount: number
+  vendorSecurityDeposit: number
+  vendorExpectedRentTotal: number
   lines: OrderLine[]
+}
+
+interface VendorProfile {
+  companyName: string | null
+  gstin: string | null
+  address: string | null
+  signature: string | null
 }
 
 interface OrdersClientProps {
   orders: Order[]
+  vendorProfile: VendorProfile
 }
 
-export function OrdersClient({ orders }: OrdersClientProps) {
+export function OrdersClient({ orders, vendorProfile }: OrdersClientProps) {
   const { t, language, chatMessages, sendSimulatedMessage } = useVendor()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -134,77 +149,37 @@ export function OrdersClient({ orders }: OrdersClientProps) {
     if (!chatInput.trim() || !selectedOrder) return
     sendSimulatedMessage(selectedOrder.id, chatInput)
     setChatInput('')
-  }
-
-  // Auto-invoicing Printer layout
+  }  // Auto-invoicing Printer layout
   const handlePrintInvoice = () => {
     if (!selectedOrder) return
     const printWindow = window.open('', '_blank')
     if (!printWindow) return
 
-    const invoiceHTML = `
-      <html>
-        <head>
-          <title>Invoice - #${selectedOrder.id.slice(-8).toUpperCase()}</title>
-          <style>
-            body { font-family: sans-serif; padding: 40px; color: #333; }
-            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #eee; padding-bottom: 20px; }
-            .meta { margin: 20px 0; display: flex; justify-content: space-between; font-size: 14px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-            th { bg-color: #f5f5f5; }
-            .total { text-align: right; margin-top: 30px; font-size: 18px; font-weight: bold; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div>
-              <h2>RENTALKART TAX INVOICE</h2>
-              <p>Prime Rentals Co.<br>GSTIN: 24AAAAA0000A1Z5</p>
-            </div>
-            <div>
-              <h3>Invoice #: INV-${selectedOrder.id.slice(-8).toUpperCase()}</h3>
-              <p>Date: ${new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
-            </div>
-          </div>
-          <div class="meta">
-            <div>
-              <strong>Billed To:</strong>
-              <p>${selectedOrder.user.name}<br>${selectedOrder.user.email}<br>Phone: ${selectedOrder.user.phoneNumber || 'N/A'}</p>
-            </div>
-            <div>
-              <strong>Rental Period:</strong>
-              <p>Start: ${new Date(selectedOrder.startDate).toLocaleDateString()}<br>End: ${new Date(selectedOrder.endDate).toLocaleDateString()}</p>
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Product Description</th>
-                <th>Qty</th>
-                <th>Daily Rate</th>
-                <th>Total (INR)</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${selectedOrder.lines.map(line => `
-                <tr>
-                  <td>${line.product.name}</td>
-                  <td>${line.quantity}</td>
-                  <td>₹${line.price}</td>
-                  <td>₹${(line.price * line.quantity).toLocaleString()}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-          <div class="total">
-            <p>Rental Charge: ₹${(selectedOrder.totalAmount - selectedOrder.securityDeposit).toLocaleString()}</p>
-            <p>Security Deposit (Refundable): ₹${selectedOrder.securityDeposit.toLocaleString()}</p>
-            <p>Grand Total Paid: ₹${selectedOrder.totalAmount.toLocaleString()}</p>
-          </div>
-        </body>
-      </html>
-    `
+    const vendorProfileObj = {
+      companyName: vendorProfile.companyName,
+      gstin: vendorProfile.gstin,
+      address: vendorProfile.address,
+      signature: vendorProfile.signature
+    }
+
+    const invoiceHTML = generateInvoiceHTML({
+      orderId: selectedOrder.id,
+      invoiceNumber: selectedOrder.invoiceNumber,
+      createdAt: selectedOrder.createdAt,
+      startDate: selectedOrder.startDate,
+      endDate: selectedOrder.endDate,
+      paymentMethod: selectedOrder.paymentMethod,
+      lines: selectedOrder.lines,
+      customerName: selectedOrder.user.name,
+      customerEmail: selectedOrder.user.email,
+      customerPhone: selectedOrder.user.phoneNumber,
+      customerAddress: selectedOrder.user.address,
+      vendorProfile: vendorProfileObj,
+      discountAmount: selectedOrder.vendorDiscountAmount,
+      securityDeposit: selectedOrder.vendorSecurityDeposit,
+      expectedRentTotal: selectedOrder.vendorExpectedRentTotal,
+    })
+
     printWindow.document.write(invoiceHTML)
     printWindow.document.close()
     printWindow.print()

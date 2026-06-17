@@ -57,6 +57,9 @@ import { CancelButton } from "@/app/dashboard/customer/orders/cancel-button"
 import { WishlistButton } from "@/components/wishlist-button"
 import { calculateHallRent } from "@/lib/pricing"
 import { format } from "date-fns"
+import { NotificationsTab } from "@/components/notifications-tab"
+import { seedDefaultNotificationsIfEmpty } from "@/actions/notifications"
+import { InvoicePrintButton } from "@/components/invoice-print-button"
 
 // Cache helper for category lists & featured products
 async function getStorefrontData() {
@@ -67,7 +70,14 @@ async function getStorefrontData() {
         orderBy: { name: "asc" }
       }),
       prisma.product.findMany({
-        where: { isApproved: true, isRentable: true },
+        where: { 
+          isApproved: true, 
+          isRentable: true,
+          OR: [
+            { vendorId: null },
+            { vendor: { isVerifiedVendor: true } }
+          ]
+        },
         take: 8,
         include: { category: true, vendor: true },
         orderBy: { createdAt: "desc" }
@@ -83,7 +93,7 @@ async function getStorefrontData() {
 
 const PREMIUM_BOX_SHADOW = '0 1px 4px rgba(0,0,0,0.07)'
 
-export default async function HomePage({ searchParams }: { searchParams?: Promise<{ tab?: string }> }) {
+export default async function HomePage({ searchParams }: { searchParams?: Promise<{ tab?: string; orderId?: string }> }) {
   const session = await getServerSession(authOptions)
   
   // If logged in as VENDOR or ADMIN, redirect them immediately to their portals
@@ -104,6 +114,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
 
   let customerData: any = null
   let cartCount = 0
+  let coupons: any[] = []
 
   if (isLoggedIn && session?.user?.email) {
     try {
@@ -112,17 +123,38 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
         include: {
           orders: {
             where: { status: { not: "QUOTATION" } },
-            include: { lines: { include: { product: true } }, invoice: true },
+            include: { lines: { include: { product: { include: { vendor: true } } } }, invoice: true },
             orderBy: { createdAt: 'desc' }
           },
           walletTransactions: {
             orderBy: { createdAt: 'desc' }
           },
-          wishlist: true
+          wishlist: true,
+          notifications: {
+            orderBy: { createdAt: 'desc' }
+          }
         }
       });
       
       if (user) {
+        // Load coupons dynamically from DB
+        coupons = await prisma.coupon.findMany({
+          where: { isActive: true },
+          orderBy: { createdAt: 'desc' }
+        });
+
+        // Seed default notifications dynamically if database is empty
+        let userNotifs = user.notifications;
+        if (userNotifs.length === 0) {
+          await seedDefaultNotificationsIfEmpty(user.id);
+
+          // Re-fetch to get database IDs and dates
+          userNotifs = await prisma.notification.findMany({
+            where: { userId: user.id },
+            orderBy: { createdAt: "desc" }
+          });
+        }
+
         const cart = await prisma.rentalOrder.findFirst({
           where: { 
             userId: user.id,
@@ -151,7 +183,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
         });
         const wishlistItems = wishlistRecords.map((item) => item.product);
 
-        customerData = { user, cart, wishlistItems };
+        customerData = { user: { ...user, notifications: userNotifs }, cart, wishlistItems };
       }
     } catch (e) {
       console.error("Error loading customer data on homepage:", e);
@@ -326,26 +358,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                       Notifications
                     </Link>
 
-                    <Link
-                      href="/?tab=invoices"
-                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                        activeTab === "invoices"
-                          ? "bg-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10"
-                          : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <FileText className="w-4 h-4 shrink-0" />
-                        My Invoices
-                      </span>
-                      {customerData.user.orders.filter((o: any) => o.invoice !== null).length > 0 && (
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          activeTab === "invoices" ? "bg-amber-600 text-amber-50" : "bg-slate-800 text-slate-300 font-bold"
-                        }`}>
-                          {customerData.user.orders.filter((o: any) => o.invoice !== null).length}
-                        </span>
-                      )}
-                    </Link>
+
                   </div>
                 </div>
 
@@ -540,127 +553,342 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
               })()}
 
               {/* Tab: Orders */}
-              {activeTab === "orders" && (
-                <div className="space-y-6">
-                  <div>
-                    <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Order Central</h1>
-                    <p className="text-slate-500 text-xs mt-0.5">Track your rental lifecycle: Quotations → Active Rentals → Returns.</p>
-                  </div>
+              {activeTab === "orders" && (() => {
+                const selectedOrderId = params.orderId;
+                const selectedOrder = selectedOrderId
+                  ? customerData.user.orders.find((o: any) => o.id === selectedOrderId)
+                  : null;
 
-                  {/* Stats Overview */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm">
-                      <div>
-                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Approval</p>
-                        <h3 className="text-2xl font-black text-slate-900 mt-1">
-                          {customerData.user.orders.filter((o: any) => o.status === "PENDING").length}
-                        </h3>
-                      </div>
-                      <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                      </div>
-                    </div>
-
-                    <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm">
-                      <div>
-                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Rentals</p>
-                        <h3 className="text-2xl font-black text-slate-900 mt-1">
-                          {customerData.user.orders.filter((o: any) => o.status === "CONFIRMED" || o.status === "PICKED_UP").length}
-                        </h3>
-                      </div>
-                      <div className="h-10 w-10 rounded-full bg-purple-50 flex items-center justify-center border border-purple-100">
-                        <Package className="w-5 h-5 text-purple-600" />
-                      </div>
-                    </div>
-
-                    <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm">
-                      <div>
-                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Completed</p>
-                        <h3 className="text-2xl font-black text-slate-900 mt-1">
-                          {customerData.user.orders.filter((o: any) => o.status === "RETURNED").length}
-                        </h3>
-                      </div>
-                      <div className="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Orders List */}
-                  <div className="space-y-4">
-                    {customerData.user.orders.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-dashed border-slate-300 text-center shadow-sm">
-                        <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-150">
-                          <Package className="h-8 w-8 text-slate-300" />
+                if (selectedOrder) {
+                  return (
+                    <div className="space-y-6">
+                      {/* Breadcrumbs / Header */}
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Link href="/?tab=orders" className="hover:text-amber-650 transition-colors">My Orders</Link>
+                            <ChevronRight className="w-3 h-3" />
+                            <span className="text-slate-900">Order details</span>
+                          </div>
+                          <h1 className="text-xl font-extrabold text-slate-900 uppercase mt-1 tracking-tight">Order #{selectedOrder.id.slice(-8).toUpperCase()}</h1>
                         </div>
-                        <h3 className="text-sm font-black text-slate-900 uppercase">No orders found</h3>
-                        <p className="text-xs text-slate-500 mt-1 mb-6">You haven&apos;t placed any rental orders yet.</p>
-                        <Link href="/products">
-                          <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs rounded-xl px-6">Browse Equipment</Button>
+                        <Link href="/?tab=orders">
+                          <Button variant="outline" size="sm" className="font-extrabold text-xs h-9 rounded-xl">
+                            Back to Orders
+                          </Button>
                         </Link>
                       </div>
-                    ) : (
-                      customerData.user.orders.map((order: any) => {
-                        const statusColors: Record<string, string> = {
-                          PENDING: "bg-amber-50 text-amber-700 border-amber-200",
-                          CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
-                          PICKED_UP: "bg-purple-50 text-purple-700 border-purple-200",
-                          RETURNED: "bg-emerald-50 text-emerald-700 border-emerald-200",
-                          CANCELLED: "bg-red-50 text-red-700 border-red-200",
-                        }
-                        return (
-                          <Card key={order.id} className="border-slate-200 shadow-sm hover:shadow-md transition-all rounded-xl">
-                            <CardHeader className="p-5 pb-3 flex flex-row items-center justify-between space-y-0 flex-wrap gap-2">
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-3">
-                                  <span className="font-mono text-[10px] text-slate-400 font-bold">#{order.id.slice(-8).toUpperCase()}</span>
-                                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-black border uppercase tracking-wider ${statusColors[order.status] || "bg-gray-100"}`}>
-                                    {order.status.replace("_", " ")}
-                                  </span>
-                                </div>
-                                <CardTitle className="text-sm font-bold text-slate-900 uppercase">
-                                  Rental Request for {order.lines.length} item{order.lines.length !== 1 ? 's' : ''}
-                                </CardTitle>
-                              </div>
-                              <div className="text-right">
-                                <span className="block text-base font-black text-slate-900">₹{order.totalAmount.toLocaleString()}</span>
-                                <span className="text-[10px] text-slate-400 font-semibold uppercase font-sans">Est. Total</span>
-                              </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        {/* Left Column: Order Items and Timeline (8 cols) */}
+                        <div className="lg:col-span-8 space-y-6">
+                          
+                          {/* Product list */}
+                          <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden bg-white">
+                            <CardHeader className="border-b border-slate-100 p-5">
+                              <CardTitle className="text-sm font-bold text-slate-900 uppercase">Items Rented</CardTitle>
                             </CardHeader>
-                            <CardContent className="p-5 pt-0">
-                              <div className="mt-3 flex items-center gap-6 text-xs text-slate-500 font-semibold">
-                                <div className="flex items-center gap-2">
-                                  <CalendarIcon className="w-4 h-4 text-slate-400" />
-                                  {new Date(order.startDate).toLocaleDateString()} — {new Date(order.endDate).toLocaleDateString()}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Clock className="w-4 h-4 text-slate-400" />
-                                  Requested {new Date(order.createdAt).toLocaleDateString()}
-                                </div>
-                              </div>
-                              
-                              <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div className="flex flex-wrap gap-2">
-                                  {order.lines.map((line: any) => (
-                                    <Badge key={line.id} variant="secondary" className="bg-slate-100 text-slate-600 font-semibold text-[10px] uppercase">
-                                      {line.quantity}x {line.product.name}
-                                    </Badge>
-                                  ))}
-                                </div>
-                                {["PENDING", "CONFIRMED"].includes(order.status) && (
-                                  <div className="shrink-0 flex justify-end w-full sm:w-auto">
-                                    <CancelButton orderId={order.id} />
+                            <CardContent className="p-0 divide-y divide-slate-100">
+                              {selectedOrder.lines.map((line: any) => (
+                                <div key={line.id} className="p-5 flex gap-4 items-start">
+                                  <div className="w-20 h-15 bg-slate-550/5 border border-slate-150 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+                                    {line.product.image ? (
+                                      <img src={line.product.image} alt={line.product.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <Building className="w-6 h-6 text-slate-350" />
+                                    )}
                                   </div>
-                                )}
-                              </div>
+                                  <div className="space-y-1 flex-1 min-w-0">
+                                    <h4 className="text-sm font-extrabold text-slate-900 truncate uppercase">{line.product.name}</h4>
+                                    <p className="text-[10px] font-bold text-slate-550 uppercase">Vendor: <span className="text-amber-600">{line.product.vendor?.companyName || line.product.vendor?.name || "Prime Partner"}</span></p>
+                                    <p className="text-[10.5px] text-slate-450 font-semibold font-mono">₹{line.price.toLocaleString()} / day x {line.quantity} Qty</p>
+                                  </div>
+                                </div>
+                              ))}
                             </CardContent>
                           </Card>
-                        )
-                      })
-                    )}
+
+                          {/* Progress Timeline */}
+                          <Card className="border-slate-200 shadow-sm rounded-xl bg-white p-5">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase mb-6">Rental Lifecycle Track</h3>
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative">
+                              {[
+                                { id: "PLACED", label: "Booking Placed", desc: "Security check completed", active: true },
+                                { id: "CONFIRMED", label: "Confirmed", desc: "Venue date reserved", active: ["CONFIRMED", "PICKED_UP", "RETURNED"].includes(selectedOrder.status) },
+                                { id: "PICKED_UP", label: "Dispatched / Live", desc: "Access granted / active", active: ["PICKED_UP", "RETURNED"].includes(selectedOrder.status) },
+                                { id: "RETURNED", label: "Returned", desc: "Damage audit resolved", active: selectedOrder.status === "RETURNED" }
+                              ].map((step, idx) => {
+                                const isDone = step.active;
+                                const isCancelled = selectedOrder.status === "CANCELLED";
+                                return (
+                                  <div key={idx} className="flex-1 flex gap-3.5 md:flex-col md:items-center md:text-center relative">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 border-2 transition-all ${
+                                      isCancelled && idx > 0
+                                        ? "bg-rose-50 border-rose-200 text-rose-600"
+                                        : isDone
+                                        ? "bg-amber-500 border-amber-500 text-slate-950 shadow-sm"
+                                        : "bg-slate-50 border-slate-200 text-slate-400"
+                                    }`}>
+                                      {isCancelled && idx > 0 ? "X" : isDone ? "✓" : idx + 1}
+                                    </div>
+                                    <div className="space-y-0.5">
+                                      <p className={`text-xs font-black uppercase ${isDone ? 'text-slate-950' : 'text-slate-450'}`}>{isCancelled && idx > 0 ? "Cancelled" : step.label}</p>
+                                      <p className="text-[9.5px] text-slate-400 font-semibold">{step.desc}</p>
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </Card>
+
+                          {/* Support Chat Card */}
+                          <Card className="border-slate-200 shadow-sm rounded-xl bg-white p-5 flex items-center justify-between gap-4">
+                            <div className="space-y-1">
+                              <h4 className="text-sm font-bold text-slate-955 uppercase tracking-tight">Need assistance with this order?</h4>
+                              <p className="text-xs text-slate-500 font-semibold">Connect with our support team to verify setup requirements or modify details.</p>
+                            </div>
+                            <Link href="/?tab=profile">
+                              <Button className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs h-9 rounded-xl px-5 shadow-sm">
+                                Contact Support
+                              </Button>
+                            </Link>
+                          </Card>
+
+                        </div>
+
+                        {/* Right Column: Address, Billing breakdown & Download invoice button (4 cols) */}
+                        <div className="lg:col-span-4 space-y-6">
+                          
+                          {/* Delivery details card */}
+                          <Card className="border-slate-200 shadow-sm rounded-xl bg-white p-5">
+                            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-slate-400" /> Venue / Booking details
+                            </h3>
+                            <div className="space-y-2 text-xs">
+                              <div>
+                                <p className="font-extrabold text-slate-950">{userName}</p>
+                                <p className="text-slate-500 font-semibold mt-0.5">{customerData.user.address || "No address configured"}</p>
+                              </div>
+                              <div className="pt-2 border-t border-slate-100 mt-2 text-slate-500">
+                                <span style={{ fontWeight: 600 }}>Phone: </span><span className="font-mono">{customerData.user.phoneNumber || "N/A"}</span>
+                              </div>
+                            </div>
+                          </Card>
+
+                          {/* Price Details Card */}
+                          <Card className="border-slate-200 shadow-sm rounded-xl bg-white p-5 space-y-4">
+                            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider pb-2 border-b border-slate-100">
+                              Price Details
+                            </h3>
+                            
+                            {(() => {
+                              const start = new Date(selectedOrder.startDate);
+                              const end = new Date(selectedOrder.endDate);
+                              const duration = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+                              
+                              let lineBaseTotal = 0;
+                              for (const line of selectedOrder.lines) {
+                                const breakdown = calculateHallRent(line.price, start, end);
+                                lineBaseTotal += breakdown.total * line.quantity;
+                              }
+
+                              const listingPriceWithTax = Math.round((lineBaseTotal * 1.18) * 100) / 100;
+                              const discountWithTax = Math.round(((selectedOrder.discountAmount || 0) * 1.18) * 100) / 100;
+                              const rentPaidWithTax = Math.round((listingPriceWithTax - discountWithTax) * 100) / 100;
+                              const finalTax = Math.round((rentPaidWithTax * 0.18 / 1.18) * 100) / 100;
+                              const baseRentValue = Math.round((rentPaidWithTax - finalTax) * 100) / 100;
+
+                              return (
+                                <div className="space-y-3.5 text-xs">
+                                  <div className="flex justify-between font-semibold text-slate-550">
+                                    <span>Gross Rental Price (Incl. Tax)</span>
+                                    <span className="font-mono text-slate-900">₹{listingPriceWithTax.toLocaleString()}</span>
+                                  </div>
+                                  
+                                  {discountWithTax > 0 && (
+                                    <div className="flex justify-between font-semibold text-emerald-600">
+                                      <span>Voucher Discount (Incl. Tax)</span>
+                                      <span className="font-mono">-₹{discountWithTax.toLocaleString()}</span>
+                                    </div>
+                                  )}
+
+                                  <div className="flex justify-between font-semibold text-slate-550">
+                                    <span>Taxable Value (Excl. Tax)</span>
+                                    <span className="font-mono text-slate-900">₹{baseRentValue.toLocaleString()}</span>
+                                  </div>
+
+                                  <div className="flex justify-between font-semibold text-slate-550">
+                                    <span>CGST (9%) + SGST (9%)</span>
+                                    <span className="font-mono text-slate-900">₹{finalTax.toLocaleString()}</span>
+                                  </div>
+
+                                  <div className="flex justify-between font-semibold text-slate-550">
+                                    <span>Refundable Deposit Hold</span>
+                                    <span className="font-mono text-slate-900">₹{selectedOrder.securityDeposit.toLocaleString()}</span>
+                                  </div>
+
+                                  <div className="flex justify-between pt-3.5 border-t border-slate-100 font-black text-slate-900 text-sm">
+                                    <span>Grand Total Paid</span>
+                                    <span className="font-mono text-amber-600">₹{selectedOrder.totalAmount.toLocaleString()}</span>
+                                  </div>
+
+                                  <div className="pt-2.5 text-[10px] font-bold text-slate-400 uppercase flex items-center justify-between border-t border-slate-100">
+                                    <span>Paid Via: {selectedOrder.paymentMethod.replace("_", " ")}</span>
+                                    <span>Date: {new Date(selectedOrder.createdAt).toLocaleDateString()}</span>
+                                  </div>
+
+                                  {/* Download Invoice Button Inside Order Details */}
+                                  {selectedOrder.invoice && (
+                                    <div className="pt-4 border-t border-slate-100">
+                                      <InvoicePrintButton 
+                                        order={selectedOrder} 
+                                        customerName={userName}
+                                        customerEmail={customerData.user.email}
+                                        customerPhone={customerData.user.phoneNumber}
+                                        customerAddress={customerData.user.address}
+                                        invoiceNumber={selectedOrder.invoice.invoiceNumber}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                          </Card>
+
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Render normal list
+                return (
+                  <div className="space-y-6">
+                    <div>
+                      <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Order Central</h1>
+                      <p className="text-slate-500 text-xs mt-0.5">Track your rental lifecycle: Quotations → Active Rentals → Returns.</p>
+                    </div>
+
+                    {/* Stats Overview */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Approval</p>
+                          <h3 className="text-2xl font-black text-slate-900 mt-1">
+                            {customerData.user.orders.filter((o: any) => o.status === "PENDING").length}
+                          </h3>
+                        </div>
+                        <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center border border-blue-100">
+                          <FileText className="w-5 h-5 text-blue-600" />
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Rentals</p>
+                          <h3 className="text-2xl font-black text-slate-900 mt-1">
+                            {customerData.user.orders.filter((o: any) => o.status === "CONFIRMED" || o.status === "PICKED_UP").length}
+                          </h3>
+                        </div>
+                        <div className="h-10 w-10 rounded-full bg-purple-50 flex items-center justify-center border border-purple-100">
+                          <Package className="w-5 h-5 text-purple-600" />
+                        </div>
+                      </div>
+
+                      <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between shadow-sm">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Completed</p>
+                          <h3 className="text-2xl font-black text-slate-900 mt-1">
+                            {customerData.user.orders.filter((o: any) => o.status === "RETURNED").length}
+                          </h3>
+                        </div>
+                        <div className="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Orders List */}
+                    <div className="space-y-4">
+                      {customerData.user.orders.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-dashed border-slate-300 text-center shadow-sm">
+                          <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-150">
+                            <Package className="h-8 w-8 text-slate-300" />
+                          </div>
+                          <h3 className="text-sm font-black text-slate-900 uppercase">No orders found</h3>
+                          <p className="text-xs text-slate-500 mt-1 mb-6">You haven&apos;t placed any rental orders yet.</p>
+                          <Link href="/products">
+                            <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs rounded-xl px-6">Browse Equipment</Button>
+                          </Link>
+                        </div>
+                      ) : (
+                        customerData.user.orders.map((order: any) => {
+                          const statusColors: Record<string, string> = {
+                            PENDING: "bg-amber-50 text-amber-700 border-amber-200",
+                            CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
+                            PICKED_UP: "bg-purple-50 text-purple-700 border-purple-200",
+                            RETURNED: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                            CANCELLED: "bg-red-50 text-red-700 border-red-200",
+                          }
+                          return (
+                            <Card key={order.id} className="border-slate-200 shadow-sm hover:shadow-md transition-all rounded-xl">
+                              <CardHeader className="p-5 pb-3 flex flex-row items-center justify-between space-y-0 flex-wrap gap-2">
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-3">
+                                    <span className="font-mono text-[10px] text-slate-400 font-bold">#{order.id.slice(-8).toUpperCase()}</span>
+                                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-black border uppercase tracking-wider ${statusColors[order.status] || "bg-gray-100"}`}>
+                                      {order.status.replace("_", " ")}
+                                    </span>
+                                  </div>
+                                  <CardTitle className="text-sm font-bold text-slate-900 uppercase">
+                                    Rental Request for {order.lines.length} item{order.lines.length !== 1 ? 's' : ''}
+                                  </CardTitle>
+                                </div>
+                                <div className="text-right">
+                                  <span className="block text-base font-black text-slate-900">₹{order.totalAmount.toLocaleString()}</span>
+                                  <span className="text-[10px] text-slate-400 font-semibold uppercase font-sans">Est. Total</span>
+                                </div>
+                              </CardHeader>
+                              <CardContent className="p-5 pt-0">
+                                <div className="mt-3 flex items-center gap-6 text-xs text-slate-500 font-semibold">
+                                  <div className="flex items-center gap-2">
+                                    <CalendarIcon className="w-4 h-4 text-slate-400" />
+                                    {new Date(order.startDate).toLocaleDateString()} — {new Date(order.endDate).toLocaleDateString()}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-slate-400" />
+                                    Requested {new Date(order.createdAt).toLocaleDateString()}
+                                  </div>
+                                </div>
+                                
+                                <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                  <div className="flex flex-wrap gap-2">
+                                    {order.lines.map((line: any) => (
+                                      <Badge key={line.id} variant="secondary" className="bg-slate-100 text-slate-650 font-semibold text-[10px] uppercase">
+                                        {line.quantity}x {line.product.name}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                  <div className="shrink-0 flex items-center gap-2 justify-end w-full sm:w-auto">
+                                    <Link href={`/?tab=orders&orderId=${order.id}`}>
+                                      <Button variant="outline" size="sm" className="text-xs font-semibold h-8 rounded-lg">
+                                        View Details
+                                      </Button>
+                                    </Link>
+                                    {["PENDING", "CONFIRMED"].includes(order.status) && (
+                                      <CancelButton orderId={order.id} />
+                                    )}
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )
+                        })
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Tab: Wishlist */}
               {activeTab === "wishlist" && (
@@ -795,285 +1023,11 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                 </div>
               )}
 
-              {/* Tab: Invoices */}
-              {activeTab === "invoices" && (() => {
-                const ordersWithInvoices = customerData.user.orders.filter((o: any) => o.invoice !== null);
-                const totalInvoices = ordersWithInvoices.length;
-                const paidInvoices = ordersWithInvoices.filter((o: any) => o.invoice?.status === "PAID").length;
-                const unpaidInvoices = ordersWithInvoices.filter((o: any) => o.invoice?.status === "UNPAID").length;
 
-                return (
-                  <div className="space-y-6">
-                    <div>
-                      <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">My Invoices</h1>
-                      <p className="text-slate-500 text-xs mt-0.5">View and download your rental invoices</p>
-                    </div>
-
-                    {/* Stats Overview */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Card className="border-slate-200 shadow-sm rounded-xl">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Invoices</CardTitle>
-                          <FileText className="h-4 w-4 text-blue-600" />
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-black text-slate-900">{totalInvoices}</div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="border-slate-200 shadow-sm rounded-xl">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Paid</CardTitle>
-                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-black text-slate-900">{paidInvoices}</div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="border-slate-200 shadow-sm rounded-xl">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending</CardTitle>
-                          <Clock className="h-4 w-4 text-amber-600" />
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-2xl font-black text-slate-900">{unpaidInvoices}</div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* Invoices List */}
-                    {ordersWithInvoices.length === 0 ? (
-                      <Card className="border-slate-200 shadow-sm rounded-xl">
-                        <CardContent className="flex flex-col items-center justify-center py-16">
-                          <FileText className="h-12 w-12 text-slate-300 mb-4" />
-                          <h3 className="text-sm font-black text-slate-900 uppercase">No invoices yet</h3>
-                          <p className="text-xs text-slate-500 mb-6 font-semibold">Invoices will appear here once your orders are processed.</p>
-                          <Link href="/products">
-                            <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs rounded-xl px-6">Browse Products</Button>
-                          </Link>
-                        </CardContent>
-                      </Card>
-                    ) : (
-                      <div className="space-y-4">
-                        {ordersWithInvoices.map((order: any) => {
-                          const invoice = order.invoice;
-                          if (!invoice) return null;
-
-                          const statusColors: Record<string, string> = {
-                            PAID: "bg-emerald-50 text-emerald-700 border-emerald-255",
-                            UNPAID: "bg-amber-50 text-amber-700 border-amber-255",
-                            PARTIALLY_PAID: "bg-blue-50 text-blue-700 border-blue-255",
-                            CANCELLED: "bg-red-50 text-red-700 border-red-255",
-                          };
-
-                          return (
-                            <Card key={order.id} className="border-slate-200 shadow-sm hover:shadow-md transition-all rounded-xl">
-                              <CardHeader className="p-5 pb-3">
-                                <div className="flex items-start justify-between flex-wrap gap-2">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                      <CardTitle className="text-sm font-bold text-slate-900 uppercase">
-                                        Invoice #{invoice.invoiceNumber}
-                                      </CardTitle>
-                                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-black border uppercase tracking-wider ${statusColors[invoice.status] || "bg-gray-100"}`}>
-                                        {invoice.status.replace("_", " ")}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-xs text-slate-500 mt-2 font-semibold">
-                                      <div className="flex items-center gap-1.5">
-                                        <CalendarIcon className="w-4 h-4 text-slate-400" />
-                                        <span>{new Date(invoice.createdAt).toLocaleDateString()}</span>
-                                      </div>
-                                      <div className="flex items-center gap-1.5">
-                                        <FileText className="w-4 h-4 text-slate-400" />
-                                        <span>Order #{order.id.slice(0, 8).toUpperCase()}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <div className="text-lg font-black text-slate-900 flex items-center gap-1 justify-end font-mono">
-                                      ₹{invoice.amount.toLocaleString()}
-                                    </div>
-                                    <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-wider">Total Amount</p>
-                                  </div>
-                                </div>
-                              </CardHeader>
-                              <CardContent className="p-5 pt-0">
-                                <div className="space-y-2 mb-4">
-                                  <p className="text-xs font-bold text-slate-800 uppercase tracking-wider">Items Included:</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {order.lines.map((line: any) => (
-                                      <Badge key={line.id} variant="secondary" className="bg-slate-100 text-slate-650 font-semibold text-[10px] uppercase">
-                                        {line.quantity}x {line.product.name}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-center justify-between pt-4 border-t border-slate-100 flex-wrap gap-2">
-                                  <div className="text-xs text-slate-500 font-semibold">
-                                    {invoice.paymentMethod && (
-                                      <span>Payment Method: <strong className="text-slate-700">{invoice.paymentMethod}</strong></span>
-                                    )}
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Link href={`/?tab=orders`}>
-                                      <Button variant="outline" size="sm" className="text-xs font-semibold h-8 rounded-lg">
-                                        View Order
-                                      </Button>
-                                    </Link>
-                                    <Button size="sm" className="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs h-8 rounded-lg">
-                                      <Download className="w-4 h-4 mr-2" />
-                                      Download PDF
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
 
               {/* Tab: Notifications */}
               {activeTab === "notifications" && (
-                <div className="space-y-6">
-                  <div>
-                    <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Notifications</h1>
-                    <p className="text-slate-500 text-xs mt-0.5">Stay updated with order confirmations, platform news, and discount events.</p>
-                  </div>
-
-                  <div className="space-y-5">
-                    {/* Dynamic Wishlist Price Drop & Offer Notifications */}
-                    {customerData?.wishlistItems && customerData.wishlistItems.map((product: any) => {
-                      const { mrp, discount } = getSimulatedMRP(product.priceDaily);
-                      const vendorName = product.vendor?.companyName || product.vendor?.name || "Prime Partner";
-                      
-                      return (
-                        <div key={`wishlist-notif-${product.id}`} className="bg-white border border-rose-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-rose-350 transition-all duration-300 bg-gradient-to-br from-rose-50/10 via-white to-white">
-                          <div className="flex justify-between items-start gap-4">
-                            <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shadow-sm shrink-0">
-                                <Tag className="w-5 h-5 animate-pulse" />
-                              </div>
-                              <div>
-                                <span className="text-[10px] text-rose-500 font-black uppercase tracking-wider flex items-center gap-1.5">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
-                                  Price Drop Alert
-                                </span>
-                                <h3 className="text-sm font-extrabold text-slate-900 mt-0.5">Special Promo on {product.name}</h3>
-                              </div>
-                            </div>
-                            <span className="text-[9px] bg-rose-100 text-rose-800 font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
-                              {discount}% Off
-                            </span>
-                          </div>
-                          
-                          <div className="mt-3 pl-[52px] space-y-3">
-                            <p className="text-xs text-slate-650 leading-relaxed">
-                              Great news! The <strong>{product.name}</strong> listed by <span className="text-amber-600 font-bold">{vendorName}</span> is currently running an exclusive price drop. Rent it now at only <strong className="text-emerald-700 font-mono text-sm">₹{product.priceDaily.toLocaleString()}</strong>/day (Original value: <span className="line-through text-slate-400">₹{mrp}</span>).
-                            </p>
-                            <div className="flex items-center justify-between gap-4 pt-3 border-t border-slate-100">
-                              <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider font-sans">Updated Just Now</span>
-                              <Link href={`/products/${product.id}`}>
-                                <Button size="sm" className="bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-[10px] h-7 px-3.5 rounded-lg shadow-sm">
-                                  Rent Now &rarr;
-                                </Button>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {/* Tip block for empty/low wishlist alerts */}
-                    {(!customerData?.wishlistItems || customerData.wishlistItems.length === 0) && (
-                      <div className="bg-gradient-to-br from-amber-50/20 via-white to-white border border-amber-100 rounded-2xl p-5 shadow-none flex gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500 shrink-0">
-                          <Heart className="w-5 h-5 fill-current animate-pulse" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="text-xs font-black uppercase text-amber-950 tracking-wider">Get Price Drop & Deal Alerts</h4>
-                          <p className="text-xs text-slate-650 leading-relaxed mt-1">
-                            Add items to your wishlist using the **heart icon** on any product card or catalog page. If the vendor drops the price or launches a discount coupon, you will receive an instant alert here!
-                          </p>
-                          <Link href="/products" className="inline-block mt-2.5">
-                            <span className="text-[11px] text-amber-500 hover:text-amber-600 font-bold hover:underline">
-                              Browse Products Catalog &rarr;
-                            </span>
-                          </Link>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Welcome Announcement */}
-                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-350 transition-all duration-300">
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shadow-sm shrink-0">
-                            <Bell className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <span className="text-[10px] text-amber-600 font-black uppercase tracking-wider">System Announcement</span>
-                            <h3 className="text-sm font-extrabold text-slate-900 mt-0.5">Welcome to RentKart Central</h3>
-                          </div>
-                        </div>
-                        <span className="text-[9px] bg-slate-100 text-slate-500 font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
-                          Just Now
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-655 leading-relaxed mt-3 pl-[52px]">
-                        We are extremely excited to have you on-board. Explore heavy event rigs, designer ethnic sherwanis, or professional camera setups with 24-hour verification turnaround.
-                      </p>
-                    </div>
-
-                    {/* Deposit Acknowledged */}
-                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-350 transition-all duration-300">
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm shrink-0">
-                            <CreditCard className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <span className="text-[10px] text-emerald-600 font-black uppercase tracking-wider">Wallet Transaction</span>
-                            <h3 className="text-sm font-extrabold text-slate-900 mt-0.5">Deposit Acknowledged</h3>
-                          </div>
-                        </div>
-                        <span className="text-[9px] bg-slate-100 text-slate-500 font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
-                          2 Hours Ago
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-655 leading-relaxed mt-3 pl-[52px]">
-                        Your payment simulation was processed successfully. Funds have been loaded directly into your RentKart digital wallet ledger.
-                      </p>
-                    </div>
-
-                    {/* Compliance Rule */}
-                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-350 transition-all duration-300">
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shadow-sm shrink-0">
-                            <ShieldCheck className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <span className="text-[10px] text-amber-600 font-black uppercase tracking-wider">Account Compliance</span>
-                            <h3 className="text-sm font-extrabold text-slate-900 mt-0.5">Platform Safety Compliance Rules</h3>
-                          </div>
-                        </div>
-                        <span className="text-[9px] bg-slate-100 text-slate-500 font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
-                          1 Day Ago
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-655 leading-relaxed mt-3 pl-[52px]">
-                        Please ensure your account verification, including mobile and billing address details, are finalized before scheduling banquets or heavy electronics checkout.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <NotificationsTab initialNotifications={customerData?.user?.notifications || []} />
               )}
 
               {/* Tab: Profile (Personal Details) */}
@@ -1153,31 +1107,48 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      { code: "WELCOME10", desc: "Get 10% Off your total checkout amount with no upper limit.", type: "PERCENTAGE", val: 10, theme: "from-blue-50 to-amber-50 border-blue-200/50" },
-                      { code: "HALFOFF", desc: "Unlock 50% Off rental subtotal (applicable on selected gear).", type: "PERCENTAGE", val: 50, theme: "from-rose-50 to-pink-50 border-rose-200/50" },
-                      { code: "FLAT500", desc: "Save flat ₹500 discount instantly on checkout checks above ₹2000.", type: "FIXED", val: 500, theme: "from-emerald-50 to-teal-50 border-emerald-200/50" }
-                    ].map((coupon) => (
-                      <div 
-                        key={coupon.code}
-                        className={`bg-gradient-to-br ${coupon.theme} border p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group`}
-                      >
-                        {/* Ticket punch holes style overlay */}
-                        <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#F8FAFC] border-r border-slate-200/40" />
-                        <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#F8FAFC] border-l border-slate-200/40" />
+                    {coupons.map((coupon: any) => {
+                      const isPercentage = coupon.discountType === "PERCENTAGE"
+                      const valText = isPercentage ? `${coupon.discountValue}%` : `₹${coupon.discountValue}`
+                      const desc = isPercentage 
+                        ? `Get ${valText} Off your total checkout amount with this active coupon.`
+                        : `Save flat ${valText} discount instantly on your next rental checkout.`
+                      
+                      const themes = [
+                        "from-blue-50 to-amber-50 border-blue-200/50",
+                        "from-rose-50 to-pink-50 border-rose-200/50",
+                        "from-emerald-50 to-teal-50 border-emerald-200/50",
+                        "from-purple-50 to-indigo-50 border-purple-200/50"
+                      ]
+                      const codeLength = coupon.code.length
+                      const theme = themes[codeLength % themes.length]
 
-                        <div className="pl-2.5">
-                          <span className="text-[9px] bg-slate-900 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">VOUCHER</span>
-                          <h4 className="text-sm font-black text-slate-850 mt-2 font-mono tracking-tight uppercase">{coupon.code}</h4>
-                          <p className="text-[11px] text-slate-500 mt-1 font-semibold leading-relaxed">{coupon.desc}</p>
+                      return (
+                        <div 
+                          key={coupon.code}
+                          className={`bg-gradient-to-br ${theme} border p-5 rounded-2xl flex flex-col justify-between shadow-sm relative overflow-hidden group`}
+                        >
+                          <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#F8FAFC] border-r border-slate-200/40" />
+                          <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#F8FAFC] border-l border-slate-200/40" />
+
+                          <div className="pl-2.5">
+                            <span className="text-[9px] bg-slate-900 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">VOUCHER</span>
+                            <h4 className="text-sm font-black text-slate-850 mt-2 font-mono tracking-tight uppercase">{coupon.code}</h4>
+                            <p className="text-[11px] text-slate-500 mt-1 font-semibold leading-relaxed">{desc}</p>
+                          </div>
+                          
+                          <div className="mt-5 pt-3 border-t border-slate-200/30 flex justify-between items-center pl-2.5">
+                            <span className="text-xs font-black text-amber-600">{isPercentage ? `${coupon.discountValue}% Off` : `Flat ₹${coupon.discountValue}`}</span>
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase group-hover:underline">Copy Code At Checkout</span>
+                          </div>
                         </div>
-                        
-                        <div className="mt-5 pt-3 border-t border-slate-200/30 flex justify-between items-center pl-2.5">
-                          <span className="text-xs font-black text-amber-600">{coupon.type === "PERCENTAGE" ? `${coupon.val}% Off` : `Flat ₹${coupon.val}`}</span>
-                          <span className="text-[10px] text-slate-400 font-extrabold uppercase group-hover:underline">Copy Code At Checkout</span>
-                        </div>
+                      )
+                    })}
+                    {coupons.length === 0 && (
+                      <div className="col-span-2 text-center py-10 bg-slate-50 border border-dashed rounded-2xl">
+                        <p className="text-sm text-slate-500 font-bold">No active coupons available at this time.</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
               )}

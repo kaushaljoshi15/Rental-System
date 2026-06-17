@@ -115,6 +115,7 @@ export default async function VendorEarningsPage() {
     <EarningsClient 
       stats={stats}
       transactions={initialTransactions}
+      bankDetails={user.bankDetails}
     />
   )
 }

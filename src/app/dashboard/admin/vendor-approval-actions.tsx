@@ -1,26 +1,16 @@
 'use client'
 
 import { useState, useTransition } from "react"
-import { deleteUser } from "@/actions/user-management"
 import { approveVendor, rejectVendor } from "@/actions/admin"
 import { Button } from "@/components/ui/button"
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash2, Copy, UserCog, Mail, ShieldCheck, Check, X, Store, Landmark, Signature, FileText, User, Phone, MapPin } from "lucide-react"
 import { toast } from "sonner"
+import { Check, X, Eye, ShieldAlert, Landmark, Signature, FileText, User, Phone, MapPin, Store } from "lucide-react"
 
-interface UserActionsProps {
-  user: {
+interface VendorApprovalActionsProps {
+  vendor: {
     id: string
     name: string
     email: string
-    role: string
     companyName: string | null
     gstin: string | null
     address: string | null
@@ -30,39 +20,19 @@ interface UserActionsProps {
     kycDocUrl: string | null
     signature: string | null
     bankDetails: string | null
-    isVerifiedVendor: boolean
-    kycStatus: string
   }
 }
 
-export function UserActionsMenu({ user }: UserActionsProps) {
+export function VendorApprovalActions({ vendor }: VendorApprovalActionsProps) {
   const [isPending, startTransition] = useTransition()
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(user.email)
-    toast.success("Email copied to clipboard")
-  }
-
-  const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
-      startTransition(async () => {
-        const result = await deleteUser(user.id)
-        if (result.success) {
-          toast.success(result.message)
-        } else {
-          toast.error(result.message)
-        }
-      })
-    }
-  }
+  const [isOpen, setIsOpen] = useState(false)
 
   const handleApprove = () => {
     startTransition(async () => {
-      const result = await approveVendor(user.id)
+      const result = await approveVendor(vendor.id)
       if (result.success) {
         toast.success(result.message)
-        setIsModalOpen(false)
+        setIsOpen(false)
       } else {
         toast.error(result.message)
       }
@@ -70,12 +40,12 @@ export function UserActionsMenu({ user }: UserActionsProps) {
   }
 
   const handleReject = () => {
-    if (confirm(`Are you sure you want to reject the onboarding credentials for "${user.companyName || user.name}"?`)) {
+    if (confirm(`Are you sure you want to reject the onboarding credentials for "${vendor.companyName || vendor.name}"?`)) {
       startTransition(async () => {
-        const result = await rejectVendor(user.id)
+        const result = await rejectVendor(vendor.id)
         if (result.success) {
           toast.success(result.message)
-          setIsModalOpen(false)
+          setIsOpen(false)
         } else {
           toast.error(result.message)
         }
@@ -85,65 +55,22 @@ export function UserActionsMenu({ user }: UserActionsProps) {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100 data-[state=open]:bg-slate-100 transition-all"
-          >
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[180px] bg-white border-slate-200">
-          <DropdownMenuLabel className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-            Actions
-          </DropdownMenuLabel>
-          
-          <DropdownMenuItem onClick={handleCopyEmail} className="cursor-pointer text-slate-700 focus:bg-slate-50 focus:text-slate-900">
-            <Copy className="mr-2 h-3.5 w-3.5 text-slate-400" />
-            Copy Email
-          </DropdownMenuItem>
-          
-          {user.role === "VENDOR" && (
-            <DropdownMenuItem 
-              onClick={() => setIsModalOpen(true)}
-              className="cursor-pointer text-slate-700 focus:bg-slate-50 focus:text-slate-900 font-semibold"
-            >
-              <ShieldCheck className="mr-2 h-3.5 w-3.5 text-amber-500" />
-              Verify KYC Info
-            </DropdownMenuItem>
-          )}
+      <div className="flex gap-2 shrink-0">
+        <Button
+          onClick={() => setIsOpen(true)}
+          size="sm"
+          variant="outline"
+          className="text-indigo-600 hover:text-indigo-700 border-indigo-200 hover:bg-indigo-50 font-extrabold text-xs h-8 px-3 rounded-lg flex items-center gap-1 shadow-sm"
+        >
+          <Eye className="w-3.5 h-3.5" /> Review Onboarding
+        </Button>
+      </div>
 
-          <DropdownMenuItem className="cursor-pointer text-slate-700 focus:bg-slate-50 focus:text-slate-900">
-            <UserCog className="mr-2 h-3.5 w-3.5 text-slate-400" />
-            View Profile
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem onClick={() => window.location.href = `mailto:${user.email}`} className="cursor-pointer text-slate-700 focus:bg-slate-50 focus:text-slate-900">
-            <Mail className="mr-2 h-3.5 w-3.5 text-slate-400" />
-            Send Email
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator className="bg-slate-100" />
-          
-          <DropdownMenuItem 
-            onClick={handleDelete}
-            disabled={isPending}
-            className="cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700"
-          >
-            <Trash2 className="mr-2 h-3.5 w-3.5" />
-            {isPending ? "Deleting..." : "Delete User"}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Onboarding Review Details Modal */}
-      {isModalOpen && (
+      {/* KYC / Onboarding Review Details Modal */}
+      {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div 
-            className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative animate-in zoom-in-95 duration-200 text-left"
+            className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -156,11 +83,11 @@ export function UserActionsMenu({ user }: UserActionsProps) {
                   Review Business Verification Details
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Verify documentation and GSTIN registry for {user.name}
+                  Verify documentation and GSTIN registry for {vendor.name}
                 </p>
               </div>
               <button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => setIsOpen(false)}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold p-1 hover:bg-slate-50 dark:hover:bg-slate-900 rounded-lg"
               >
                 ✕
@@ -178,28 +105,28 @@ export function UserActionsMenu({ user }: UserActionsProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div>
                     <span className="text-slate-450 font-bold block">Company / Store Name</span>
-                    <strong className="text-slate-850 dark:text-slate-200 text-sm mt-0.5 block">{user.companyName || "N/A"}</strong>
+                    <strong className="text-slate-850 dark:text-slate-200 text-sm mt-0.5 block">{vendor.companyName || "N/A"}</strong>
                   </div>
                   <div>
                     <span className="text-slate-455 font-bold block">GSTIN Number (Tax ID)</span>
-                    <strong className="text-slate-850 dark:text-slate-200 text-sm uppercase tracking-wide mt-0.5 block">{user.gstin || "N/A"}</strong>
+                    <strong className="text-slate-850 dark:text-slate-200 text-sm uppercase tracking-wide mt-0.5 block">{vendor.gstin || "N/A"}</strong>
                   </div>
                   <div>
                     <span className="text-slate-450 font-bold block">Authorized Representative</span>
                     <strong className="text-slate-850 dark:text-slate-200 mt-0.5 block flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-slate-400" /> {user.name}
+                      <User className="w-3.5 h-3.5 text-slate-400" /> {vendor.name}
                     </strong>
                   </div>
                   <div>
                     <span className="text-slate-450 font-bold block">Primary Phone</span>
                     <strong className="text-slate-850 dark:text-slate-200 mt-0.5 block flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-slate-400" /> {user.phoneNumber || "N/A"}
+                      <Phone className="w-3.5 h-3.5 text-slate-400" /> {vendor.phoneNumber || "N/A"}
                     </strong>
                   </div>
                   <div className="sm:col-span-2">
                     <span className="text-slate-450 font-bold block">Registered Pickup / Warehouse Address</span>
                     <strong className="text-slate-800 dark:text-slate-250 font-medium mt-1 block flex items-start gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" /> {user.address || "N/A"}
+                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" /> {vendor.address || "N/A"}
                     </strong>
                   </div>
                 </div>
@@ -214,16 +141,16 @@ export function UserActionsMenu({ user }: UserActionsProps) {
                   <div className="space-y-2.5 text-xs">
                     <div>
                       <span className="text-slate-450 font-bold">Aadhaar Card Number</span>
-                      <strong className="text-slate-850 dark:text-slate-200 tracking-wider mt-0.5 block">{user.aadhaarNumber || "Not Provided"}</strong>
+                      <strong className="text-slate-850 dark:text-slate-200 tracking-wider mt-0.5 block">{vendor.aadhaarNumber || "Not Provided"}</strong>
                     </div>
                     <div>
                       <span className="text-slate-450 font-bold">PAN Card Number</span>
-                      <strong className="text-slate-850 dark:text-slate-200 uppercase tracking-widest mt-0.5 block">{user.panNumber || "Not Provided"}</strong>
+                      <strong className="text-slate-850 dark:text-slate-200 uppercase tracking-widest mt-0.5 block">{vendor.panNumber || "Not Provided"}</strong>
                     </div>
-                    {user.kycDocUrl && (
+                    {vendor.kycDocUrl && (
                       <div className="pt-1">
                         <a 
-                          href={user.kycDocUrl} 
+                          href={vendor.kycDocUrl} 
                           target="_blank" 
                           rel="noreferrer"
                           className="text-[10px] text-indigo-600 hover:text-indigo-700 dark:text-amber-400 font-extrabold uppercase tracking-wider underline flex items-center gap-1"
@@ -242,9 +169,9 @@ export function UserActionsMenu({ user }: UserActionsProps) {
                   </h4>
                   <div className="text-xs space-y-2">
                     <div>
-                      <span className="text-slate-455 font-bold block">Settlement Details</span>
+                      <span className="text-slate-450 font-bold block">Settlement Details</span>
                       <strong className="text-slate-850 dark:text-slate-200 font-semibold mt-1 block bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-lg border border-slate-100 dark:border-slate-900">
-                        {user.bankDetails || "No bank settlement accounts configured"}
+                        {vendor.bankDetails || "No bank settlement accounts configured"}
                       </strong>
                     </div>
                   </div>
@@ -257,9 +184,9 @@ export function UserActionsMenu({ user }: UserActionsProps) {
                   <Signature className="w-3.5 h-3.5 text-amber-500" /> Authorized e-Signature
                 </h4>
                 <div className="p-3 bg-white dark:bg-slate-950 rounded-lg border border-slate-100 dark:border-slate-900 text-center font-serif text-sm italic text-slate-700 dark:text-slate-350 select-none">
-                  {user.signature ? (
+                  {vendor.signature ? (
                     <div className="space-y-1">
-                      <span className="text-lg font-bold tracking-wide">{user.signature}</span>
+                      <span className="text-lg font-bold tracking-wide">{vendor.signature}</span>
                       <span className="text-[8px] text-slate-400 dark:text-slate-500 font-sans block not-italic uppercase tracking-widest mt-1">
                         Digitally signed & locked for automated invoicing
                       </span>
@@ -274,7 +201,7 @@ export function UserActionsMenu({ user }: UserActionsProps) {
             {/* Modal Actions Footer */}
             <div className="flex gap-3 justify-end pt-5 border-t border-slate-100 dark:border-slate-900 mt-6">
               <Button 
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => setIsOpen(false)}
                 variant="outline"
                 className="text-xs font-bold border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 rounded-xl h-10 shadow-sm"
               >

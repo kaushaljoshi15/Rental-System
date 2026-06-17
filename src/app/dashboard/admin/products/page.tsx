@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { requireRole } from "@/lib/middleware";
+import { ApprovalActions } from "./approval-actions";
 
 export default async function ProductsPage({
   searchParams,
@@ -27,7 +28,8 @@ export default async function ProductsPage({
 
   // 2. Build Filter Logic
   const whereClause: Prisma.ProductWhereInput = {
-    isRentable: true, // Only show rentable items
+    isRentable: true,
+    isApproved: true, // Only show approved listings in general catalog grid
   };
 
   if (categorySlug) {
@@ -38,12 +40,19 @@ export default async function ProductsPage({
     whereClause.name = { contains: searchQuery, mode: 'insensitive' };
   }
 
-  // 3. Fetch Products based on filters
-  const products = await prisma.product.findMany({
-    where: whereClause,
-    include: { category: true },
-    orderBy: { createdAt: 'desc' }
-  });
+  // 3. Fetch Products and Pending Vendor Listings in parallel
+  const [products, pendingProducts] = await Promise.all([
+    prisma.product.findMany({
+      where: whereClause,
+      include: { category: true, vendor: true },
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.product.findMany({
+      where: { isApproved: false },
+      include: { category: true, vendor: true },
+      orderBy: { createdAt: 'desc' }
+    })
+  ]);
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -103,6 +112,45 @@ export default async function ProductsPage({
 
           {/* MAIN GRID: Product Cards */}
           <div className="flex-1">
+          
+            {/* Pending Approvals Section */}
+            {pendingProducts.length > 0 && (
+              <div className="mb-8 bg-white border border-amber-250 rounded-2xl p-6 shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="flex h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse" />
+                  <h2 className="text-sm font-black text-slate-950 uppercase tracking-widest">
+                    Pending Vendor Listings ({pendingProducts.length})
+                  </h2>
+                </div>
+                <div className="divide-y divide-slate-100 max-h-[350px] overflow-y-auto pr-2">
+                  {pendingProducts.map((pending) => (
+                    <div key={pending.id} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="h-14 w-14 bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
+                          {pending.image && pending.image.startsWith("http") ? (
+                            <img src={pending.image} alt={pending.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Tag className="w-5 h-5 text-slate-350" />
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide leading-tight">{pending.name}</h4>
+                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[10px] text-slate-450 mt-1 font-semibold">
+                            <span>Category: <strong className="text-slate-700">{pending.category?.name || "General"}</strong></span>
+                            <span>•</span>
+                            <span>Daily Rent: <strong className="text-emerald-700">₹{pending.priceDaily.toLocaleString()}</strong></span>
+                            <span>•</span>
+                            <span>Vendor: <strong className="text-amber-600">{pending.vendor?.companyName || pending.vendor?.name || "Partner"}</strong></span>
+                          </div>
+                        </div>
+                      </div>
+                      <ApprovalActions productId={pending.id} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {products.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-xl border border-dashed border-slate-300">
                 <div className="h-12 w-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">

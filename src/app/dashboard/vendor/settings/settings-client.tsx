@@ -45,6 +45,8 @@ interface UserProfile {
   panNumber: string | null
   kycStatus: string
   kycDocUrl: string | null
+  signature?: string | null
+  bankDetails?: string | null
 }
 
 interface SettingsClientProps {
@@ -82,6 +84,8 @@ export function SettingsClient({ user }: SettingsClientProps) {
   const [gstin, setGstin] = useState(user.gstin || '')
   const [address, setAddress] = useState(user.address || '')
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '')
+  const [signature, setSignature] = useState(user.signature || '')
+  const [bankDetails, setBankDetails] = useState(user.bankDetails || '')
   const [isSaving, setIsSaving] = useState(false)
 
   // --- KYC Form States ---
@@ -195,6 +199,8 @@ export function SettingsClient({ user }: SettingsClientProps) {
       gstin: gstin.toUpperCase().trim() || undefined,
       address: address.trim() || undefined,
       phoneNumber: phoneNumber.trim() || undefined,
+      signature: signature.trim() || undefined,
+      bankDetails: bankDetails.trim() || undefined,
     })
 
     setIsSaving(false)
@@ -507,6 +513,28 @@ export function SettingsClient({ user }: SettingsClientProps) {
                         readOnly
                         disabled
                         className="bg-slate-100 dark:bg-slate-900/50 border-none rounded-xl text-xs font-semibold text-slate-400 cursor-not-allowed"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="signature" className="text-[11px] font-black uppercase text-slate-550 dark:text-slate-400">Digital Authorized Signature</Label>
+                      <Input
+                        id="signature"
+                        value={signature}
+                        onChange={(e) => setSignature(e.target.value)}
+                        placeholder="e.g. John Doe (type full name to sign)"
+                        className="bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-xs font-semibold focus-visible:ring-amber-500/50 font-serif italic"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <Label htmlFor="bankDetails" className="text-[11px] font-black uppercase text-slate-550 dark:text-slate-400">Bank Account Details (For Payout Settlements)</Label>
+                      <Input
+                        id="bankDetails"
+                        value={bankDetails}
+                        onChange={(e) => setBankDetails(e.target.value)}
+                        placeholder="e.g. HDFC Bank, A/C: 5010012345678, IFSC: HDFC0000123"
+                        className="bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-xs font-semibold focus-visible:ring-amber-500/50"
                       />
                     </div>
                   </div>

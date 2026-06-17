@@ -32,6 +32,8 @@ model User {
   commissionRate    Float     @default(10.0) // Platform percentage cut (e.g., 10%)
   image             String?
   walletBalance     Float     @default(0.0)
+  signature         String?   // Vendor digital authorized signature
+  bankDetails       String?   // Vendor bank details for payout settlements
   
   // KYC Database Fields
   aadhaarNumber     String?
@@ -55,6 +57,7 @@ model User {
   auditLogs         AuditLog[]
   walletTransactions WalletTransaction[]
   wishlist          WishlistItem[]
+  notifications     Notification[]
 }
 
 // ==========================================
@@ -363,5 +366,21 @@ model WishlistItem {
   createdAt DateTime @default(now())
 
   @@unique([userId, productId])
+  @@index([userId])
+}
+
+// ==========================================
+// 13. DYNAMIC NOTIFICATIONS
+// ==========================================
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   // e.g. "OFFER", "SYSTEM", "TRANSACTION", "COMPLIANCE"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
   @@index([userId])
 }

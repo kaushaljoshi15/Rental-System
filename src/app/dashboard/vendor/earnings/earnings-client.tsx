@@ -38,9 +38,10 @@ interface EarningsClientProps {
     availableBalance: number
   }
   transactions: Transaction[]
+  bankDetails?: string | null
 }
 
-export function EarningsClient({ stats, transactions }: EarningsClientProps) {
+export function EarningsClient({ stats, transactions, bankDetails }: EarningsClientProps) {
   const { t, language } = useVendor()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -306,7 +307,7 @@ export function EarningsClient({ stats, transactions }: EarningsClientProps) {
                 <Label htmlFor="bank" className="text-[10px] font-extrabold uppercase text-slate-450 tracking-wider">Bank Account *</Label>
                 <Input 
                   id="bank"
-                  value={`State Bank of India (XXXX-${bankLast4})`}
+                  value={bankDetails || "No Payout Account Configured (Setup in Settings)"}
                   disabled
                   className="h-10 bg-slate-100 dark:bg-slate-900 border-none rounded-xl text-xs font-semibold"
                 />

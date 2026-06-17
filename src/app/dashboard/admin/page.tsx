@@ -17,9 +17,11 @@ import {
   ArrowRight,
   UserPlus,
   TrendingUp,
-  Clock
+  Clock,
+  Store
 } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { VendorApprovalActions } from "./vendor-approval-actions";
 
 // 🔒 SECURITY: Only this specific email is the Master Admin
 const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
@@ -39,7 +41,8 @@ export default async function AdminDashboard() {
     totalProducts, 
     totalOrders, 
     revenueData,
-    recentOrders
+    recentOrders,
+    pendingVendors
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: "VENDOR" } }),
@@ -52,6 +55,14 @@ export default async function AdminDashboard() {
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: { user: true }
+    }),
+    // Fetch pending vendor onboarding requests
+    prisma.user.findMany({
+      where: {
+        role: "VENDOR",
+        kycStatus: "PENDING"
+      },
+      orderBy: { createdAt: 'desc' }
     })
   ]);
 
@@ -139,6 +150,36 @@ export default async function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Section 2: Management Modules (Main Area) */}
             <section className="lg:col-span-2 space-y-6">
+                {/* Pending Vendor Approvals Widget */}
+                {pendingVendors.length > 0 && (
+                  <Card className="border-amber-250 bg-white rounded-2xl p-6 shadow-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="flex h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse" />
+                      <h2 className="text-sm font-black text-slate-950 uppercase tracking-widest flex items-center gap-1.5">
+                        <Store className="w-4 h-4 text-amber-500" /> Pending Vendor Onboardings ({pendingVendors.length})
+                      </h2>
+                    </div>
+                    <div className="divide-y divide-slate-100 max-h-[300px] overflow-y-auto pr-2">
+                      {pendingVendors.map((vendor: any) => (
+                        <div key={vendor.id} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                          <div>
+                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide leading-tight">
+                              {vendor.companyName || "Unknown Store"}
+                            </h4>
+                            <p className="text-[10px] text-slate-500 font-semibold mt-1">
+                              Representative: {vendor.name} • Email: {vendor.email}
+                            </p>
+                            <p className="text-[9px] text-slate-400 font-medium mt-0.5">
+                              GSTIN: <strong className="text-slate-650">{vendor.gstin || "N/A"}</strong>
+                            </p>
+                          </div>
+                          <VendorApprovalActions vendor={vendor} />
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-slate-900 tracking-tight">Management Modules</h2>
                 </div>

@@ -86,6 +86,10 @@ export async function searchHalls(filters: SearchFilters) {
     const whereConditions: Prisma.ProductWhereInput = {
       isRentable: true,
       isApproved: true, // Only search approved halls
+      OR: [
+        { vendorId: null },
+        { vendor: { isVerifiedVendor: true } }
+      ]
     }
 
     // Filter out unavailable halls and/or match search query

@@ -228,6 +228,31 @@ export async function updateProduct(productId: string, formData: FormData) {
       }
     })
 
+    // If the price was lowered, trigger notifications for wishlist watchers
+    if (oldProduct && priceDaily < oldProduct.priceDaily) {
+      try {
+        const wishlistWatchers = await prisma.wishlistItem.findMany({
+          where: { productId },
+          select: { userId: true }
+        })
+
+        if (wishlistWatchers.length > 0) {
+          const discountPercentage = Math.round(((oldProduct.priceDaily - priceDaily) / oldProduct.priceDaily) * 100)
+          
+          await prisma.notification.createMany({
+            data: wishlistWatchers.map(watcher => ({
+              userId: watcher.userId,
+              title: "Price Drop Alert",
+              message: `Great news! The product "${name}" in your wishlist is running an exclusive price drop. Rent it now at only ₹${priceDaily.toLocaleString()}/day (${discountPercentage}% off)!`,
+              type: "OFFER"
+            }))
+          })
+        }
+      } catch (notifErr) {
+        console.error("Failed to generate price drop notifications:", notifErr)
+      }
+    }
+
   } catch (error) {
     console.error("Update Product Error:", error)
     return { success: false, message: "Failed to update product." }
