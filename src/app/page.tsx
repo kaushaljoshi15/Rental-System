@@ -51,6 +51,7 @@ import { Navbar } from "@/components/navbar"
 import { RentButton } from "@/components/rent-button"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { SettingsForm } from "@/app/dashboard/customer/settings/settings-form"
+import { AVATAR_PRESETS } from "@/lib/avatars"
 import { AddressForm } from "@/components/address-form"
 import { CheckoutPanel } from "@/app/dashboard/customer/cart/checkout-panel"
 import { CartItem } from "@/app/dashboard/customer/cart/cart-item"
@@ -298,7 +299,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
               <div className="flex items-center gap-3 pb-4 border-b border-slate-850">
                 <div className="relative">
                   <img
-                    src={customerData.user.image || "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix"}
+                    src={customerData.user.image || AVATAR_PRESETS[0].url}
                     alt="Profile Avatar"
                     className="w-12 h-12 rounded-full border-2 border-[#F59E0B] shadow-sm shadow-amber-500/10 bg-slate-800 object-cover"
                   />

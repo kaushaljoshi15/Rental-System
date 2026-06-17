@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { updateProfile, addMoneyToWallet, deleteAccount } from "@/actions/profile"
+import { AVATAR_PRESETS } from "@/lib/avatars"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
@@ -24,14 +25,6 @@ import {
   ArrowDownLeft, 
   Copy 
 } from "lucide-react"
-
-// Predefined avatar seeds from DiceBear
-const AVATAR_PRESETS = [
-  { name: "Felix", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" },
-  { name: "Aneka", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka" },
-  { name: "Jack", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=Jack" },
-  { name: "Mia", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=Mia" }
-]
 
 const SAMPLE_COUPONS = [
   { code: "WELCOME10", desc: "10% Off your total rental amount", type: "PERCENTAGE", val: 10 },
@@ -119,6 +112,20 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
   const [walletLoading, setWalletLoading] = useState(false)
   const [walletMsg, setWalletMsg] = useState<{ success: boolean; text: string } | null>(null)
   
+  // Interactive ledger states
+  const [txFilter, setTxFilter] = useState<"ALL" | "CREDIT" | "DEBIT">("ALL")
+  const [txSearch, setTxSearch] = useState("")
+
+  const filteredTransactions = walletTransactions.filter((tx) => {
+    if (txFilter === "CREDIT" && tx.type !== "CREDIT") return false
+    if (txFilter === "DEBIT" && tx.type !== "DEBIT") return false
+    if (txSearch.trim() !== "") {
+      const q = txSearch.toLowerCase()
+      return tx.description.toLowerCase().includes(q) || tx.id.toLowerCase().includes(q)
+    }
+    return true
+  })
+
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -216,7 +223,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
             <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white">
               <div className="bg-slate-550/5 p-5 flex items-center gap-4 border-b border-slate-150">
                 <img
-                  src={profile.image}
+                  src={profile.image || AVATAR_PRESETS[0].url}
                   alt="Profile Avatar"
                   className="w-12 h-12 rounded-full border-2 border-slate-200 object-cover bg-white shrink-0"
                 />
@@ -232,7 +239,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
               </CardHeader>
               <CardContent className="space-y-5">
                 {/* Avatar Preset Grid */}
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {AVATAR_PRESETS.map((preset) => {
                     const isSelected = profile.image === preset.url
                     return (
@@ -481,26 +488,26 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
             </Card>
 
             {/* Accordion FAQ block */}
-            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white p-5 space-y-4">
+            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white p-6 space-y-5">
               <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Frequently Asked Questions (FAQs)</h3>
               
-              <div className="space-y-4 divide-y divide-slate-100 text-xs text-slate-655 font-semibold">
-                <div className="space-y-1">
+              <div className="space-y-4 text-xs font-semibold">
+                <div className="pb-4 border-b border-slate-100 space-y-1.5">
                   <h5 className="font-bold text-slate-900">What happens when I update my email address (or mobile number)?</h5>
                   <p className="text-slate-500 font-medium leading-relaxed">Your login email id (or mobile number) changes, likewise. You&apos;ll receive all your account related communication on your updated email address (or mobile number).</p>
                 </div>
                 
-                <div className="space-y-1 pt-3.5">
+                <div className="pb-4 border-b border-slate-100 space-y-1.5">
                   <h5 className="font-bold text-slate-900">When will my RentalKart account be updated with the new email address?</h5>
                   <p className="text-slate-500 font-medium leading-relaxed">It happens as soon as you confirm the verification code sent to your email (or mobile) and save the changes.</p>
                 </div>
                 
-                <div className="space-y-1 pt-3.5">
+                <div className="pb-4 border-b border-slate-100 space-y-1.5">
                   <h5 className="font-bold text-slate-900">What happens to my existing RentalKart orders when I update details?</h5>
                   <p className="text-slate-500 font-medium leading-relaxed">Updating your details does not affect your active orders. Your history remains fully intact and available inside your order dashboard.</p>
                 </div>
 
-                <div className="space-y-1 pt-3.5">
+                <div className="space-y-1.5">
                   <h5 className="font-bold text-slate-900">Does my Seller/Vendor account get affected when I update my email?</h5>
                   <p className="text-slate-500 font-medium leading-relaxed">RentalKart has a &apos;single sign-on&apos; policy. Any changes will reflect in your Seller/Vendor account also.</p>
                 </div>
@@ -596,105 +603,116 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
             </Card>
           </div>
 
-          {/* Billing & Active Coupons (7 cols) */}
+          {/* Billing Ledger (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Promo Codes & Coupons */}
-            <Card className="border-slate-200 shadow-sm rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                  <Ticket className="w-4 h-4 text-indigo-600" /> Active Promo Coupons
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Copy and apply these active coupons at checkout for flat or percentage discounts.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {SAMPLE_COUPONS.map((coupon) => (
-                  <div 
-                    key={coupon.code}
-                    className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-100 transition-colors"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs bg-indigo-50 border border-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-md">
-                          {coupon.code}
-                        </span>
-                        <Badge variant="outline" className="text-[9px] px-1.5 py-0">
-                          {coupon.type === "PERCENTAGE" ? `${coupon.val}% Off` : `Flat ₹${coupon.val}`}
-                        </Badge>
-                      </div>
-                      <p className="text-[11px] text-slate-500 font-medium">{coupon.desc}</p>
-                    </div>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyCoupon(coupon.code)}
-                      className="text-slate-500 hover:text-indigo-600 font-semibold text-xs"
-                    >
-                      {copiedCode === coupon.code ? (
-                        <span className="flex items-center gap-1 text-emerald-600"><Check className="w-3.5 h-3.5" /> Copied</span>
-                      ) : (
-                        <span className="flex items-center gap-1"><Copy className="w-3.5 h-3.5" /> Copy</span>
-                      )}
-                    </Button>
+            {/* Wallet Transactions Ledger */}
+            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white overflow-hidden">
+              <CardHeader className="border-b border-slate-100 p-5 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="space-y-1">
+                    <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                      <History className="w-4 h-4 text-amber-500" /> Transaction Ledger
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Review credit and debit records in your virtual wallet.
+                    </CardDescription>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
+                  
+                  {/* Search box */}
+                  <div className="relative w-full sm:w-60">
+                    <input
+                      type="text"
+                      placeholder="Search transactions..."
+                      value={txSearch}
+                      onChange={(e) => setTxSearch(e.target.value)}
+                      className="w-full text-xs rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-amber-500 bg-slate-50/50"
+                    />
+                    <svg
+                      className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
 
-            {/* Wallet Transactions ledger */}
-            <Card className="border-slate-200 shadow-sm rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                  <History className="w-4 h-4 text-indigo-600" /> Transaction Ledger
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Review historical credit and debit logs in your virtual wallet.
-                </CardDescription>
+                {/* Filter Tabs */}
+                <div className="flex border-b border-slate-100 pb-1 gap-2">
+                  {(["ALL", "CREDIT", "DEBIT"] as const).map((filter) => {
+                    const label = filter === "ALL" ? "All Logs" : filter === "CREDIT" ? "Credits (+)" : "Debits (-)"
+                    const isActive = txFilter === filter
+                    return (
+                      <button
+                        key={filter}
+                        type="button"
+                        onClick={() => setTxFilter(filter)}
+                        className={`text-xs px-3 py-1 rounded-lg font-bold transition-all ${
+                          isActive
+                            ? "bg-amber-500 text-slate-950 shadow-xs"
+                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
               </CardHeader>
+              
               <CardContent className="p-0">
-                {walletTransactions.length === 0 ? (
-                  <div className="p-6 text-center text-slate-400 text-xs font-semibold">
-                    No transactions found.
+                {filteredTransactions.length === 0 ? (
+                  <div className="p-12 text-center text-slate-400 text-xs font-semibold flex flex-col items-center gap-2">
+                    <History className="w-8 h-8 text-slate-300 stroke-[1.5]" />
+                    <p>No transaction matches found.</p>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-50/70 text-slate-500 font-bold border-b border-slate-150">
-                          <th className="py-2.5 px-4">Description</th>
-                          <th className="py-2.5 px-4">Date</th>
-                          <th className="py-2.5 px-4 text-right">Amount</th>
+                        <tr className="bg-slate-50/50 text-slate-500 font-bold border-b border-slate-100">
+                          <th className="py-3 px-5">Description</th>
+                          <th className="py-3 px-5">Date</th>
+                          <th className="py-3 px-5 text-right">Amount</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
-                        {walletTransactions.map((tx) => {
+                        {filteredTransactions.map((tx) => {
                           const isCredit = tx.type === "CREDIT"
                           return (
-                            <tr key={tx.id} className="hover:bg-slate-50/40">
-                              <td className="py-3 px-4">
-                                <div className="flex gap-2 items-start">
+                            <tr key={tx.id} className="hover:bg-slate-50/30 transition-colors">
+                              <td className="py-3 px-5">
+                                <div className="flex gap-3 items-center">
                                   {isCredit ? (
-                                    <div className="bg-emerald-50 text-emerald-600 p-1.5 rounded-lg border border-emerald-100 shrink-0">
+                                    <div className="bg-emerald-50 text-emerald-600 p-1.5 rounded-lg border border-emerald-100/50 shrink-0">
                                       <ArrowDownLeft className="w-3.5 h-3.5" />
                                     </div>
                                   ) : (
-                                    <div className="bg-red-50 text-red-600 p-1.5 rounded-lg border border-red-100 shrink-0">
+                                    <div className="bg-red-50 text-red-600 p-1.5 rounded-lg border border-red-100/50 shrink-0">
                                       <ArrowUpRight className="w-3.5 h-3.5" />
                                     </div>
                                   )}
                                   <div>
                                     <p className="text-slate-900 font-bold">{tx.description}</p>
-                                    <p className="text-[10px] text-slate-400 mt-0.5 uppercase tracking-wide">ID: #{tx.id.substring(0, 8)}</p>
+                                    <p className="text-[10px] text-slate-400 mt-0.5 uppercase tracking-wider font-mono">ID: #{tx.id.substring(0, 8)}</p>
                                   </div>
                                 </div>
                               </td>
-                              <td className="py-3 px-4 text-slate-500 text-[11px] whitespace-nowrap">
-                                {new Date(tx.createdAt).toLocaleDateString()}
+                              <td className="py-3 px-5 text-slate-500 text-[11px] whitespace-nowrap">
+                                {new Date(tx.createdAt).toLocaleDateString(undefined, {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric'
+                                })}
                               </td>
-                              <td className={`py-3 px-4 text-right font-bold text-sm whitespace-nowrap ${
-                                isCredit ? "text-emerald-600" : "text-slate-900"
+                              <td className={`py-3 px-5 text-right font-black text-sm whitespace-nowrap ${
+                                isCredit ? "text-emerald-600 font-mono" : "text-slate-900 font-mono"
                               }`}>
                                 {isCredit ? "+" : "-"} ₹{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                               </td>
