@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from "react"
-import { updateProfile, addMoneyToWallet } from "@/actions/profile"
+import { updateProfile, addMoneyToWallet, deleteAccount } from "@/actions/profile"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -46,6 +47,9 @@ interface SettingsFormProps {
     address: string | null
     image: string | null
     walletBalance: number
+    gender?: string | null
+    birthday?: string | null
+    alternatePhone?: string | null
   }
   transactions: Array<{
     id: string
@@ -60,15 +64,52 @@ interface SettingsFormProps {
 export function SettingsForm({ initialUser, transactions: initialTransactions, defaultTab }: SettingsFormProps) {
   const [activeTab, setActiveTab] = useState<"profile" | "wallet">(defaultTab || "profile")
   
+  // Split name to first and last name
+  const getFirstAndLastName = (fullName: string) => {
+    const parts = fullName.trim().split(/\s+/)
+    const firstName = parts[0] || ""
+    const lastName = parts.slice(1).join(" ")
+    return { firstName, lastName }
+  }
+
+  const { firstName: initFirst, lastName: initLast } = getFirstAndLastName(initialUser.name)
+
   // Profile State
   const [profile, setProfile] = useState({
-    name: initialUser.name,
+    firstName: initFirst,
+    lastName: initLast,
     phoneNumber: initialUser.phoneNumber || "",
     address: initialUser.address || "",
-    image: initialUser.image || AVATAR_PRESETS[0].url
+    image: initialUser.image || AVATAR_PRESETS[0].url,
+    gender: (initialUser as any).gender || "",
+    birthday: (initialUser as any).birthday || "",
+    alternatePhone: (initialUser as any).alternatePhone || ""
   })
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileMsg, setProfileMsg] = useState<{ success: boolean; text: string } | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const handleDeleteAccount = async () => {
+    const isConfirmed = window.confirm(
+      "Are you absolutely sure you want to permanently delete your RentalKart account? This will erase all your personal details, order records, coupons, and wallet balance. This action CANNOT be undone."
+    )
+    if (!isConfirmed) return
+
+    setDeleteLoading(true)
+    try {
+      const res = await deleteAccount()
+      if (res.success) {
+        alert("Your account has been deleted successfully.")
+        await signOut({ callbackUrl: "/login" })
+      } else {
+        alert(res.message || "Failed to delete account.")
+      }
+    } catch (e) {
+      alert("An unexpected error occurred while deleting your account.")
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
 
   // Wallet State
   const [walletBalance, setWalletBalance] = useState(initialUser.walletBalance)
@@ -85,8 +126,8 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
     setProfileLoading(true)
     setProfileMsg(null)
     
-    // Client-side validations
-    if (!profile.name.trim()) {
+    const fullName = `${profile.firstName.trim()} ${profile.lastName.trim()}`.trim()
+    if (!fullName) {
       setProfileMsg({ success: false, text: "Name cannot be empty." })
       setProfileLoading(false)
       return
@@ -99,7 +140,15 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
     }
 
     try {
-      const res = await updateProfile(profile)
+      const res = await updateProfile({
+        name: fullName,
+        phoneNumber: profile.phoneNumber,
+        address: profile.address,
+        image: profile.image,
+        gender: profile.gender,
+        birthday: profile.birthday,
+        alternatePhone: profile.alternatePhone
+      })
       if (res.success) {
         setProfileMsg({ success: true, text: "Profile details updated successfully!" })
       } else {
@@ -162,30 +211,27 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
     <div className="space-y-6">
       {activeTab === "profile" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Avatar Settings */}
-          <Card className="border-slate-200 shadow-sm rounded-2xl h-fit">
-            <CardHeader>
-              <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                <Camera className="w-4 h-4 text-indigo-600" /> Profile Photo
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Select a preset avatar or paste a custom link.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 flex flex-col items-center">
-              <div className="relative group">
+          {/* Avatar Settings / Hello Box */}
+          <div className="space-y-6">
+            <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white">
+              <div className="bg-slate-550/5 p-5 flex items-center gap-4 border-b border-slate-150">
                 <img
                   src={profile.image}
                   alt="Profile Avatar"
-                  className="w-28 h-28 rounded-full border-4 border-slate-100 shadow-md object-cover bg-slate-50"
+                  className="w-12 h-12 rounded-full border-2 border-slate-200 object-cover bg-white shrink-0"
                 />
+                <div className="min-w-0">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hello,</p>
+                  <h4 className="text-sm font-black text-slate-900 truncate uppercase">{profile.firstName || "User"} {profile.lastName}</h4>
+                </div>
               </div>
-
-              {/* Avatar Preset Grid */}
-              <div className="space-y-2 w-full">
-                <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center block">
-                  Select Preset Avatar
-                </Label>
+              <CardHeader className="pt-4 pb-2">
+                <CardTitle className="text-xs font-extrabold text-slate-900 flex items-center gap-2">
+                  <Camera className="w-3.5 h-3.5 text-amber-500" /> Choose Profile Avatar
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                {/* Avatar Preset Grid */}
                 <div className="grid grid-cols-4 gap-2">
                   {AVATAR_PRESETS.map((preset) => {
                     const isSelected = profile.image === preset.url
@@ -194,109 +240,273 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         key={preset.name}
                         type="button"
                         onClick={() => setProfile({ ...profile, image: preset.url })}
-                        className={`p-1.5 rounded-xl border-2 transition-all hover:scale-105 bg-slate-50 flex justify-center items-center relative ${
-                          isSelected ? "border-indigo-600 bg-indigo-50/30" : "border-slate-200"
+                        className={`p-1 rounded-xl border-2 transition-all hover:scale-105 bg-slate-50 flex justify-center items-center relative ${
+                          isSelected ? "border-amber-500 bg-amber-500/10" : "border-slate-200"
                         }`}
                       >
-                        <img src={preset.url} alt={preset.name} className="w-10 h-10 rounded-full" />
+                        <img src={preset.url} alt={preset.name} className="w-8 h-8 rounded-full" />
                         {isSelected && (
-                          <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white rounded-full p-0.5 border-2 border-white">
-                            <Check className="w-2.5 h-2.5" />
+                          <span className="absolute -top-1 -right-1 bg-amber-500 text-slate-950 rounded-full p-0.5 border border-white">
+                            <Check className="w-2 h-2 stroke-[3]" />
                           </span>
                         )}
                       </button>
                     )
                   })}
                 </div>
-              </div>
+                {/* Custom Image URL */}
+                <div className="space-y-1 w-full pt-2 border-t border-slate-100">
+                  <Label htmlFor="avatarUrl" className="text-[10px] font-bold text-slate-550">Or Custom Image URL</Label>
+                  <Input
+                    id="avatarUrl"
+                    type="text"
+                    placeholder="Paste URL (https://...)"
+                    value={profile.image}
+                    onChange={(e) => setProfile({ ...profile, image: e.target.value })}
+                    className="text-[11px] rounded-lg h-8 border-slate-200"
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Custom Image URL */}
-              <div className="space-y-1.5 w-full">
-                <Label htmlFor="avatarUrl" className="text-xs font-bold text-slate-700">Custom Photo URL</Label>
-                <Input
-                  id="avatarUrl"
-                  type="text"
-                  placeholder="Paste URL (https://...)"
-                  value={profile.image}
-                  onChange={(e) => setProfile({ ...profile, image: e.target.value })}
-                  className="text-xs rounded-lg h-9 border-slate-200"
-                />
+            {/* Payments Summary Cards (Flipkart Style Info Sidebar) */}
+            <Card className="border-slate-200 shadow-sm rounded-2xl p-5 bg-white space-y-4">
+              <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider">Payments Info</h4>
+              <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+                <span>Gift Card Balance</span>
+                <span className="text-emerald-600">₹0</span>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex justify-between items-center text-xs font-bold text-slate-700 pt-2 border-t border-slate-100">
+                <span>Saved Cards</span>
+                <span className="text-slate-400">None</span>
+              </div>
+              <div className="flex justify-between items-center text-xs font-bold text-slate-700 pt-2 border-t border-slate-100">
+                <span>Saved UPI</span>
+                <span className="text-slate-400">None</span>
+              </div>
+            </Card>
+          </div>
 
-          {/* Contact Details Settings */}
-          <Card className="lg:col-span-2 border-slate-200 shadow-sm rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                <User className="w-4 h-4 text-indigo-600" /> Account & Contact Info
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Provide your active phone number and shipping address for delivery processing.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleProfileSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-xs font-bold text-slate-700">Email Address (Read-only)</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      disabled
-                      value={initialUser.email}
-                      className="text-xs rounded-lg h-10 bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed"
-                    />
+          {/* Contact Details / Edit Profile Form (Spans 2 columns) */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white">
+              <CardHeader className="border-b border-slate-100 p-5">
+                <CardTitle className="text-base font-extrabold text-slate-900">
+                  Edit Profile Details
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Update your contact details, select gender, and define alternate contacts.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-5">
+                <form onSubmit={handleProfileSubmit} className="space-y-6">
+                  
+                  {/* Section: Personal Info */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Personal Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="firstName" className="text-xs font-bold text-slate-700">First Name</Label>
+                        <Input
+                          id="firstName"
+                          type="text"
+                          placeholder="e.g. Rahul"
+                          value={profile.firstName}
+                          onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                          className="text-xs rounded-lg h-10 border-slate-200"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="lastName" className="text-xs font-bold text-slate-700">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          type="text"
+                          placeholder="e.g. Sharma"
+                          value={profile.lastName}
+                          onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                          className="text-xs rounded-lg h-10 border-slate-200"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Gender (Segmented Buttons) */}
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-bold text-slate-700">Your Gender</Label>
+                        <div className="flex gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setProfile({ ...profile, gender: "Male" })}
+                            className={`flex-1 py-2.5 rounded-lg border text-xs font-extrabold transition-all duration-200 flex justify-center items-center gap-1.5 ${
+                              profile.gender === "Male"
+                                ? "bg-amber-500/10 border-amber-500 text-amber-700 font-black"
+                                : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                            }`}
+                          >
+                            {profile.gender === "Male" && <Check className="w-3.5 h-3.5 text-amber-550" />}
+                            Male
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setProfile({ ...profile, gender: "Female" })}
+                            className={`flex-1 py-2.5 rounded-lg border text-xs font-extrabold transition-all duration-200 flex justify-center items-center gap-1.5 ${
+                              profile.gender === "Female"
+                                ? "bg-amber-500/10 border-amber-500 text-amber-700 font-black"
+                                : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                            }`}
+                          >
+                            {profile.gender === "Female" && <Check className="w-3.5 h-3.5 text-amber-550" />}
+                            Female
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Birthday */}
+                      <div className="space-y-1.5">
+                        <Label htmlFor="birthday" className="text-xs font-bold text-slate-700">Birthday (dd/mm/yyyy)</Label>
+                        <Input
+                          id="birthday"
+                          type="text"
+                          placeholder="e.g. 15/08/1995"
+                          value={profile.birthday}
+                          onChange={(e) => setProfile({ ...profile, birthday: e.target.value })}
+                          className="text-xs rounded-lg h-10 border-slate-200"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <Label htmlFor="name" className="text-xs font-bold text-slate-700">Full Name</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="e.g. John Doe"
-                      value={profile.name}
-                      onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                      className="text-xs rounded-lg h-10 border-slate-200"
-                    />
+                  {/* Section: Email Address */}
+                  <div className="space-y-3 pt-4 border-t border-slate-100">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Email Address</h4>
+                      <span className="text-[10px] text-amber-600 font-bold bg-amber-50 border border-amber-100 px-2 py-0.5 rounded">Primary Email</span>
+                    </div>
+                    <div className="flex gap-3">
+                      <Input
+                        id="email"
+                        type="email"
+                        disabled
+                        value={initialUser.email}
+                        className="text-xs rounded-lg h-10 bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed flex-1"
+                      />
+                      <Button type="button" disabled variant="outline" className="h-10 text-xs font-bold border-slate-200 text-slate-400 shrink-0">
+                        Verify OTP
+                      </Button>
+                    </div>
                   </div>
+
+                  {/* Section: Mobile Number */}
+                  <div className="space-y-3 pt-4 border-t border-slate-100">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Mobile Number</h4>
+                      <span className="text-[10px] text-emerald-605 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded flex items-center gap-1">
+                        <Check className="w-2.5 h-2.5" /> Active Number
+                      </span>
+                    </div>
+                    <div className="flex gap-3">
+                      <Input
+                        id="phone"
+                        type="text"
+                        placeholder="e.g. +91 98765 43210"
+                        value={profile.phoneNumber}
+                        onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
+                        className="text-xs rounded-lg h-10 border-slate-200 flex-1"
+                      />
+                      <Button type="button" variant="outline" className="h-10 text-xs font-bold border-slate-200 hover:bg-slate-50 text-slate-650 shrink-0">
+                        Change
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Section: Alternate Mobile Details (Myntra Style) */}
+                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                    <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Alternate Contact Details</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="altPhone" className="text-xs font-bold text-slate-700">Alternate Phone (Optional)</Label>
+                        <Input
+                          id="altPhone"
+                          type="text"
+                          placeholder="e.g. 9876543211"
+                          value={profile.alternatePhone}
+                          onChange={(e) => setProfile({ ...profile, alternatePhone: e.target.value })}
+                          className="text-xs rounded-lg h-10 border-slate-200"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="altHint" className="text-xs font-bold text-slate-700">Relation / Contact Name</Label>
+                        <Input
+                          id="altHint"
+                          type="text"
+                          placeholder="e.g. Father, Spouse"
+                          className="text-xs rounded-lg h-10 border-slate-200"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {profileMsg && (
+                    <div className={`p-3 rounded-lg text-xs font-semibold ${
+                      profileMsg.success ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-red-50 text-red-700 border border-red-100"
+                    }`}>
+                      {profileMsg.text}
+                    </div>
+                  )}
+
+                  {/* Action Button & Delete Section */}
+                  <div className="pt-2 flex justify-between items-center flex-wrap gap-4 border-t border-slate-100">
+                    <Button 
+                      type="submit" 
+                      disabled={profileLoading || deleteLoading}
+                      className="bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-extrabold text-xs h-10 px-8 rounded-xl transition-all shadow-none"
+                    >
+                      {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                      Save Details
+                    </Button>
+
+                    <div className="flex gap-4 text-xs font-bold">
+                      <button 
+                        type="button" 
+                        onClick={handleDeleteAccount}
+                        disabled={deleteLoading || profileLoading}
+                        className="text-rose-650 hover:underline disabled:opacity-50"
+                      >
+                        {deleteLoading ? "Deleting..." : "Delete Account"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Accordion FAQ block */}
+            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white p-5 space-y-4">
+              <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Frequently Asked Questions (FAQs)</h3>
+              
+              <div className="space-y-4 divide-y divide-slate-100 text-xs text-slate-655 font-semibold">
+                <div className="space-y-1">
+                  <h5 className="font-bold text-slate-900">What happens when I update my email address (or mobile number)?</h5>
+                  <p className="text-slate-500 font-medium leading-relaxed">Your login email id (or mobile number) changes, likewise. You&apos;ll receive all your account related communication on your updated email address (or mobile number).</p>
+                </div>
+                
+                <div className="space-y-1 pt-3.5">
+                  <h5 className="font-bold text-slate-900">When will my RentalKart account be updated with the new email address?</h5>
+                  <p className="text-slate-500 font-medium leading-relaxed">It happens as soon as you confirm the verification code sent to your email (or mobile) and save the changes.</p>
+                </div>
+                
+                <div className="space-y-1 pt-3.5">
+                  <h5 className="font-bold text-slate-900">What happens to my existing RentalKart orders when I update details?</h5>
+                  <p className="text-slate-500 font-medium leading-relaxed">Updating your details does not affect your active orders. Your history remains fully intact and available inside your order dashboard.</p>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="phone" className="text-xs font-bold text-slate-700">Phone Number</Label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                    <Input
-                      id="phone"
-                      type="text"
-                      placeholder="e.g. +91 98765 43210"
-                      value={profile.phoneNumber}
-                      onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
-                      className="text-xs rounded-lg h-10 border-slate-200 pl-10"
-                    />
-                  </div>
+                <div className="space-y-1 pt-3.5">
+                  <h5 className="font-bold text-slate-900">Does my Seller/Vendor account get affected when I update my email?</h5>
+                  <p className="text-slate-500 font-medium leading-relaxed">RentalKart has a &apos;single sign-on&apos; policy. Any changes will reflect in your Seller/Vendor account also.</p>
                 </div>
-
-
-                {profileMsg && (
-                  <div className={`p-3 rounded-lg text-xs font-semibold ${
-                    profileMsg.success ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-red-50 text-red-700 border border-red-100"
-                  }`}>
-                    {profileMsg.text}
-                  </div>
-                )}
-
-                <Button 
-                  type="submit" 
-                  disabled={profileLoading}
-                  className="bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs h-10 px-6 rounded-lg transition-all"
-                >
-                  {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Save Profile Settings
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </div>
+            </Card>
+          </div>
         </div>
       )}
 
@@ -313,7 +523,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
                   <p className="text-[10px] text-indigo-200 font-bold uppercase tracking-widest">Digital Wallet</p>
-                  <p className="text-sm font-semibold tracking-wider opacity-90">{profile.name}</p>
+                  <p className="text-sm font-semibold tracking-wider opacity-90">{profile.firstName} {profile.lastName}</p>
                 </div>
                 <div className="bg-white/10 p-2 rounded-lg backdrop-blur-md border border-white/10">
                   <Wallet className="w-5 h-5 text-white" />

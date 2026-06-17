@@ -28,6 +28,9 @@ model User {
   companyName       String?   // For Vendors/Business Customers
   gstin             String?   // Mandatory for B2B/Vendors
   address           String?  
+  gender            String?
+  birthday          String?
+  alternatePhone    String?
   isVerifiedVendor  Boolean   @default(false)
   commissionRate    Float     @default(10.0) // Platform percentage cut (e.g., 10%)
   image             String?

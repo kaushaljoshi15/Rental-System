@@ -10,6 +10,9 @@ export async function updateProfile(data: {
   phoneNumber?: string
   address?: string
   image?: string
+  gender?: string
+  birthday?: string
+  alternatePhone?: string
 }) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
@@ -23,8 +26,11 @@ export async function updateProfile(data: {
         name: data.name,
         phoneNumber: data.phoneNumber,
         address: data.address,
-        image: data.image
-      }
+        image: data.image,
+        gender: data.gender,
+        birthday: data.birthday,
+        alternatePhone: data.alternatePhone
+      } as any
     })
 
     revalidatePath("/dashboard/customer/settings")
@@ -33,7 +39,10 @@ export async function updateProfile(data: {
       name: updatedUser.name,
       phoneNumber: updatedUser.phoneNumber,
       address: updatedUser.address,
-      image: updatedUser.image
+      image: updatedUser.image,
+      gender: (updatedUser as any).gender,
+      birthday: (updatedUser as any).birthday,
+      alternatePhone: (updatedUser as any).alternatePhone
     } }
   } catch (error) {
     console.error("Profile update error:", error)
@@ -89,5 +98,64 @@ export async function addMoneyToWallet(amount: number, paymentMethod: string) {
   } catch (error) {
     console.error("Add money error:", error)
     return { success: false, message: "Failed to add money to wallet." }
+  }
+}
+
+export async function deleteAccount() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized. Please log in." }
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    })
+
+    if (!user) {
+      return { success: false, message: "User not found." }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete notifications
+      await tx.notification.deleteMany({
+        where: { userId: user.id }
+      })
+
+      // 2. Delete wishlist items
+      await tx.wishlistItem.deleteMany({
+        where: { userId: user.id }
+      })
+
+      // 3. Delete wallet transactions
+      await tx.walletTransaction.deleteMany({
+        where: { userId: user.id }
+      })
+
+      // 4. Delete reviews left by this user
+      await tx.review.deleteMany({
+        where: { userId: user.id }
+      })
+
+      // 5. Delete audit logs
+      await tx.auditLog.deleteMany({
+        where: { userId: user.id }
+      })
+
+      // 6. Delete orders (this cascade deletes order lines, invoice, payment, booking addons)
+      await tx.rentalOrder.deleteMany({
+        where: { userId: user.id }
+      })
+
+      // 7. Finally, delete the user itself
+      await tx.user.delete({
+        where: { id: user.id }
+      })
+    })
+
+    return { success: true, message: "Account deleted successfully." }
+  } catch (error) {
+    console.error("Account delete error:", error)
+    return { success: false, message: "Failed to delete account. Please try again." }
   }
 }
