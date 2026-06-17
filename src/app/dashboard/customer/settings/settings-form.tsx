@@ -160,30 +160,6 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
 
   return (
     <div className="space-y-6">
-      {/* Navigation Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 pb-1">
-        <button
-          onClick={() => setActiveTab("profile")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-bold border-b-2 transition-all ${
-            activeTab === "profile" 
-              ? "border-indigo-600 text-indigo-600" 
-              : "border-transparent text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <User className="w-4 h-4" /> Profile Details
-        </button>
-        <button
-          onClick={() => setActiveTab("wallet")}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-bold border-b-2 transition-all ${
-            activeTab === "wallet" 
-              ? "border-indigo-600 text-indigo-600" 
-              : "border-transparent text-slate-500 hover:text-slate-900"
-          }`}
-        >
-          <Wallet className="w-4 h-4" /> Wallet & Coupons
-        </button>
-      </div>
-
       {activeTab === "profile" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Avatar Settings */}
@@ -301,20 +277,6 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <Label htmlFor="address" className="text-xs font-bold text-slate-700">Delivery & Billing Address</Label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                    <Textarea
-                      id="address"
-                      placeholder="Enter street, city, state and zipcode details..."
-                      rows={3}
-                      value={profile.address}
-                      onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-                      className="text-xs rounded-lg border-slate-200 pl-10 min-h-[90px]"
-                    />
-                  </div>
-                </div>
 
                 {profileMsg && (
                   <div className={`p-3 rounded-lg text-xs font-semibold ${

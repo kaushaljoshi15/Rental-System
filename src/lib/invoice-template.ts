@@ -1,4 +1,5 @@
 import { calculateHallRent } from "./pricing";
+import { formatAddress } from "./utils";
 
 interface InvoiceLine {
   id: string;
@@ -224,13 +225,13 @@ export function generateInvoiceHTML({
               </td>
               <td style="vertical-align: top; line-height: 1.6; padding: 12px;">
                 <strong style="color: #0f172a; font-size: 12px;">${customerName}</strong><br>
-                ${customerAddress || "Address not provided"}<br>
+                ${formatAddress(customerAddress)}<br>
                 <strong style="color: #0f172a;">Phone:</strong> ${customerPhone || "N/A"}<br>
                 <strong style="color: #0f172a;">Email:</strong> ${customerEmail || "N/A"}
               </td>
               <td style="vertical-align: top; line-height: 1.6; padding: 12px;">
                 <strong style="color: #0f172a; font-size: 12px;">${customerName}</strong><br>
-                ${customerAddress || "Address not provided"}<br>
+                ${formatAddress(customerAddress)}<br>
                 <strong style="color: #0f172a;">Delivery Type:</strong> Venue Access / Service Setup<br>
                 <span style="font-size: 10px; font-weight: bold; color: #475569; display: block; margin-top: 5px;">*Keep this invoice for event entry validation.</span>
               </td>

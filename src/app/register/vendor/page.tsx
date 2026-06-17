@@ -354,7 +354,7 @@ export default function VendorRegisterPage() {
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          placeholder="8160278562" 
+                          placeholder="9876543210" 
                           required 
                           disabled={phoneVerified || loading}
                           className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
@@ -412,7 +412,7 @@ export default function VendorRegisterPage() {
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="joshikaushald1596@gmail.com" 
+                          placeholder="email@example.com" 
                           required 
                           disabled={emailVerified || loading}
                           className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"

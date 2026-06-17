@@ -51,6 +51,7 @@ import { Navbar } from "@/components/navbar"
 import { RentButton } from "@/components/rent-button"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { SettingsForm } from "@/app/dashboard/customer/settings/settings-form"
+import { AddressForm } from "@/components/address-form"
 import { CheckoutPanel } from "@/app/dashboard/customer/cart/checkout-panel"
 import { CartItem } from "@/app/dashboard/customer/cart/cart-item"
 import { CancelButton } from "@/app/dashboard/customer/orders/cancel-button"
@@ -60,6 +61,7 @@ import { format } from "date-fns"
 import { NotificationsTab } from "@/components/notifications-tab"
 import { seedDefaultNotificationsIfEmpty } from "@/actions/notifications"
 import { InvoicePrintButton } from "@/components/invoice-print-button"
+import { formatAddress } from "@/lib/utils"
 
 // Cache helper for category lists & featured products
 async function getStorefrontData() {
@@ -667,7 +669,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                             <div className="space-y-2 text-xs">
                               <div>
                                 <p className="font-extrabold text-slate-950">{userName}</p>
-                                <p className="text-slate-500 font-semibold mt-0.5">{customerData.user.address || "No address configured"}</p>
+                                <p className="text-slate-500 font-semibold mt-0.5">{formatAddress(customerData.user.address)}</p>
                               </div>
                               <div className="pt-2 border-t border-slate-100 mt-2 text-slate-500">
                                 <span style={{ fontWeight: 600 }}>Phone: </span><span className="font-mono">{customerData.user.phoneNumber || "N/A"}</span>
@@ -1053,32 +1055,7 @@ export default async function HomePage({ searchParams }: { searchParams?: Promis
                     <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Saved Addresses</h1>
                     <p className="text-slate-500 text-xs mt-0.5">Your registered shipping & delivery address for rent checkout.</p>
                   </div>
-
-                  <Card className="border-slate-200 shadow-sm rounded-xl">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2 uppercase">
-                        <MapPin className="w-4 h-4 text-amber-600" /> Default Delivery Address
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {customerData.user.address ? (
-                        <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                          <p className="text-xs font-bold text-slate-800 leading-relaxed font-sans">{customerData.user.address}</p>
-                        </div>
-                      ) : (
-                        <div className="p-4 bg-amber-50/50 border border-amber-250 text-amber-705 rounded-xl text-xs font-semibold">
-                          No default address configured. Please update your address in account details to enable seamless shipping.
-                        </div>
-                      )}
-                      <div>
-                        <Link href="/?tab=profile">
-                          <Button className="bg-slate-900 hover:bg-amber-500 text-white font-extrabold text-xs h-9 rounded-lg">
-                            Configure Address
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <AddressForm initialAddress={customerData.user.address} />
                 </div>
               )}
 

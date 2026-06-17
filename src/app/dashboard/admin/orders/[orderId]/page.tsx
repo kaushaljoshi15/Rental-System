@@ -7,6 +7,7 @@ import { ArrowLeft, Calendar, Mail, MapPin, User, Phone } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { OrderActionPanel } from "./order-actions";
+import { formatAddress } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ orderId: string }>
@@ -123,7 +124,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
                     <div className="pt-3 border-t border-slate-100">
                         <div className="flex items-start gap-2 text-sm text-slate-600">
                             <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-                            {order.user.address}
+                            {formatAddress(order.user.address)}
                         </div>
                     </div>
                 )}
