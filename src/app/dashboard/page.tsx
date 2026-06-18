@@ -15,6 +15,6 @@ export default async function DashboardRedirect() {
   } else if (role === "ADMIN") {
     redirect("/dashboard/admin");
   } else {
-    redirect("/products");
+    redirect("/");
   }
 }

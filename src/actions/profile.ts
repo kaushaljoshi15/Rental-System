@@ -33,7 +33,6 @@ export async function updateProfile(data: {
       } as any
     })
 
-    revalidatePath("/dashboard/customer/settings")
     revalidatePath("/")
     return { success: true, message: "Profile updated successfully.", user: {
       name: updatedUser.name,
@@ -89,10 +88,19 @@ export async function addMoneyToWallet(amount: number, paymentMethod: string) {
         }
       })
 
+      await tx.notification.create({
+        data: {
+          userId: user.id,
+          title: "Wallet Recharge Successful",
+          message: `₹${amount.toLocaleString()} has been successfully credited to your RentKart wallet via ${paymentMethod}.`,
+          type: "TRANSACTION",
+          isRead: false
+        }
+      })
+
       return u
     })
 
-    revalidatePath("/dashboard/customer/settings")
     revalidatePath("/")
     return { success: true, message: `Successfully added ₹${amount} to wallet.`, balance: updatedUser.walletBalance }
   } catch (error) {

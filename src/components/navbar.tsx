@@ -70,7 +70,7 @@ export async function Navbar() {
 
         {/* Minimalist Search Bar (Linear/Stripe style) */}
         <div className="flex-1 max-w-lg relative group hidden md:block mx-4">
-          <form action="/products" method="GET">
+          <form action="/" method="GET">
             <div className="relative flex items-center">
               <Search className="absolute left-3.5 h-4 w-4 text-slate-400 group-focus-within:text-[#F59E0B] transition-colors" />
               <input 
@@ -85,9 +85,6 @@ export async function Navbar() {
 
         {/* User Controls Menu */}
         <div className="flex items-center gap-6">
-          <Link href="/products" className="text-xs font-bold text-slate-200 hover:text-[#F59E0B] transition-all uppercase tracking-wider">
-            All Products
-          </Link>
 
           {/* Authentication Dropdown (MNC Layout) */}
           {isLoggedIn ? (
@@ -218,7 +215,7 @@ export async function Navbar() {
                       <Store className="w-4 h-4 text-slate-400" />
                       <span>Become a Seller</span>
                     </Link>
-                    <Link href="#" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                       <Headphones className="w-4 h-4 text-slate-400" />
                       <span>24x7 Customer Care</span>
                     </Link>
@@ -252,7 +249,7 @@ export async function Navbar() {
                     <Bell className="w-4 h-4 text-slate-400" />
                     <span>Notification Settings</span>
                   </Link>
-                  <Link href="#" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                  <Link href="#support" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                     <Headphones className="w-4 h-4 text-slate-400" />
                     <span>24x7 Customer Care</span>
                   </Link>

@@ -83,8 +83,6 @@ export async function addToCart(productId: string, price: number, dateRange?: { 
       data: { totalAmount: newTotal }
     })
 
-    revalidatePath("/products")
-    revalidatePath("/dashboard/customer/cart")
     revalidatePath("/")
     return { success: true, message: "Item added to quotation!" }
 
@@ -118,7 +116,6 @@ export async function removeCartItem(lineId: string) {
       data: { totalAmount: newTotal }
     })
 
-    revalidatePath("/dashboard/customer/cart")
     revalidatePath("/")
     return { success: true, message: "Item removed" }
   } catch {
@@ -133,7 +130,6 @@ export async function submitQuotation(orderId: string) {
       where: { id: orderId },
       data: { status: "PENDING" }
     })
-    revalidatePath("/dashboard/customer/cart")
     revalidatePath("/")
     return { success: true, message: "Quotation requested successfully!" }
   } catch {

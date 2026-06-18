@@ -11,11 +11,10 @@ import {
   Gift
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { 
   markAllNotificationsAsRead, 
-  markNotificationAsRead, 
-  simulateNewOfferNotification,
-  getUserNotifications
+  markNotificationAsRead
 } from "@/actions/notifications"
 import { toast } from "sonner"
 
@@ -34,7 +33,11 @@ interface NotificationsTabProps {
 
 export function NotificationsTab({ initialNotifications }: NotificationsTabProps) {
   const [notifications, setNotifications] = useState<DBNotification[]>(initialNotifications)
-  const [isSimulating, setIsSimulating] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Automatically mark all notifications as read when the tab is opened
   useEffect(() => {
@@ -54,6 +57,7 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
 
   // Function to format time ago
   const formatTimeAgo = (dateInput: Date | string) => {
+    if (!isMounted) return ""
     const date = new Date(dateInput)
     const diffMs = Date.now() - date.getTime()
     const diffMins = Math.floor(diffMs / (1000 * 60))
@@ -77,30 +81,6 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
       toast.success("Notification marked as read")
     } catch (err) {
       console.error(err)
-    }
-  }
-
-  // Handle trigger for mock simulation
-  const handleSimulateOffer = async () => {
-    setIsSimulating(true)
-    try {
-      const res = await simulateNewOfferNotification()
-      if (res.success && res.notification) {
-        // Fetch latest list of notifications from DB to keep order and items correct
-        const latest = await getUserNotifications()
-        if (latest.success && latest.notifications) {
-          // Map notifications back to local state
-          setNotifications(latest.notifications as DBNotification[])
-        }
-        toast.success(res.message || "Simulated offer arrived!")
-      } else {
-        toast.error("Failed to simulate offer")
-      }
-    } catch (err) {
-      toast.error("Simulation error")
-      console.error(err)
-    } finally {
-      setIsSimulating(false)
     }
   }
 
@@ -153,32 +133,36 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/60 pb-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-            Notification Center <Sparkles className="w-5 h-5 text-amber-500 fill-amber-500 animate-pulse" />
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2 uppercase">
+            Notification Center <Sparkles className="w-4.5 h-4.5 text-[#F59E0B] fill-[#F59E0B] animate-pulse" />
           </h1>
-          <p className="text-slate-500 text-xs mt-0.5">Stay updated with exclusive offers, price drops, transactions, and account rules.</p>
+          <p className="text-slate-505 text-xs mt-0.5">Stay updated with exclusive offers, price drops, transactions, and account rules.</p>
         </div>
-        <Button 
-          onClick={handleSimulateOffer}
-          disabled={isSimulating}
-          className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs h-9 px-4 rounded-xl shadow-md transition-all self-end sm:self-auto"
-        >
-          {isSimulating ? "Simulating..." : "Simulate Offer Arrival ⚡"}
-        </Button>
       </div>
 
       <div className="space-y-4">
         {notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-slate-200 text-center space-y-4 shadow-sm">
-            <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center border border-slate-200">
-              <Bell className="h-8 w-8 text-slate-300" />
+          <div className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-sm rounded-3xl p-10 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
+            <div className="relative flex items-center justify-center w-20 h-20">
+              <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+              <div className="h-14 w-14 bg-slate-900 border border-slate-800 text-white rounded-2xl flex items-center justify-center shadow-md">
+                <Bell className="h-6 w-6 text-[#F59E0B]" />
+              </div>
             </div>
-            <div className="space-y-1">
-              <h3 className="text-lg font-bold text-slate-900">All caught up!</h3>
-              <p className="text-xs text-slate-500 max-w-xs mx-auto">You have no notifications in your inbox.</p>
+            <div className="space-y-1.5">
+              <span className="text-[9px] bg-amber-500/10 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Inbox Clean</span>
+              <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-2">All Caught Up!</h3>
+              <p className="text-xs text-slate-505 max-w-xs mx-auto leading-relaxed font-semibold">
+                You have no new notifications right now. Check back later for updates or explore available discount coupons.
+              </p>
             </div>
+            <Link href="/?tab=coupons">
+              <Button className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5">
+                Explore Promo Coupons
+              </Button>
+            </Link>
           </div>
         ) : (
           notifications.map((n) => {
@@ -186,8 +170,8 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
             return (
               <div 
                 key={n.id} 
-                className={`bg-white border rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300 relative ${
-                  !n.isRead ? "border-amber-300 ring-2 ring-amber-100" : "border-slate-200"
+                className={`bg-white border rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-300 relative overflow-hidden ${
+                  !n.isRead ? "border-amber-500/35 border-l-4 border-l-[#F59E0B] bg-[#F59E0B]/2 rounded-l-none" : "border-slate-200/70"
                 }`}
               >
                 {/* Unread indicator dot */}
@@ -199,34 +183,34 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
                 )}
 
                 <div className="flex justify-between items-start gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-xl border flex items-center justify-center shadow-sm shrink-0 ${colors.bg}`}>
+                  <div className="flex items-center gap-3.5">
+                    <div className={`h-10 w-10 rounded-xl border flex items-center justify-center shadow-xs shrink-0 ${colors.bg}`}>
                       {getIcon(n.type)}
                     </div>
                     <div>
-                      <span className={`text-[10px] font-black uppercase tracking-wider ${colors.tag} px-2 py-0.5 rounded-md`}>
-                        {n.type === "OFFER" ? "Price Drop & Deals" : n.type}
+                      <span className={`text-[9px] font-black uppercase tracking-wider ${colors.tag} px-2.5 py-0.5 rounded-md`}>
+                        {n.type === "OFFER" ? "Promo Deal" : n.type}
                       </span>
-                      <h3 className="text-sm font-extrabold text-slate-900 mt-1">{n.title}</h3>
+                      <h3 className="text-sm font-bold text-slate-900 mt-1.5 uppercase tracking-wide leading-snug">{n.title}</h3>
                     </div>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-bold shrink-0 pt-0.5">
+                  <span className="text-[10px] text-slate-450 font-bold shrink-0 pt-0.5">
                     {formatTimeAgo(n.createdAt)}
                   </span>
                 </div>
                 
-                <div className="mt-3 pl-[52px] space-y-3">
-                  <p className="text-xs text-slate-650 leading-relaxed font-medium">
+                <div className="mt-3.5 pl-[54px] space-y-3">
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
                     {n.message}
                   </p>
                   
                   {!n.isRead && (
-                    <div className="flex justify-end pt-2">
+                    <div className="flex justify-end pt-1">
                       <Button 
                         size="sm" 
                         variant="ghost"
                         onClick={() => handleMarkAsRead(n.id)}
-                        className="text-slate-500 hover:text-slate-800 text-[10px] h-7 px-3 rounded-lg flex items-center gap-1 hover:bg-slate-100 font-extrabold"
+                        className="text-slate-400 hover:text-[#F59E0B] hover:bg-amber-500/10 text-[10px] h-7.5 px-3 rounded-lg flex items-center gap-1 font-bold transition-colors cursor-pointer"
                       >
                         <CheckCheck className="w-3.5 h-3.5" /> Mark as Read
                       </Button>

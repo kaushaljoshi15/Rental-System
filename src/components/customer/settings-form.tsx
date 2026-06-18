@@ -220,26 +220,26 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Avatar Settings / Hello Box */}
           <div className="space-y-6">
-            <Card className="border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white">
-              <div className="bg-slate-550/5 p-5 flex items-center gap-4 border-b border-slate-150">
+            <Card className="border border-slate-200/60 shadow-xs rounded-2xl overflow-hidden bg-white">
+              <div className="bg-slate-50/50 p-5 flex items-center gap-4 border-b border-slate-100">
                 <img
                   src={profile.image || AVATAR_PRESETS[0].url}
                   alt="Profile Avatar"
-                  className="w-12 h-12 rounded-full border-2 border-slate-200 object-cover bg-white shrink-0"
+                  className="w-12 h-12 rounded-full border border-slate-200 object-cover bg-white shrink-0 shadow-inner"
                 />
                 <div className="min-w-0">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Hello,</p>
-                  <h4 className="text-sm font-black text-slate-900 truncate uppercase">{profile.firstName || "User"} {profile.lastName}</h4>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Hello,</p>
+                  <h4 className="text-sm font-bold text-slate-900 truncate uppercase tracking-wide">{profile.firstName || "User"} {profile.lastName}</h4>
                 </div>
               </div>
-              <CardHeader className="pt-4 pb-2">
-                <CardTitle className="text-xs font-extrabold text-slate-900 flex items-center gap-2">
-                  <Camera className="w-3.5 h-3.5 text-amber-500" /> Choose Profile Avatar
+              <CardHeader className="pt-4.5 pb-2">
+                <CardTitle className="text-xs font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+                  <Camera className="w-3.5 h-3.5 text-[#F59E0B]" /> Choose Profile Avatar
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 {/* Avatar Preset Grid */}
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2.5">
                   {AVATAR_PRESETS.map((preset) => {
                     const isSelected = profile.image === preset.url
                     return (
@@ -247,14 +247,14 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         key={preset.name}
                         type="button"
                         onClick={() => setProfile({ ...profile, image: preset.url })}
-                        className={`p-1 rounded-xl border-2 transition-all hover:scale-105 bg-slate-50 flex justify-center items-center relative ${
-                          isSelected ? "border-amber-500 bg-amber-500/10" : "border-slate-200"
+                        className={`p-1 rounded-xl border-2 transition-all hover:scale-105 bg-slate-50/50 flex justify-center items-center relative cursor-pointer ${
+                          isSelected ? "border-[#F59E0B] bg-amber-500/5" : "border-slate-200 hover:border-slate-300"
                         }`}
                       >
                         <img src={preset.url} alt={preset.name} className="w-8 h-8 rounded-full" />
                         {isSelected && (
-                          <span className="absolute -top-1 -right-1 bg-amber-500 text-slate-950 rounded-full p-0.5 border border-white">
-                            <Check className="w-2 h-2 stroke-[3]" />
+                          <span className="absolute -top-1 -right-1 bg-[#F59E0B] text-slate-950 rounded-full p-0.5 border border-white">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </span>
                         )}
                       </button>
@@ -262,43 +262,43 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   })}
                 </div>
                 {/* Custom Image URL */}
-                <div className="space-y-1 w-full pt-2 border-t border-slate-100">
-                  <Label htmlFor="avatarUrl" className="text-[10px] font-bold text-slate-550">Or Custom Image URL</Label>
+                <div className="space-y-1.5 w-full pt-3 border-t border-slate-100">
+                  <Label htmlFor="avatarUrl" className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Or Custom Image URL</Label>
                   <Input
                     id="avatarUrl"
                     type="text"
                     placeholder="Paste URL (https://...)"
                     value={profile.image}
                     onChange={(e) => setProfile({ ...profile, image: e.target.value })}
-                    className="text-[11px] rounded-lg h-8 border-slate-200"
+                    className="text-xs rounded-xl h-8.5 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            {/* Payments Summary Cards (Flipkart Style Info Sidebar) */}
-            <Card className="border-slate-200 shadow-sm rounded-2xl p-5 bg-white space-y-4">
-              <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider">Payments Info</h4>
-              <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+            {/* Payments Summary Cards */}
+            <Card className="border border-slate-200/60 shadow-xs rounded-2xl p-5 bg-white space-y-4">
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-100 pb-2.5">Payments Info</h4>
+              <div className="flex justify-between items-center text-xs font-semibold text-slate-500">
                 <span>Gift Card Balance</span>
-                <span className="text-emerald-600">₹0</span>
+                <span className="text-emerald-600 font-bold">₹0</span>
               </div>
-              <div className="flex justify-between items-center text-xs font-bold text-slate-700 pt-2 border-t border-slate-100">
+              <div className="flex justify-between items-center text-xs font-semibold text-slate-500 pt-2.5 border-t border-slate-100">
                 <span>Saved Cards</span>
-                <span className="text-slate-400">None</span>
+                <span className="text-slate-400 font-medium">None</span>
               </div>
-              <div className="flex justify-between items-center text-xs font-bold text-slate-700 pt-2 border-t border-slate-100">
+              <div className="flex justify-between items-center text-xs font-semibold text-slate-500 pt-2.5 border-t border-slate-100">
                 <span>Saved UPI</span>
-                <span className="text-slate-400">None</span>
+                <span className="text-slate-400 font-medium">None</span>
               </div>
             </Card>
           </div>
 
           {/* Contact Details / Edit Profile Form (Spans 2 columns) */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white">
+            <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white">
               <CardHeader className="border-b border-slate-100 p-5">
-                <CardTitle className="text-base font-extrabold text-slate-900">
+                <CardTitle className="text-sm font-bold text-slate-900 uppercase tracking-wide">
                   Edit Profile Details
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -310,7 +310,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   
                   {/* Section: Personal Info */}
                   <div className="space-y-4">
-                    <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Personal Information</h4>
+                    <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Personal Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <Label htmlFor="firstName" className="text-xs font-bold text-slate-700">First Name</Label>
@@ -320,7 +320,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. Rahul"
                           value={profile.firstName}
                           onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
-                          className="text-xs rounded-lg h-10 border-slate-200"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -331,7 +331,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. Sharma"
                           value={profile.lastName}
                           onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
-                          className="text-xs rounded-lg h-10 border-slate-200"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                         />
                       </div>
                     </div>
@@ -344,25 +344,25 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           <button
                             type="button"
                             onClick={() => setProfile({ ...profile, gender: "Male" })}
-                            className={`flex-1 py-2.5 rounded-lg border text-xs font-extrabold transition-all duration-200 flex justify-center items-center gap-1.5 ${
+                            className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer ${
                               profile.gender === "Male"
-                                ? "bg-amber-500/10 border-amber-500 text-amber-700 font-black"
-                                : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                                ? "bg-amber-500/10 border-[#F59E0B] text-[#F59E0B]"
+                                : "border-slate-200 text-slate-500 hover:bg-slate-50/50"
                             }`}
                           >
-                            {profile.gender === "Male" && <Check className="w-3.5 h-3.5 text-amber-550" />}
+                            {profile.gender === "Male" && <Check className="w-3.5 h-3.5" />}
                             Male
                           </button>
                           <button
                             type="button"
                             onClick={() => setProfile({ ...profile, gender: "Female" })}
-                            className={`flex-1 py-2.5 rounded-lg border text-xs font-extrabold transition-all duration-200 flex justify-center items-center gap-1.5 ${
+                            className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer ${
                               profile.gender === "Female"
-                                ? "bg-amber-500/10 border-amber-500 text-amber-700 font-black"
-                                : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                                ? "bg-amber-500/10 border-[#F59E0B] text-[#F59E0B]"
+                                : "border-slate-200 text-slate-500 hover:bg-slate-50/50"
                             }`}
                           >
-                            {profile.gender === "Female" && <Check className="w-3.5 h-3.5 text-amber-550" />}
+                            {profile.gender === "Female" && <Check className="w-3.5 h-3.5" />}
                             Female
                           </button>
                         </div>
@@ -377,7 +377,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. 15/08/1995"
                           value={profile.birthday}
                           onChange={(e) => setProfile({ ...profile, birthday: e.target.value })}
-                          className="text-xs rounded-lg h-10 border-slate-200"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                         />
                       </div>
                     </div>
@@ -386,8 +386,8 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   {/* Section: Email Address */}
                   <div className="space-y-3 pt-4 border-t border-slate-100">
                     <div className="flex justify-between items-center">
-                      <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Email Address</h4>
-                      <span className="text-[10px] text-amber-600 font-bold bg-amber-50 border border-amber-100 px-2 py-0.5 rounded">Primary Email</span>
+                      <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Email Address</h4>
+                      <span className="text-[9px] text-[#F59E0B] font-bold bg-amber-500/10 border border-amber-500/15 px-2 py-0.5 rounded">Primary Email</span>
                     </div>
                     <div className="flex gap-3">
                       <Input
@@ -395,9 +395,9 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         type="email"
                         disabled
                         value={initialUser.email}
-                        className="text-xs rounded-lg h-10 bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed flex-1"
+                        className="text-xs rounded-xl h-10 bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed flex-1"
                       />
-                      <Button type="button" disabled variant="outline" className="h-10 text-xs font-bold border-slate-200 text-slate-400 shrink-0">
+                      <Button type="button" disabled variant="outline" className="h-10 text-xs font-bold border-slate-200 text-slate-400 shrink-0 rounded-xl">
                         Verify OTP
                       </Button>
                     </div>
@@ -406,8 +406,8 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   {/* Section: Mobile Number */}
                   <div className="space-y-3 pt-4 border-t border-slate-100">
                     <div className="flex justify-between items-center">
-                      <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Mobile Number</h4>
-                      <span className="text-[10px] text-emerald-605 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded flex items-center gap-1">
+                      <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Mobile Number</h4>
+                      <span className="text-[9px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded flex items-center gap-1">
                         <Check className="w-2.5 h-2.5" /> Active Number
                       </span>
                     </div>
@@ -418,17 +418,17 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         placeholder="e.g. +91 98765 43210"
                         value={profile.phoneNumber}
                         onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
-                        className="text-xs rounded-lg h-10 border-slate-200 flex-1"
+                        className="text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                       />
-                      <Button type="button" variant="outline" className="h-10 text-xs font-bold border-slate-200 hover:bg-slate-50 text-slate-650 shrink-0">
+                      <Button type="button" variant="outline" className="h-10 text-xs font-bold border-slate-250 hover:bg-slate-50 text-slate-700 shrink-0 rounded-xl transition-colors">
                         Change
                       </Button>
                     </div>
                   </div>
 
-                  {/* Section: Alternate Mobile Details (Myntra Style) */}
+                  {/* Section: Alternate Mobile Details */}
                   <div className="space-y-4 pt-4 border-t border-slate-100">
-                    <h4 className="text-xs font-black uppercase text-slate-500 tracking-wider">Alternate Contact Details</h4>
+                    <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Alternate Contact Details</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <Label htmlFor="altPhone" className="text-xs font-bold text-slate-700">Alternate Phone (Optional)</Label>
@@ -438,7 +438,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. 9876543211"
                           value={profile.alternatePhone}
                           onChange={(e) => setProfile({ ...profile, alternatePhone: e.target.value })}
-                          className="text-xs rounded-lg h-10 border-slate-200"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -447,26 +447,26 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           id="altHint"
                           type="text"
                           placeholder="e.g. Father, Spouse"
-                          className="text-xs rounded-lg h-10 border-slate-200"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                         />
                       </div>
                     </div>
                   </div>
 
                   {profileMsg && (
-                    <div className={`p-3 rounded-lg text-xs font-semibold ${
-                      profileMsg.success ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-red-50 text-red-700 border border-red-100"
+                    <div className={`p-3 rounded-xl text-xs font-semibold ${
+                      profileMsg.success ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-rose-50 text-rose-700 border border-rose-100"
                     }`}>
                       {profileMsg.text}
                     </div>
                   )}
 
                   {/* Action Button & Delete Section */}
-                  <div className="pt-2 flex justify-between items-center flex-wrap gap-4 border-t border-slate-100">
+                  <div className="pt-3 flex justify-between items-center flex-wrap gap-4 border-t border-slate-100">
                     <Button 
                       type="submit" 
                       disabled={profileLoading || deleteLoading}
-                      className="bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-extrabold text-xs h-10 px-8 rounded-xl transition-all shadow-none"
+                      className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-10 px-8 rounded-xl transition-all cursor-pointer shadow-sm"
                     >
                       {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                       Save Details
@@ -477,7 +477,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         type="button" 
                         onClick={handleDeleteAccount}
                         disabled={deleteLoading || profileLoading}
-                        className="text-rose-650 hover:underline disabled:opacity-50"
+                        className="text-rose-600 hover:underline cursor-pointer disabled:opacity-50 font-bold"
                       >
                         {deleteLoading ? "Deleting..." : "Delete Account"}
                       </button>
@@ -488,8 +488,8 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
             </Card>
 
             {/* Accordion FAQ block */}
-            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white p-6 space-y-5">
-              <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">Frequently Asked Questions (FAQs)</h3>
+            <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white p-6 space-y-5">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-100 pb-2.5">Frequently Asked Questions (FAQs)</h3>
               
               <div className="space-y-4 text-xs font-semibold">
                 <div className="pb-4 border-b border-slate-100 space-y-1.5">
@@ -522,38 +522,47 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
           {/* Wallet Balance & Loader Form (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             {/* Apple-Card Style Wallet */}
-            <div className="bg-gradient-to-br from-indigo-700 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden h-48 flex flex-col justify-between border border-indigo-600/30">
-              {/* Card chips decoration */}
-              <div className="absolute right-0 bottom-0 opacity-10 translate-x-1/4 translate-y-1/4">
+            <div className="bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#1E293B] border border-slate-800/60 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden h-48 flex flex-col justify-between">
+              {/* Gold contactless wave icon / background pattern */}
+              <div className="absolute right-0 bottom-0 opacity-[0.03] translate-x-1/4 translate-y-1/4 pointer-events-none">
                 <Wallet className="w-64 h-64" />
               </div>
-              <div className="flex justify-between items-start">
+              
+              <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-1">
-                  <p className="text-[10px] text-indigo-200 font-bold uppercase tracking-widest">Digital Wallet</p>
-                  <p className="text-sm font-semibold tracking-wider opacity-90">{profile.firstName} {profile.lastName}</p>
+                  <p className="text-[9px] text-[#F59E0B] font-bold uppercase tracking-widest font-mono">RentalKart Pay</p>
+                  <div className="w-10 h-7 bg-gradient-to-br from-amber-300 via-amber-400 to-amber-200 rounded-md border border-amber-300/40 relative overflow-hidden shrink-0 shadow-inner opacity-90 mt-2">
+                    <div className="absolute top-0 bottom-0 left-[30%] w-[1px] bg-amber-600/30" />
+                    <div className="absolute top-0 bottom-0 left-[60%] w-[1px] bg-amber-600/30" />
+                    <div className="absolute left-0 right-0 top-[35%] h-[1px] bg-amber-600/30" />
+                    <div className="absolute left-0 right-0 top-[70%] h-[1px] bg-amber-600/30" />
+                  </div>
                 </div>
-                <div className="bg-white/10 p-2 rounded-lg backdrop-blur-md border border-white/10">
-                  <Wallet className="w-5 h-5 text-white" />
+                <div className="bg-white/5 p-2 rounded-xl border border-white/10 backdrop-blur-md">
+                  <Wallet className="w-4 h-4 text-slate-300" />
                 </div>
               </div>
               
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-indigo-200 font-bold uppercase tracking-wider">Available Balance</p>
-                <h3 className="text-3xl font-extrabold tracking-tight">₹{walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+              <div className="space-y-1.5 relative z-10">
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Available Balance</p>
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-2xl font-black tracking-tight font-mono">₹{walletBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                  <span className="text-[9px] text-slate-400 font-mono tracking-widest uppercase">•••• 8820</span>
+                </div>
               </div>
             </div>
 
             {/* Load Funds Form */}
-            <Card className="border-slate-200 shadow-sm rounded-2xl">
+            <Card className="border border-slate-200/60 shadow-xs rounded-2xl">
               <CardHeader>
-                <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                  <Plus className="w-4 h-4 text-indigo-600" /> Deposit Wallet Funds
+                <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+                  <Plus className="w-4 h-4 text-[#F59E0B]" /> Deposit Wallet Funds
                 </CardTitle>
                 <CardDescription className="text-xs">
                   Simulate loading money into your wallet balance instantly.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <form onSubmit={handleAddMoney} className="space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="amount" className="text-xs font-bold text-slate-700">Amount (INR)</Label>
@@ -563,8 +572,22 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       placeholder="e.g. 5000"
                       value={loadAmount}
                       onChange={(e) => setLoadAmount(e.target.value)}
-                      className="text-xs rounded-lg h-10 border-slate-200"
+                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                     />
+                    
+                    {/* Prest Recharge Amount Pills */}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {["500", "1000", "2000", "5000"].map((amt) => (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => setLoadAmount(amt)}
+                          className="text-[10px] font-bold px-2.5 py-1 border border-slate-200 text-slate-500 rounded-lg hover:border-[#F59E0B] hover:text-[#F59E0B] hover:bg-amber-500/5 transition-all cursor-pointer font-mono"
+                        >
+                          + ₹{parseInt(amt).toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="space-y-1.5">
@@ -573,7 +596,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       id="method"
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="flex h-10 w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-background px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="CREDIT_CARD">Credit Card</option>
                       <option value="DEBIT_CARD">Debit Card</option>
@@ -583,8 +606,8 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   </div>
 
                   {walletMsg && (
-                    <div className={`p-3 rounded-lg text-xs font-semibold ${
-                      walletMsg.success ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-red-50 text-red-700 border border-red-100"
+                    <div className={`p-3 rounded-xl text-xs font-semibold ${
+                      walletMsg.success ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-rose-50 text-rose-700 border border-rose-100"
                     }`}>
                       {walletMsg.text}
                     </div>
@@ -593,7 +616,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   <Button 
                     type="submit" 
                     disabled={walletLoading}
-                    className="w-full bg-slate-900 hover:bg-indigo-600 text-white font-extrabold text-xs h-10 rounded-lg transition-all"
+                    className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
                   >
                     {walletLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     Confirm Deposit
@@ -606,12 +629,12 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
           {/* Billing Ledger (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             {/* Wallet Transactions Ledger */}
-            <Card className="border-slate-200 shadow-sm rounded-2xl bg-white overflow-hidden">
+            <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white overflow-hidden">
               <CardHeader className="border-b border-slate-100 p-5 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1">
-                    <CardTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                      <History className="w-4 h-4 text-amber-500" /> Transaction Ledger
+                    <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+                      <History className="w-4 h-4 text-[#F59E0B]" /> Transaction Ledger
                     </CardTitle>
                     <CardDescription className="text-xs">
                       Review credit and debit records in your virtual wallet.
@@ -625,7 +648,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       placeholder="Search transactions..."
                       value={txSearch}
                       onChange={(e) => setTxSearch(e.target.value)}
-                      className="w-full text-xs rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-amber-500 bg-slate-50/50"
+                      className="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-[#F59E0B] bg-slate-50/50"
                     />
                     <svg
                       className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400"
@@ -653,10 +676,10 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         key={filter}
                         type="button"
                         onClick={() => setTxFilter(filter)}
-                        className={`text-xs px-3 py-1 rounded-lg font-bold transition-all ${
+                        className={`text-xs px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                           isActive
-                            ? "bg-amber-500 text-slate-950 shadow-xs"
-                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                            ? "bg-[#F59E0B] text-slate-950 shadow-xs"
+                            : "text-slate-505 hover:bg-slate-50 hover:text-slate-900"
                         }`}
                       >
                         {label}
@@ -668,9 +691,19 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
               
               <CardContent className="p-0">
                 {filteredTransactions.length === 0 ? (
-                  <div className="p-12 text-center text-slate-400 text-xs font-semibold flex flex-col items-center gap-2">
-                    <History className="w-8 h-8 text-slate-300 stroke-[1.5]" />
-                    <p>No transaction matches found.</p>
+                  <div className="p-10 flex flex-col items-center justify-center text-center space-y-4 max-w-sm mx-auto">
+                    <div className="relative flex items-center justify-center w-16 h-16">
+                      <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+                      <div className="h-11 w-11 bg-slate-900 border border-slate-800 text-white rounded-xl flex items-center justify-center shadow-xs">
+                        <History className="h-5 w-5 text-[#F59E0B]" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wide">Ledger Empty</h4>
+                      <p className="text-[11px] text-slate-500 leading-normal">
+                        No transactions registered under this filter. Complete checkouts or load money to verify wallet credits.
+                      </p>
+                    </div>
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
@@ -694,12 +727,12 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                                       <ArrowDownLeft className="w-3.5 h-3.5" />
                                     </div>
                                   ) : (
-                                    <div className="bg-red-50 text-red-600 p-1.5 rounded-lg border border-red-100/50 shrink-0">
+                                    <div className="bg-rose-50 text-rose-600 p-1.5 rounded-lg border border-rose-100/50 shrink-0">
                                       <ArrowUpRight className="w-3.5 h-3.5" />
                                     </div>
                                   )}
                                   <div>
-                                    <p className="text-slate-900 font-bold">{tx.description}</p>
+                                    <p className="text-slate-900 font-bold leading-tight">{tx.description}</p>
                                     <p className="text-[10px] text-slate-400 mt-0.5 uppercase tracking-wider font-mono">ID: #{tx.id.substring(0, 8)}</p>
                                   </div>
                                 </div>

@@ -236,6 +236,16 @@ export async function confirmBooking(
               description: `Earnings from order #${order.id.substring(0, 8).toUpperCase()} (Customer: ${user.name}, Paid via ${paymentMethod.replace("_", " ")})`
             }
           })
+
+          await tx.notification.create({
+            data: {
+              userId: vendorId,
+              title: "New Booking Order Received",
+              message: `You received a booking request for order #${order.id.substring(0, 8).toUpperCase()}. Earnings credit: ₹${finalPayout.toLocaleString()}`,
+              type: "TRANSACTION",
+              isRead: false
+            }
+          })
         }
       }
 
@@ -252,6 +262,16 @@ export async function confirmBooking(
           platformFee: platformFeeFinal,
           vendorPayout: vendorPayoutFinal,
           payoutStatus: "PENDING"
+        }
+      })
+
+      await tx.notification.create({
+        data: {
+          userId: user.id,
+          title: "Order Placed Successfully",
+          message: `Your booking order #${order.id.substring(0, 8).toUpperCase()} has been confirmed. Total paid: ₹${grandTotalAmount.toLocaleString()}`,
+          type: "SYSTEM",
+          isRead: false
         }
       })
 
@@ -289,10 +309,6 @@ export async function confirmBooking(
       return updatedOrder
     })
 
-    revalidatePath("/dashboard/customer/cart")
-    revalidatePath("/dashboard/customer/orders")
-    revalidatePath("/dashboard/customer/invoices")
-    revalidatePath("/dashboard/customer/settings")
     revalidatePath("/")
     return { success: true, message: "Booking confirmed successfully!", order: result }
 
@@ -418,6 +434,16 @@ export async function cancelBookingAndRefund(orderId: string) {
         }
       })
 
+      await tx.notification.create({
+        data: {
+          userId: order.userId,
+          title: "Order Cancelled & Refunded",
+          message: `Your booking order #${order.id.substring(0, 8).toUpperCase()} has been cancelled. Refunded: ₹${totalRefund.toLocaleString()}`,
+          type: "SYSTEM",
+          isRead: false
+        }
+      })
+
       // 3. If refund amount is > 0, credit customer's wallet
       if (totalRefund > 0) {
         await tx.user.update({
@@ -459,6 +485,16 @@ export async function cancelBookingAndRefund(orderId: string) {
             description: `Earnings deduction due to cancellation of Order #${order.id.substring(0, 8).toUpperCase()} (${Math.round(refundPercentage * 100)}% refund)`
           }
         })
+
+        await tx.notification.create({
+          data: {
+            userId: vendorId,
+            title: "Booking Order Cancelled",
+            message: `Order #${order.id.substring(0, 8).toUpperCase()} has been cancelled by the customer. Earnings deduction: ₹${debitAmount.toLocaleString()}`,
+            type: "TRANSACTION",
+            isRead: false
+          }
+        })
       }
 
       // 5. Update Invoice status to CANCELLED
@@ -487,9 +523,6 @@ export async function cancelBookingAndRefund(orderId: string) {
       return { updatedOrder, totalRefund, refundPolicyNotes }
     })
 
-    revalidatePath("/dashboard/customer/orders")
-    revalidatePath("/dashboard/customer/invoices")
-    revalidatePath("/dashboard/customer/settings")
     revalidatePath("/")
     revalidatePath("/dashboard/vendor/orders")
     
