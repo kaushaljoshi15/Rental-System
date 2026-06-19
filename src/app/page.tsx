@@ -70,6 +70,9 @@ import { searchHalls } from "@/actions/search"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Input } from "@/components/ui/input"
 import { CatalogSortSelect } from "@/components/catalog-sort-select"
+import { EventPlanner } from "@/components/customer/event-planner"
+import { CartDatePicker } from "@/components/customer/cart-date-picker"
+import { CartAddressSelector } from "@/components/customer/cart-address-selector"
 
 // Cache helper for category lists
 const getCachedCategories = unstable_cache(
@@ -416,186 +419,13 @@ export default async function HomePage({
       <Navbar />
 
       {isLoggedIn && activeTab && customerData?.user ? (
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 flex-1 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Sidebar Navigation Card */}
-            <aside className="lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md">
-              
-              {/* Profile Card Summary */}
-              <div className="flex items-center gap-3.5 pb-4 border-b border-slate-800/60">
-                <div className="relative">
-                  <img
-                    src={customerData.user.image || AVATAR_PRESETS[0].url}
-                    alt="Profile Avatar"
-                    className="w-12 h-12 rounded-full border-2 border-[#F59E0B]/80 shadow-md shadow-amber-500/5 bg-slate-850 object-cover ring-2 ring-amber-500/10 ring-offset-2 ring-offset-[#0F172A]"
-                  />
-                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-50 border-2 border-[#0F172A] animate-pulse" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[9px] text-slate-450 font-bold uppercase tracking-wider">Welcome back,</p>
-                  <p className="text-sm font-black text-slate-100 truncate">{customerData.user.name}</p>
-                </div>
-              </div>
-
-              {/* Navigation Links */}
-              <nav className="space-y-5">
-                <div>
-                  <p className="px-3 text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2.5">My Workspace</p>
-                  <div className="space-y-1.5">
-                    <Link
-                      href="/?tab=orders"
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "orders"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <Package className="w-4 h-4 shrink-0" />
-                        Orders & Bookings
-                      </span>
-                      {customerData.user.orders?.length > 0 && (
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                          activeTab === "orders" ? "bg-[#F59E0B] text-slate-950" : "bg-slate-800 text-slate-350"
-                        }`}>
-                          {customerData.user.orders.length}
-                        </span>
-                      )}
-                    </Link>
-
-                    <Link
-                      href="/?tab=wishlist"
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "wishlist"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <Heart className="w-4 h-4 shrink-0" />
-                      My Wishlist
-                    </Link>
-
-                    <Link
-                      href="/?tab=notifications"
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "notifications"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <Bell className="w-4 h-4 shrink-0" />
-                      Notifications
-                    </Link>
-
-                    <Link
-                      href="/?tab=cart"
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "cart"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <ShoppingCart className="w-4 h-4 shrink-0" />
-                        My Cart
-                      </span>
-                      {cartCount > 0 && (
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                          activeTab === "cart" ? "bg-[#F59E0B] text-slate-950" : "bg-slate-800 text-slate-350"
-                        }`}>
-                          {cartCount}
-                        </span>
-                      )}
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Account Settings</p>
-                  <div className="space-y-1.5">
-                    <Link
-                      href="/?tab=profile"
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "profile"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <User className="w-4 h-4 shrink-0" />
-                      Personal Details
-                    </Link>
-
-                    <Link
-                      href="/?tab=addresses"
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "addresses"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <MapPin className="w-4 h-4 shrink-0" />
-                      Saved Addresses
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Payments & Perks</p>
-                  <div className="space-y-1.5">
-                    <Link
-                      href="/?tab=wallet"
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "wallet"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <CreditCard className="w-4 h-4 shrink-0" />
-                        Wallet & Ledger
-                      </span>
-                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
-                        activeTab === "wallet" ? "bg-[#F59E0B] text-slate-950" : "bg-slate-800 text-[#F59E0B]"
-                      }`}>
-                        ₹{customerData.user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                      </span>
-                    </Link>
-
-                    <Link
-                      href="/?tab=coupons"
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
-                        activeTab === "coupons"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
-                          : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
-                      }`}
-                    >
-                      <Ticket className="w-4 h-4 shrink-0" />
-                      Available Coupons
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800/60">
-                  <Link
-                    href="/api/auth/signout"
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide text-[#F59E0B]/85 hover:bg-rose-950/20 hover:text-rose-400 transition-colors border-l-2 border-transparent"
-                  >
-                    <LogOut className="w-4 h-4 shrink-0 text-rose-450" />
-                    Sign Out Account
-                  </Link>
-                </div>
-              </nav>
-            </aside>
-
-            {/* Right Tab Viewport */}
-            <div className="lg:col-span-9 space-y-6 pt-2.5">
-            
-            {/* Tab: Cart */}
-            {activeTab === "cart" && (() => {
+        activeTab === "cart" ? (
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 flex-1 w-full">
+            {(() => {
               const hasCartItems = customerData?.cart && customerData.cart.lines.length > 0;
               const cartStartDate = customerData?.cart?.startDate ? new Date(customerData.cart.startDate) : new Date();
               const cartEndDate = customerData?.cart?.endDate ? new Date(customerData.cart.endDate) : new Date();
-              const cartDuration = Math.max(1, Math.ceil((cartEndDate.getTime() - cartStartDate.getTime()) / (1000 * 60 * 60 * 24)));
+              const cartDuration = Math.round((cartEndDate.getTime() - cartStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
               let baseTotal = 0;
               let weekendSurcharge = 0;
@@ -613,15 +443,19 @@ export default async function HomePage({
               }
 
               return (
-                <div className="space-y-6">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/60 pb-4">
+                <div className="space-y-6 animate-in fade-in duration-305">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/40 pb-5">
                     <div>
-                      <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase">Rental Quotation Cart</h1>
-                      <p className="text-slate-500 text-xs mt-0.5">Review items, schedule, select payment, and lock contract parameters.</p>
+                      <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Rental Quotation Cart</h1>
+                      <p className="text-slate-500 text-xs mt-1">Review items, lock inclusive dates, lock contract parameters & checkout.</p>
                     </div>
                     <div className="shrink-0 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-[#F59E0B] border border-amber-500/15">
-                        <Clock className="w-3.5 h-3.5" /> Draft Quotation
+                      <span className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider font-extrabold bg-slate-900 border border-slate-800 text-slate-200 shadow-sm">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]"></span>
+                        </span>
+                        Draft Quotation
                       </span>
                     </div>
                   </div>
@@ -630,50 +464,61 @@ export default async function HomePage({
                     {/* Left Column: Cart Items (8 cols) */}
                     <div className="lg:col-span-8 space-y-6">
                       {!hasCartItems ? (
-                        <div className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-sm rounded-3xl p-10 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
+                        <div className="bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-3xl p-12 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-6">
                           <div className="relative flex items-center justify-center w-20 h-20">
-                            <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
-                            <div className="h-14 w-14 bg-slate-900 border border-slate-800 text-white rounded-2xl flex items-center justify-center shadow-md">
-                              <ShoppingBag className="h-6 w-6 text-[#F59E0B]" />
+                            <div className="absolute inset-0 border border-dashed border-slate-200 rounded-full animate-[spin_20s_linear_infinite]" />
+                            <div className="h-14 w-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-md">
+                              <ShoppingBag className="h-5 w-5 text-[#F59E0B]" />
                             </div>
                           </div>
-                          <div className="space-y-1.5">
-                            <span className="text-[9px] bg-amber-500/10 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Cart Empty</span>
-                            <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-2">Your Cart is Empty</h3>
-                            <p className="text-xs text-slate-505 max-w-xs mx-auto leading-relaxed font-semibold">
+                          <div className="space-y-2">
+                            <span className="text-[10px] bg-slate-100 text-slate-655 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Cart Empty</span>
+                            <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-3">Your Cart is Empty</h3>
+                            <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed font-semibold">
                               Browse through our collections of high-end equipment, professional gear, and event spaces to start checkout.
                             </p>
                           </div>
                           <Link href="/">
-                            <Button className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5">
+                            <Button className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs rounded-xl h-11 px-8 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5">
                               Browse Catalog
                             </Button>
                           </Link>
                         </div>
                       ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-6">
+                          {/* Delivery / Setup Address Selector */}
+                          <CartAddressSelector
+                            initialAddress={customerData.user.address}
+                            userName={userName}
+                          />
+
                           {/* Schedule Summary Banner */}
-                          <div className="bg-gradient-to-r from-amber-500/8 via-amber-500/2 to-transparent border border-amber-500/15 p-4 rounded-2xl flex items-center justify-between shadow-xs">
-                            <div className="flex items-center gap-3">
-                              <div className="bg-amber-500/10 p-2 rounded-xl text-[#F59E0B] shrink-0 border border-amber-500/10">
+                          <div className="bg-white border border-slate-150 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
+                            <div className="flex items-center gap-4">
+                              <div className="bg-slate-50 p-3 rounded-xl text-slate-700 shrink-0 border border-slate-100">
                                 <CalendarIcon className="w-4 h-4" />
                               </div>
                               <div>
-                                <p className="text-xs font-bold text-slate-900 uppercase tracking-wide">Scheduled Rental Window</p>
-                                <p className="text-xs text-[#F59E0B] font-bold mt-0.5 font-mono">
-                                  {format(cartStartDate, "MMM dd")} - {format(cartEndDate, "MMM dd, yyyy")} ({cartDuration} Days duration)
+                                <p className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest">Scheduled Rental Window</p>
+                                <p className="text-sm text-slate-850 font-bold mt-1 font-sans">
+                                  {format(cartStartDate, "MMM dd")} - {format(cartEndDate, "MMM dd, yyyy")} 
+                                  <span className="ml-2.5 text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
+                                    {cartDuration} {cartDuration === 1 ? "Day" : "Days"}
+                                  </span>
                                 </p>
                               </div>
                             </div>
-                            <Link href="/">
-                              <Button variant="ghost" className="text-[#F59E0B] hover:text-amber-600 hover:bg-amber-500/10 font-bold text-xs h-8 px-3 rounded-lg transition-colors">
-                                Edit Dates
-                              </Button>
-                            </Link>
+                            <div className="w-full sm:w-auto shrink-0 flex justify-end">
+                              <CartDatePicker
+                                orderId={customerData.cart.id}
+                                initialFrom={cartStartDate}
+                                initialTo={cartEndDate}
+                              />
+                            </div>
                           </div>
 
                           {/* Cart Items Loop */}
-                          <div className="space-y-3">
+                          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] divide-y divide-slate-100">
                             {customerData.cart.lines.map((line: any) => (
                               <CartItem 
                                 key={line.id} 
@@ -698,6 +543,7 @@ export default async function HomePage({
                           initialWalletBalance={customerData.user.walletBalance}
                           cartTotal={cartTotal}
                           securityDeposit={totalSecurityDeposit}
+                          dbDiscountAmount={customerData.cart.discountAmount || 0}
                         />
                       </div>
                     )}
@@ -705,6 +551,172 @@ export default async function HomePage({
                 </div>
               );
             })()}
+          </main>
+        ) : (
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 flex-1 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Sidebar Navigation Card */}
+              <aside className="lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md">
+                
+                {/* Profile Card Summary */}
+                <div className="flex items-center gap-3.5 pb-4 border-b border-slate-800/60">
+                  <div className="relative">
+                    <img
+                      src={customerData.user.image || AVATAR_PRESETS[0].url}
+                      alt="Profile Avatar"
+                      className="w-12 h-12 rounded-full border-2 border-[#F59E0B]/80 shadow-md shadow-amber-500/5 bg-slate-850 object-cover ring-2 ring-amber-500/10 ring-offset-2 ring-offset-[#0F172A]"
+                    />
+                    <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-50 border-2 border-[#0F172A] animate-pulse" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[9px] text-slate-450 font-bold uppercase tracking-wider">Welcome back,</p>
+                    <p className="text-sm font-black text-slate-100 truncate">{customerData.user.name}</p>
+                  </div>
+                </div>
+
+                {/* Navigation Links */}
+                <nav className="space-y-5">
+                  <div>
+                    <p className="px-3 text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2.5">My Workspace</p>
+                    <div className="space-y-1.5">
+                      <Link
+                        href="/?tab=orders"
+                        className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "orders"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <Package className="w-4 h-4 shrink-0" />
+                          Orders & Bookings
+                        </span>
+                        {customerData.user.orders?.length > 0 && (
+                          <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                            activeTab === "orders" ? "bg-[#F59E0B] text-slate-950" : "bg-slate-800 text-slate-350"
+                          }`}>
+                            {customerData.user.orders.length}
+                          </span>
+                        )}
+                      </Link>
+
+                      <Link
+                        href="/?tab=wishlist"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "wishlist"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <Heart className="w-4 h-4 shrink-0" />
+                        My Wishlist
+                      </Link>
+
+                      <Link
+                        href="/?tab=notifications"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "notifications"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <Bell className="w-4 h-4 shrink-0" />
+                        Notifications
+                      </Link>
+
+                      <Link
+                        href="/?tab=event-planner"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "event-planner"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <CalendarIcon className="w-4 h-4 shrink-0" />
+                        Event Planner
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Account Settings</p>
+                    <div className="space-y-1.5">
+                      <Link
+                        href="/?tab=profile"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "profile"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <User className="w-4 h-4 shrink-0" />
+                        Personal Details
+                      </Link>
+
+                      <Link
+                        href="/?tab=addresses"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "addresses"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <MapPin className="w-4 h-4 shrink-0" />
+                        Saved Addresses
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Payments & Perks</p>
+                    <div className="space-y-1.5">
+                      <Link
+                        href="/?tab=wallet"
+                        className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "wallet"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <CreditCard className="w-4 h-4 shrink-0" />
+                          Wallet & Ledger
+                        </span>
+                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                          activeTab === "wallet" ? "bg-[#F59E0B] text-slate-950" : "bg-slate-800 text-[#F59E0B]"
+                        }`}>
+                          ₹{customerData.user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </span>
+                      </Link>
+
+                      <Link
+                        href="/?tab=coupons"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "coupons"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <Ticket className="w-4 h-4 shrink-0" />
+                        Available Coupons
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-800/60">
+                    <Link
+                      href="/api/auth/signout"
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide text-[#F59E0B]/85 hover:bg-rose-950/20 hover:text-rose-400 transition-colors border-l-2 border-transparent"
+                    >
+                      <LogOut className="w-4 h-4 shrink-0 text-rose-450" />
+                      Sign Out Account
+                    </Link>
+                  </div>
+                </nav>
+              </aside>
+
+              {/* Right Tab Viewport */}
+              <div className="lg:col-span-9 space-y-6 pt-2.5">
 
             {/* Tab: Orders */}
             {activeTab === "orders" && (() => {
@@ -842,7 +854,7 @@ export default async function HomePage({
                           {(() => {
                             const start = new Date(selectedOrder.startDate);
                             const end = new Date(selectedOrder.endDate);
-                            const duration = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+                            const duration = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
                             
                             let lineBaseTotal = 0;
                             for (const line of selectedOrder.lines) {
@@ -1019,7 +1031,7 @@ export default async function HomePage({
 
                         const start = new Date(order.startDate);
                         const end = new Date(order.endDate);
-                        const duration = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+                        const duration = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
                         const dotColors: Record<string, string> = {
                           PENDING: "bg-amber-500",
@@ -1354,10 +1366,15 @@ export default async function HomePage({
                 </div>
               </div>
             )}
+
+            {/* Tab: Event Planner */}
+            {activeTab === "event-planner" && (
+              <EventPlanner products={catalogProducts} categories={allCategories} />
+            )}
             </div>
           </div>
         </main>
-      ) : (
+      )) : (
         <>
           {/* Mobile Search Bar (Only shown on mobile) */}
           <div className="bg-white px-4 py-3 md:hidden border-b border-slate-200">

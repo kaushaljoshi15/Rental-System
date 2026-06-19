@@ -136,3 +136,109 @@ export async function submitQuotation(orderId: string) {
     return { success: false, message: "Failed to submit quotation" }
   }
 }
+
+// --- ADD BUNDLE TO CART (For Event Planner) ---
+export async function addBundleToCart(
+  items: { productId: string; price: number }[],
+  discountAmount: number,
+  dateRange: { from: Date; to: Date }
+) {
+  // 1. Check Auth
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) {
+    return { success: false, message: "Please log in to rent items.", code: "UNAUTHORIZED" }
+  }
+
+  try {
+    // 2. Find User
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    })
+    if (!user) return { success: false, message: "User not found." }
+
+    // 3. Delete existing QUOTATION order to clear any stale cart items
+    const activeOrder = await prisma.rentalOrder.findFirst({
+      where: { userId: user.id, status: "QUOTATION" }
+    })
+
+    if (activeOrder) {
+      await prisma.orderLine.deleteMany({
+        where: { orderId: activeOrder.id }
+      })
+    }
+
+    // 4. Create or update the order
+    let orderId = activeOrder?.id
+    if (!orderId) {
+      const newOrder = await prisma.rentalOrder.create({
+        data: {
+          userId: user.id,
+          status: "QUOTATION",
+          startDate: new Date(dateRange.from),
+          endDate: new Date(dateRange.to),
+          totalAmount: 0,
+          couponCode: "EVENT_BUNDLE",
+          discountAmount: discountAmount
+        }
+      })
+      orderId = newOrder.id
+    } else {
+      await prisma.rentalOrder.update({
+        where: { id: orderId },
+        data: {
+          startDate: new Date(dateRange.from),
+          endDate: new Date(dateRange.to),
+          couponCode: "EVENT_BUNDLE",
+          discountAmount: discountAmount
+        }
+      })
+    }
+
+    // 5. Add all bundle items
+    for (const item of items) {
+      await prisma.orderLine.create({
+        data: {
+          orderId: orderId,
+          productId: item.productId,
+          quantity: 1,
+          price: item.price
+        }
+      })
+    }
+
+    // 6. Update order total amount
+    const lines = await prisma.orderLine.findMany({ where: { orderId } })
+    const baseTotal = lines.reduce((acc, line) => acc + (line.price * line.quantity), 0)
+
+    await prisma.rentalOrder.update({
+      where: { id: orderId },
+      data: {
+        totalAmount: baseTotal
+      }
+    })
+
+    revalidatePath("/")
+    return { success: true, message: "Event bundle locked and added to your cart!" }
+  } catch (error) {
+    console.error("Add Bundle to Cart Error:", error)
+    return { success: false, message: "Failed to create event bundle in cart." }
+  }
+}
+
+// --- UPDATE CART DATES ---
+export async function updateCartDates(orderId: string, fromDate: Date, toDate: Date) {
+  try {
+    await prisma.rentalOrder.update({
+      where: { id: orderId },
+      data: {
+        startDate: new Date(fromDate),
+        endDate: new Date(toDate)
+      }
+    })
+    revalidatePath("/")
+    return { success: true, message: "Rental window updated!" }
+  } catch (error) {
+    console.error("Update Cart Dates Error:", error)
+    return { success: false, message: "Failed to update rental window." }
+  }
+}

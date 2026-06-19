@@ -14,7 +14,7 @@ import {
   CreditCard,
   Bell,
   Headphones,
-  Megaphone,
+  Calendar,
   Ticket,
   MapPin,
   LogOut
@@ -219,9 +219,9 @@ export async function Navbar() {
                       <Headphones className="w-4 h-4 text-slate-400" />
                       <span>24x7 Customer Care</span>
                     </Link>
-                    <Link href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
-                      <Megaphone className="w-4 h-4 text-slate-400" />
-                      <span>Advertise with Us</span>
+                    <Link href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Calendar className="w-4 h-4 text-slate-400" />
+                      <span>Event Planner</span>
                     </Link>
                   </div>
 
@@ -253,9 +253,9 @@ export async function Navbar() {
                     <Headphones className="w-4 h-4 text-slate-400" />
                     <span>24x7 Customer Care</span>
                   </Link>
-                  <Link href="/seller-center" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
-                    <Megaphone className="w-4 h-4 text-slate-400" />
-                    <span>Advertise on RentKart</span>
+                  <Link href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Calendar className="w-4 h-4 text-slate-400" />
+                    <span>Event Planner</span>
                   </Link>
                 </div>
               </div>

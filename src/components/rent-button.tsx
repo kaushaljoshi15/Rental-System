@@ -25,10 +25,7 @@ interface RentButtonProps {
 export function RentButton({ productId, price, stock }: RentButtonProps) {
   const [isPending, startTransition] = useTransition()
   const [isAdded, setIsAdded] = useState(false)
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 2),
-  })
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined)
   const router = useRouter()
 
   const days = date?.from && date?.to 

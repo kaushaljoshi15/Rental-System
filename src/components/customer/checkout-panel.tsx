@@ -29,6 +29,7 @@ interface CheckoutPanelProps {
   initialWalletBalance: number
   cartTotal: number // baseTotal + weekendSurcharge
   securityDeposit: number
+  dbDiscountAmount?: number
 }
 
 export function CheckoutPanel({
@@ -38,7 +39,8 @@ export function CheckoutPanel({
   weekendSurcharge,
   initialWalletBalance,
   cartTotal,
-  securityDeposit
+  securityDeposit,
+  dbDiscountAmount = 0
 }: CheckoutPanelProps) {
   const router = useRouter()
   
@@ -59,7 +61,7 @@ export function CheckoutPanel({
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   // Dynamic calculations
-  let discountAmount = 0
+  let discountAmount = dbDiscountAmount
   if (appliedCoupon) {
     if (appliedCoupon.discountType === "PERCENTAGE") {
       discountAmount = Math.round((appliedCoupon.discountValue / 100) * cartTotal * 100) / 100
@@ -134,54 +136,61 @@ export function CheckoutPanel({
   return (
     <div className="space-y-6">
       {/* Checkout details card */}
-      <Card className="p-6 bg-white border border-slate-200/60 shadow-md hover:shadow-lg transition-all duration-300 rounded-2xl relative overflow-hidden">
-        <h3 className="font-bold text-slate-900 text-sm mb-4.5 flex items-center gap-2 border-b border-slate-100 pb-2.5">
-          <FileText className="w-4 h-4 text-slate-400" /> Quotation Pricing Breakdown
+      <Card className="p-6 bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl relative overflow-hidden">
+        <h3 className="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-5 flex items-center gap-2 border-b border-slate-100 pb-3">
+          <FileText className="w-4 h-4 text-slate-450" /> Pricing Structure
         </h3>
         
         {/* Pricing Items */}
-        <div className="space-y-3.5 border-b border-slate-100 pb-4 mb-4 text-xs font-semibold text-slate-500">
+        <div className="space-y-3.5 border-b border-slate-100 pb-4.5 mb-5 text-xs font-semibold text-slate-500">
           <div className="flex justify-between">
-            <span>Rental Days</span>
-            <span className="text-slate-900 font-bold">{duration} Days</span>
+            <span className="text-slate-450">Rental Days</span>
+            <span className="text-slate-800 font-extrabold">{duration} Days</span>
           </div>
           <div className="flex justify-between">
-            <span>Base Subtotal</span>
-            <span className="text-slate-900 font-bold font-mono">₹{baseTotal.toLocaleString()}</span>
+            <span className="text-slate-450">Base Subtotal</span>
+            <span className="text-slate-800 font-bold font-mono">₹{baseTotal.toLocaleString()}</span>
           </div>
           {weekendSurcharge > 0 && (
-            <div className="flex justify-between text-[#F59E0B] font-bold">
-              <span>Weekend Surcharge (20% Peak)</span>
-              <span className="font-mono">+ ₹{weekendSurcharge.toLocaleString()}</span>
+            <div className="flex justify-between items-center text-amber-600">
+              <span className="flex items-center gap-1">
+                Weekend Surcharge
+                <span className="text-[8px] bg-amber-500/10 text-[#F59E0B] px-1.5 py-0.5 rounded font-black uppercase tracking-wider scale-90">Peak</span>
+              </span>
+              <span className="font-mono font-bold">+ ₹{weekendSurcharge.toLocaleString()}</span>
             </div>
           )}
           {discountAmount > 0 && (
             <div className="flex justify-between text-emerald-600 font-bold">
-              <span>Promo Code Discount</span>
+              <span>{appliedCoupon ? "Promo Code Discount" : "Event Bundle Discount"}</span>
               <span className="font-mono">- ₹{discountAmount.toLocaleString()}</span>
             </div>
           )}
           <div className="flex justify-between">
-            <span>Market CGST/SGST (18%)</span>
-            <span className="text-slate-900 font-bold font-mono">₹{tax.toLocaleString()}</span>
+            <span className="text-slate-450">Market CGST/SGST (18%)</span>
+            <span className="text-slate-800 font-bold font-mono">₹{tax.toLocaleString()}</span>
           </div>
           <div className="flex justify-between">
-            <span>Security Deposit (100% Refundable)</span>
-            <span className="text-slate-900 font-bold font-mono">₹{securityDeposit.toLocaleString()}</span>
+            <span className="text-slate-450">Security Deposit (100% Refundable)</span>
+            <span className="text-slate-800 font-bold font-mono">₹{securityDeposit.toLocaleString()}</span>
           </div>
         </div>
 
-        <div className="flex justify-between items-center mb-6 bg-slate-50/50 p-3 rounded-xl border border-slate-100">
-          <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">Grand Estimate</span>
-          <span className="text-lg font-black text-[#F59E0B] font-mono">
+        {/* Grand Estimate Card */}
+        <div className="flex justify-between items-center mb-6 bg-slate-950 text-white p-4 rounded-xl border border-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_12px_rgba(0,0,0,0.1)] select-none">
+          <div className="space-y-0.5">
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Grand Estimate</span>
+            <p className="text-[8px] text-slate-500 font-semibold leading-none">All inclusive simulation</p>
+          </div>
+          <span className="text-xl font-black text-[#F59E0B] font-mono tracking-tight">
             ₹{grandTotal.toLocaleString()}
           </span>
         </div>
 
         {/* Promo Coupon Form */}
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-2.5">
-          <Label htmlFor="coupon" className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-            <Ticket className="w-3.5 h-3.5 text-[#F59E0B]" /> Apply Coupon / Gift Card
+          <Label htmlFor="coupon" className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <Ticket className="w-3.5 h-3.5 text-[#F59E0B]" /> Apply Coupon Code
           </Label>
           <div className="flex gap-2">
             <Input
@@ -191,14 +200,14 @@ export function CheckoutPanel({
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
               disabled={!!appliedCoupon || validatingCoupon}
-              className="text-xs rounded-xl h-9.5 border-slate-200 uppercase font-mono tracking-wide"
+              className="text-xs rounded-xl h-9.5 border-slate-200 uppercase font-mono tracking-wide focus-visible:ring-slate-450"
             />
             {appliedCoupon ? (
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleRemoveCoupon}
-                className="text-xs font-bold h-9.5 rounded-xl px-4 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 transition-colors"
+                className="text-xs font-bold h-9.5 rounded-xl px-4 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 transition-colors cursor-pointer"
               >
                 Remove
               </Button>
@@ -207,7 +216,7 @@ export function CheckoutPanel({
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={validatingCoupon || !couponCode.trim()}
-                className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-9.5 rounded-xl px-5 transition-colors"
+                className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-9.5 rounded-xl px-5 transition-colors cursor-pointer"
               >
                 {validatingCoupon ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
               </Button>
@@ -224,105 +233,55 @@ export function CheckoutPanel({
 
         {/* Payment Methods */}
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-3">
-          <Label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+          <Label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
             <CreditCard className="w-3.5 h-3.5 text-[#F59E0B]" /> Select Payment Method
           </Label>
           <div className="grid grid-cols-1 gap-2.5">
-            <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all ${
-              paymentMethod === "CREDIT_CARD" ? "border-[#F59E0B] bg-[#F59E0B]/5 ring-1 ring-[#F59E0B]" : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/30"
-            }`}>
-              <input 
-                type="radio" 
-                name="paymentMethod" 
-                value="CREDIT_CARD" 
-                checked={paymentMethod === "CREDIT_CARD"} 
-                onChange={() => setPaymentMethod("CREDIT_CARD")}
-                className="accent-[#F59E0B] h-4 w-4"
-              />
-              <div className="text-xs font-semibold text-slate-800">Credit Card</div>
-            </label>
+            {[
+              { value: "CREDIT_CARD", label: "Credit Card" },
+              { value: "DEBIT_CARD", label: "Debit Card" },
+              { value: "UPI", label: "BHIM UPI (GPay / Paytm)" },
+              { value: "NET_BANKING", label: "Net Banking" },
+              { value: "WALLET", label: "Digital Wallet Balance", isWallet: true },
+              { value: "CASH_ON_DELIVERY", label: "Cash on Delivery (COD)" },
+            ].map((opt) => {
+              const isSelected = paymentMethod === opt.value;
+              const isWallet = !!opt.isWallet;
+              const isDisabled = isWallet && hasInsufficientWallet;
 
-            <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all ${
-              paymentMethod === "DEBIT_CARD" ? "border-[#F59E0B] bg-[#F59E0B]/5 ring-1 ring-[#F59E0B]" : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/30"
-            }`}>
-              <input 
-                type="radio" 
-                name="paymentMethod" 
-                value="DEBIT_CARD" 
-                checked={paymentMethod === "DEBIT_CARD"} 
-                onChange={() => setPaymentMethod("DEBIT_CARD")}
-                className="accent-[#F59E0B] h-4 w-4"
-              />
-              <div className="text-xs font-semibold text-slate-800">Debit Card</div>
-            </label>
-
-            <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all ${
-              paymentMethod === "UPI" ? "border-[#F59E0B] bg-[#F59E0B]/5 ring-1 ring-[#F59E0B]" : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/30"
-            }`}>
-              <input 
-                type="radio" 
-                name="paymentMethod" 
-                value="UPI" 
-                checked={paymentMethod === "UPI"} 
-                onChange={() => setPaymentMethod("UPI")}
-                className="accent-[#F59E0B] h-4 w-4"
-              />
-              <div className="text-xs font-semibold text-slate-800">BHIM UPI (GPay / Paytm / PhonePe)</div>
-            </label>
-
-            <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all ${
-              paymentMethod === "NET_BANKING" ? "border-[#F59E0B] bg-[#F59E0B]/5 ring-1 ring-[#F59E0B]" : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/30"
-            }`}>
-              <input 
-                type="radio" 
-                name="paymentMethod" 
-                value="NET_BANKING" 
-                checked={paymentMethod === "NET_BANKING"} 
-                onChange={() => setPaymentMethod("NET_BANKING")}
-                className="accent-[#F59E0B] h-4 w-4"
-              />
-              <div className="text-xs font-semibold text-slate-800">Net Banking</div>
-            </label>
-
-            <label className={`flex items-center justify-between p-3 border rounded-xl cursor-pointer transition-all ${
-              paymentMethod === "WALLET" ? "border-[#F59E0B] bg-[#F59E0B]/5 ring-1 ring-[#F59E0B]" : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/30"
-            } ${hasInsufficientWallet ? "opacity-60 cursor-not-allowed bg-slate-50" : ""}`}>
-              <div className="flex items-center gap-3">
-                <input 
-                  type="radio" 
-                  name="paymentMethod" 
-                  value="WALLET" 
-                  checked={paymentMethod === "WALLET"} 
-                  disabled={hasInsufficientWallet}
-                  onChange={() => setPaymentMethod("WALLET")}
-                  className="accent-[#F59E0B] h-4 w-4"
-                />
-                <div className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
-                  <Wallet className="w-3.5 h-3.5 text-[#F59E0B]" /> Digital Wallet Balance
+              return (
+                <div
+                  key={opt.value}
+                  onClick={() => !isDisabled && setPaymentMethod(opt.value)}
+                  className={`flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all duration-200 select-none ${
+                    isSelected 
+                      ? "border-slate-900 bg-slate-50/50 shadow-[0_2px_8px_rgba(0,0,0,0.03)]" 
+                      : "border-slate-200/60 hover:border-slate-350 hover:bg-slate-50/20"
+                  } ${isDisabled ? "opacity-40 cursor-not-allowed bg-slate-50" : ""}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                      isSelected ? "border-slate-900 bg-slate-900" : "border-slate-300 bg-white"
+                    }`}>
+                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      {isWallet && <Wallet className="w-3.5 h-3.5 text-[#F59E0B]" />}
+                      {opt.label}
+                    </span>
+                  </div>
+                  {isWallet && (
+                    <span className="text-xs font-bold text-slate-700 font-mono">
+                      ₹{initialWalletBalance.toLocaleString()}
+                    </span>
+                  )}
                 </div>
-              </div>
-              <div className="text-xs font-bold text-slate-700 font-mono">
-                ₹{initialWalletBalance.toLocaleString()}
-              </div>
-            </label>
-
-            <label className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all ${
-              paymentMethod === "CASH_ON_DELIVERY" ? "border-[#F59E0B] bg-[#F59E0B]/5 ring-1 ring-[#F59E0B]" : "border-slate-200 hover:border-slate-350 hover:bg-slate-50/30"
-            }`}>
-              <input 
-                type="radio" 
-                name="paymentMethod" 
-                value="CASH_ON_DELIVERY" 
-                checked={paymentMethod === "CASH_ON_DELIVERY"} 
-                onChange={() => setPaymentMethod("CASH_ON_DELIVERY")}
-                className="accent-[#F59E0B] h-4 w-4"
-              />
-              <div className="text-xs font-semibold text-slate-800">Cash on Delivery (COD)</div>
-            </label>
+              );
+            })}
           </div>
 
           {hasInsufficientWallet && (
-            <div className="flex gap-2.5 p-3 bg-rose-50 text-rose-800 rounded-xl border border-rose-200/50 text-xs mt-3.5">
+            <div className="flex gap-2.5 p-3.5 bg-rose-50 text-rose-800 rounded-xl border border-rose-200/40 text-xs mt-3.5">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold">Insufficient Wallet Balance</p>
@@ -364,7 +323,7 @@ export function CheckoutPanel({
       </Card>
 
       {/* Trust Badges box */}
-      <div className="bg-white border border-slate-200/60 rounded-2xl p-5 space-y-3.5 shadow-xs">
+      <div className="bg-white border border-slate-100 rounded-2xl p-5 space-y-3.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
         <div className="flex gap-2.5 items-start">
           <Lock className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
           <p className="text-[11px] text-slate-500 font-medium leading-relaxed">

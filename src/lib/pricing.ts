@@ -17,7 +17,7 @@ interface PricingBreakdown {
  */
 function normalizeDate(date: Date): Date {
   const d = new Date(date);
-  d.setUTCHours(0, 0, 0, 0);
+  d.setHours(0, 0, 0, 0);
   return d;
 }
 
@@ -29,15 +29,16 @@ export function calculateHallRent(baseRateDaily: number, start: Date, end: Date)
   const normalizedStart = normalizeDate(start);
   const normalizedEnd = normalizeDate(end);
 
+  const diffTime = normalizedEnd.getTime() - normalizedStart.getTime();
+  const totalDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
   let weekdayCount = 0;
   let weekendCount = 0;
-  let totalDays = 0;
   let total = 0;
 
   const current = new Date(normalizedStart);
-  while (current <= normalizedEnd) {
-    totalDays++;
-    const dayOfWeek = current.getUTCDay(); // 0 is Sunday, 6 is Saturday
+  for (let i = 0; i < totalDays; i++) {
+    const dayOfWeek = current.getDay(); // 0 is Sunday, 6 is Saturday
 
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       weekendCount++;
@@ -47,7 +48,7 @@ export function calculateHallRent(baseRateDaily: number, start: Date, end: Date)
       total += baseRateDaily; // Normal rate on weekdays
     }
 
-    current.setUTCDate(current.getUTCDate() + 1);
+    current.setDate(current.getDate() + 1);
   }
 
   const baseTotal = baseRateDaily * totalDays;
