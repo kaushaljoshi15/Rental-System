@@ -276,22 +276,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
               </CardContent>
             </Card>
 
-            {/* Payments Summary Cards */}
-            <Card className="border border-slate-200/60 shadow-xs rounded-2xl p-5 bg-white space-y-4">
-              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide border-b border-slate-100 pb-2.5">Payments Info</h4>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-500">
-                <span>Gift Card Balance</span>
-                <span className="text-emerald-600 font-bold">₹0</span>
-              </div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-500 pt-2.5 border-t border-slate-100">
-                <span>Saved Cards</span>
-                <span className="text-slate-400 font-medium">None</span>
-              </div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-500 pt-2.5 border-t border-slate-100">
-                <span>Saved UPI</span>
-                <span className="text-slate-400 font-medium">None</span>
-              </div>
-            </Card>
+
           </div>
 
           {/* Contact Details / Edit Profile Form (Spans 2 columns) */}

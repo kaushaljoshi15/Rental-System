@@ -35,6 +35,7 @@ import {
   Bell,
   Ticket,
   Gift,
+  Phone,
   ArrowDownLeft,
   ArrowUpRight,
   HelpCircle,
@@ -50,6 +51,8 @@ import {
   ImageOff
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import { SearchBar } from "@/components/search-bar"
+import { Suspense } from "react"
 import { RentButton } from "@/components/rent-button"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { SettingsForm } from "@/components/customer/settings-form"
@@ -73,6 +76,7 @@ import { CatalogSortSelect } from "@/components/catalog-sort-select"
 import { EventPlanner } from "@/components/customer/event-planner"
 import { CartDatePicker } from "@/components/customer/cart-date-picker"
 import { CartAddressSelector } from "@/components/customer/cart-address-selector"
+import { GiftCardsManager, SavedCardsManager, SavedUpiManager } from "@/components/customer/payment-managers"
 
 // Cache helper for category lists
 const getCachedCategories = unstable_cache(
@@ -415,7 +419,7 @@ export default async function HomePage({
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-[#EEF2F6] via-[#F8FAFC] to-[#FCF8F2] flex flex-col font-sans select-none text-slate-900">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900">
       <Navbar />
 
       {isLoggedIn && activeTab && customerData?.user ? (
@@ -444,21 +448,14 @@ export default async function HomePage({
 
               return (
                 <div className="space-y-6 animate-in fade-in duration-305">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/40 pb-5">
-                    <div>
-                      <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Rental Quotation Cart</h1>
-                      <p className="text-slate-500 text-xs mt-1">Review items, lock inclusive dates, lock contract parameters & checkout.</p>
+                  {hasCartItems && (
+                    <div className="bg-white border border-slate-200/60 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+                      <CartAddressSelector
+                        initialAddress={customerData.user.address}
+                        userName={userName}
+                      />
                     </div>
-                    <div className="shrink-0 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full text-[10px] uppercase tracking-wider font-extrabold bg-slate-900 border border-slate-800 text-slate-200 shadow-sm">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]"></span>
-                        </span>
-                        Draft Quotation
-                      </span>
-                    </div>
-                  </div>
+                  )}
 
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     {/* Left Column: Cart Items (8 cols) */}
@@ -485,21 +482,15 @@ export default async function HomePage({
                           </Link>
                         </div>
                       ) : (
-                        <div className="space-y-6">
-                          {/* Delivery / Setup Address Selector */}
-                          <CartAddressSelector
-                            initialAddress={customerData.user.address}
-                            userName={userName}
-                          />
-
+                        <div className="bg-white border border-slate-200/60 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden divide-y divide-slate-100">
                           {/* Schedule Summary Banner */}
-                          <div className="bg-white border border-slate-150 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
+                          <div className="p-6 bg-slate-50/40 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
-                              <div className="bg-slate-50 p-3 rounded-xl text-slate-700 shrink-0 border border-slate-100">
-                                <CalendarIcon className="w-4 h-4" />
+                              <div className="bg-white p-2.5 rounded-xl text-slate-700 shrink-0 border border-slate-100 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+                                <CalendarIcon className="w-4 h-4 text-slate-500" />
                               </div>
                               <div>
-                                <p className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest">Scheduled Rental Window</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-405">Scheduled Rental Window</p>
                                 <p className="text-sm text-slate-850 font-bold mt-1 font-sans">
                                   {format(cartStartDate, "MMM dd")} - {format(cartEndDate, "MMM dd, yyyy")} 
                                   <span className="ml-2.5 text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
@@ -518,7 +509,7 @@ export default async function HomePage({
                           </div>
 
                           {/* Cart Items Loop */}
-                          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] divide-y divide-slate-100">
+                          <div className="p-6 divide-y divide-slate-100">
                             {customerData.cart.lines.map((line: any) => (
                               <CartItem 
                                 key={line.id} 
@@ -699,6 +690,42 @@ export default async function HomePage({
                       >
                         <Ticket className="w-4 h-4 shrink-0" />
                         Available Coupons
+                      </Link>
+
+                      <Link
+                        href="/?tab=gift-cards"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "gift-cards"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <Gift className="w-4 h-4 shrink-0" />
+                        Gift Cards
+                      </Link>
+
+                      <Link
+                        href="/?tab=saved-cards"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "saved-cards"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <CreditCard className="w-4 h-4 shrink-0" />
+                        Saved Cards
+                      </Link>
+
+                      <Link
+                        href="/?tab=saved-upi"
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
+                          activeTab === "saved-upi"
+                            ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                            : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
+                        }`}
+                      >
+                        <Phone className="w-4 h-4 shrink-0" />
+                        Saved UPI
                       </Link>
                     </div>
                   </div>
@@ -1371,6 +1398,39 @@ export default async function HomePage({
             {activeTab === "event-planner" && (
               <EventPlanner products={catalogProducts} categories={allCategories} />
             )}
+
+            {/* Tab: Gift Cards */}
+            {activeTab === "gift-cards" && (
+              <div className="space-y-6">
+                <div>
+                  <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Gift Cards</h1>
+                  <p className="text-slate-505 text-xs mt-0.5">Manage your Gift Card balance and redeem gift vouchers.</p>
+                </div>
+                <GiftCardsManager />
+              </div>
+            )}
+
+            {/* Tab: Saved Cards */}
+            {activeTab === "saved-cards" && (
+              <div className="space-y-6">
+                <div>
+                  <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Saved Cards</h1>
+                  <p className="text-slate-505 text-xs mt-0.5">Securely manage your saved credit and debit cards for fast checkout.</p>
+                </div>
+                <SavedCardsManager />
+              </div>
+            )}
+
+            {/* Tab: Saved UPI */}
+            {activeTab === "saved-upi" && (
+              <div className="space-y-6">
+                <div>
+                  <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Saved UPI IDs</h1>
+                  <p className="text-slate-505 text-xs mt-0.5">Manage your linked Virtual Payment Address handles.</p>
+                </div>
+                <SavedUpiManager />
+              </div>
+            )}
             </div>
           </div>
         </main>
@@ -1378,17 +1438,9 @@ export default async function HomePage({
         <>
           {/* Mobile Search Bar (Only shown on mobile) */}
           <div className="bg-white px-4 py-3 md:hidden border-b border-slate-200">
-            <form action="/" method="GET">
-              <div className="relative flex items-center">
-                <Search className="absolute left-3.5 h-4 w-4 text-slate-400" />
-                <input 
-                  type="text" 
-                  name="query" 
-                  placeholder="Search equipment or halls to rent..." 
-                  className="w-full bg-slate-50 border border-slate-200 text-sm rounded-lg pl-10 pr-4 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500"
-                />
-              </div>
-            </form>
+            <Suspense fallback={<div className="h-10 bg-slate-550/10 border border-slate-200 rounded-xl animate-pulse w-full" />}>
+              <SearchBar isDark={false} placeholder="Search equipment or halls to rent..." />
+            </Suspense>
           </div>
 
           {/* --- TOP SLIDER CAROUSEL (MYNTRA/FLIPKART INTERFACE) --- */}

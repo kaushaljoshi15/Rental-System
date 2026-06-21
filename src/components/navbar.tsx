@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { Suspense } from "react"
+import { SearchBar } from "@/components/search-bar"
 import { 
   Search, 
   ShoppingCart, 
@@ -63,24 +65,16 @@ export async function Navbar() {
             <ShoppingCart className="w-5 h-5 text-[#0F172A] z-10" />
             <div className="absolute inset-0 bg-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
-          <span className="text-xl font-extrabold tracking-tight select-none text-white group-hover:text-amber-400 transition-colors">
+          <span className="text-xl font-extrabold tracking-tight select-none text-white">
             Rent<span className="text-[#F59E0B]">Kart</span>
           </span>
         </Link>
 
         {/* Minimalist Search Bar (Linear/Stripe style) */}
-        <div className="flex-1 max-w-lg relative group hidden md:block mx-4">
-          <form action="/" method="GET">
-            <div className="relative flex items-center">
-              <Search className="absolute left-3.5 h-4 w-4 text-slate-400 group-focus-within:text-[#F59E0B] transition-colors" />
-              <input 
-                type="text" 
-                name="query" 
-                placeholder="Search equipment, sound systems, banquet halls..." 
-                className="w-full bg-slate-850 border border-slate-700/50 text-sm rounded-xl pl-10 pr-4 py-2 text-white placeholder:text-slate-400 focus:outline-none focus:bg-slate-800 focus:border-[#F59E0B] focus:ring-4 focus:ring-amber-500/20 transition-all font-semibold"
-              />
-            </div>
-          </form>
+        <div className="flex-1 max-w-lg hidden md:block mx-4">
+          <Suspense fallback={<div className="h-10 bg-slate-850/50 border border-slate-800 rounded-xl animate-pulse w-full" />}>
+            <SearchBar isDark={true} placeholder="Search equipment, sound systems, banquet halls..." />
+          </Suspense>
         </div>
 
         {/* User Controls Menu */}

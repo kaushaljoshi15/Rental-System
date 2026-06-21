@@ -15,7 +15,7 @@ import {
   Mail, 
   Lock,
   Eye,
-  EyeOff,
+  EyeOff,       
   Building,
   ArrowRight
 } from "lucide-react"

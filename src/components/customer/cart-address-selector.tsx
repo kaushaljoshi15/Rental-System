@@ -35,10 +35,10 @@ interface CartAddressSelectorProps {
 }
 
 const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", 
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
   "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
   "Delhi", "Chandigarh", "Jammu and Kashmir", "Puducherry"
 ]
@@ -92,7 +92,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
 
   if (addresses.length === 0) {
     return (
-      <div className="bg-white border border-slate-150 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] animate-in fade-in duration-200">
+      <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white animate-in fade-in duration-200">
         <div className="flex items-center gap-4 w-full sm:w-auto text-left">
           <div className="bg-rose-50 p-3 rounded-xl text-rose-600 shrink-0 border border-rose-100/50">
             <MapPin className="w-4 h-4 text-rose-550" />
@@ -191,7 +191,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
   }
 
   return (
-    <div className="bg-white border border-slate-150 p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
+    <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white">
       <div className="flex items-center gap-4 w-full sm:w-auto">
         <div className="bg-slate-50 p-3 rounded-xl text-slate-700 shrink-0 border border-slate-100">
           <MapPin className="w-4 h-4" />
@@ -250,11 +250,10 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                       <div
                         key={addr.id}
                         onClick={() => handleSelectAddress(addr.id)}
-                        className={`p-3.5 border rounded-xl cursor-pointer text-left transition-all relative ${
-                          isCurrent
+                        className={`p-3.5 border rounded-xl cursor-pointer text-left transition-all relative ${isCurrent
                             ? "border-slate-900 bg-slate-50/50 shadow-[0_2px_6px_rgba(0,0,0,0.02)]"
                             : "border-slate-200/80 hover:border-slate-350 hover:bg-slate-50/30"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <p className="text-xs font-bold text-slate-800">{addr.name}</p>
