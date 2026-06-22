@@ -22,7 +22,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
   let title = "Rental Term Estimator";
   let subtitle = "Unlock bulk discounts with longer hire periods";
   let unitName = "item";
-  let basePrice = 1000;
+  let initialBasePrice = 1000;
   let tiers: DurationTier[] = [
     { days: 3, label: "3 Days", discount: 10, code: "RENT3" },
     { days: 7, label: "7 Days", discount: 20, code: "RENT7" },
@@ -33,7 +33,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
     title = "Couture Rental Planner";
     subtitle = "Luxury wedding wear daily discount calculator";
     unitName = "Lehenga / Sherwani";
-    basePrice = 4000;
+    initialBasePrice = 4000;
     tiers = [
       { days: 3, label: "Wedding Weekend (3 Days)", discount: 15, code: "ROYAL3" },
       { days: 7, label: "Extended Celebrations (7 Days)", discount: 30, code: "ROYAL7" },
@@ -43,7 +43,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
     title = "Production Budget Simulator";
     subtitle = "Calculate cinema camera and lens kit multi-day rates";
     unitName = "Cine/Pro Camera Gear";
-    basePrice = 2500;
+    initialBasePrice = 2500;
     tiers = [
       { days: 3, label: "Short Shoot (3 Days)", discount: 10, code: "CINE3" },
       { days: 7, label: "Weekly Production (7 Days)", discount: 25, code: "CINE7" },
@@ -53,7 +53,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
     title = "Banquet Event Estimator";
     subtitle = "Rent premium spaces & structural infrastructure";
     unitName = "Banquet Space / Setup";
-    basePrice = 30000;
+    initialBasePrice = 30000;
     tiers = [
       { days: 2, label: "Sangeet + Marriage (2 Days)", discount: 10, code: "VENUE2" },
       { days: 3, label: "Complete Wedding Rituals (3 Days)", discount: 20, code: "VENUE3" },
@@ -63,7 +63,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
     title = "Enterprise Lease Calculator";
     subtitle = "Lease high computing workstations & tech gear";
     unitName = "MacBook Pro / Workstation";
-    basePrice = 800;
+    initialBasePrice = 800;
     tiers = [
       { days: 7, label: "Sprint Week (7 Days)", discount: 15, code: "TECH7" },
       { days: 30, label: "Monthly Contract (30 Days)", discount: 35, code: "TECH30" },
@@ -73,7 +73,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
     title = "PA & Concert Audio Estimator";
     subtitle = "DJ setups, speaker columns, and mixing rigs multi-day deals";
     unitName = "Audio Sound System";
-    basePrice = 5000;
+    initialBasePrice = 5000;
     tiers = [
       { days: 2, label: "Weekend Concert (2 Days)", discount: 12, code: "SOUND2" },
       { days: 3, label: "Gig + Setup Period (3 Days)", discount: 22, code: "SOUND3" },
@@ -83,7 +83,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
     title = "Expedition Gear Estimator";
     subtitle = "Save on high-altitude Decathlon tents & trekking packs";
     unitName = "Camping Gear Kit";
-    basePrice = 400;
+    initialBasePrice = 400;
     tiers = [
       { days: 3, label: "Weekend Trek (3 Days)", discount: 15, code: "CAMP3" },
       { days: 7, label: "Himalayan Passage (7 Days)", discount: 30, code: "CAMP7" },
@@ -91,6 +91,7 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
     ];
   }
 
+  const [basePrice, setBasePrice] = useState(initialBasePrice);
   const [selectedTierIdx, setSelectedTierIdx] = useState(0);
   const activeTier = tiers[selectedTierIdx];
 
@@ -153,10 +154,43 @@ export function RentalSimulator({ categorySlug }: RentalSimulatorProps) {
         </div>
 
         {/* Middle Live Cost Calculation Breakdown Panel */}
-        <div className="lg:col-span-4 bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-4">
+        <div className="lg:col-span-4 bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-3.5">
           <div className="space-y-2">
             <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest block">Cost Calculation ({unitName})</span>
             
+            {/* Interactive Daily Rate editor */}
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
+              <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">Daily Rate</span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setBasePrice(prev => Math.max(10, prev - 100))}
+                  className="w-6 h-6 rounded bg-slate-250 hover:bg-slate-350 text-slate-800 font-black flex items-center justify-center text-xs transition-colors cursor-pointer select-none"
+                >
+                  -
+                </button>
+                <div className="relative flex items-center">
+                  <span className="absolute left-2 text-[10px] font-bold text-slate-400 font-mono">₹</span>
+                  <input
+                    type="text"
+                    value={basePrice}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value.replace(/\D/g, ""));
+                      setBasePrice(isNaN(val) ? 0 : val);
+                    }}
+                    className="w-20 pl-4.5 pr-1.5 py-0.5 text-center font-mono font-bold text-xs bg-white border border-slate-250 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setBasePrice(prev => prev + 100)}
+                  className="w-6 h-6 rounded bg-slate-250 hover:bg-slate-350 text-slate-800 font-black flex items-center justify-center text-xs transition-colors cursor-pointer select-none"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
             <div className="flex justify-between items-baseline text-slate-650 text-xs">
               <span className="font-semibold">Standard Rate ({activeTier.days}d)</span>
               <span className="font-mono line-through">₹{calculatedOriginalTotal.toLocaleString()}</span>
