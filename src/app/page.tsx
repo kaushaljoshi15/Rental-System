@@ -361,7 +361,7 @@ export default async function HomePage({
 
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900 overflow-x-clip">
       <Navbar />
 
       {isLoggedIn && activeTab && customerData?.user ? (
@@ -1390,173 +1390,196 @@ export default async function HomePage({
             <HeroCarousel categorySlug={categorySlug} />
             <RecentlyViewedSection allProducts={allProductsForSearch} userName={userName} />
           </section>
-
-          {/* --- PUBLIC CUSTOMER INTERFACE MAIN CONTENT --- */}
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16">
-            
-            {/* --- 2. DYNAMIC DUAL COLUMN CATALOG WITH FILTERS --- */}
-            <section className="space-y-6">
-              <div className="flex justify-between items-end border-b border-slate-200 pb-3">
-                <div>
-                  <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Rentals Catalog</h2>
+            {!categorySlug ? (
+              <div className="space-y-16">
+                {/* Row 1: Top Selection */}
+                <div className="bg-[#0A5C36] rounded-2xl p-4 md:p-6 shadow-md text-white select-none">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-black uppercase tracking-wide">Top Selection</h3>
+                    <div className="bg-white/10 hover:bg-white/20 p-2 rounded-full cursor-pointer transition-colors">
+                      <ChevronRight className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { name: "Canon Pro DSLR", badge: "Most-loved", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400" },
+                      { name: "JBL Concert Sound", badge: "Grab Or Gone", image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80&w=400" },
+                      { name: "Designer Bridal Wear", badge: "Popular", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400" },
+                      { name: "Executive Office Chairs", badge: "Best Picks", image: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=400" },
+                    ].map((item, idx) => (
+                      <div key={idx} className="bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
+                        <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="pt-2 flex flex-col justify-end flex-grow">
+                          <p className="text-slate-900 text-xs font-black uppercase leading-tight line-clamp-2">{item.name}</p>
+                          <p className="text-emerald-700 text-[10px] font-black uppercase tracking-wider mt-1">{item.badge}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 2: Premium Rent Partners */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Premium Rent Partners</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                      { brand: "Sony Cinema", offer: "Up to 40% Off", desc: "Pro video packages", image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=400" },
+                      { brand: "Manyavar Groom", offer: "Up to 30% Off", desc: "Luxury wedding fashion", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=400" },
+                      { brand: "DJI Enterprise", offer: "Flat 15% Off", desc: "Drones & stabilizers", image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&q=80&w=400" },
+                    ].map((partner, idx) => (
+                      <div key={idx} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-3 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:shadow-md transition-all duration-200">
+                        <div className="aspect-[16/10] bg-slate-100 rounded-xl overflow-hidden relative shrink-0">
+                          <img src={partner.image} alt={partner.brand} className="w-full h-full object-cover" />
+                          <span className="absolute top-2.5 right-2.5 bg-slate-900/60 text-white font-extrabold text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full select-none">Partner</span>
+                        </div>
+                        <div className="pt-3.5 space-y-1">
+                          <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{partner.brand}</h4>
+                          <p className="text-slate-900 text-sm font-black uppercase tracking-wide leading-tight">{partner.offer}</p>
+                          <p className="text-slate-505 text-xs font-semibold">{partner.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 3: Featured Brands */}
+                <div className="space-y-4 select-none">
+                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Featured Brands</h3>
+                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                    {[
+                      { brand: "Canon", tagline: "Premium glass range", offer: "Shop now", image: "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&q=80&w=400" },
+                      { brand: "Pioneer DJ", tagline: "Pro mixing gear", offer: "Sale is live", image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=400" },
+                      { brand: "Herman Miller", tagline: "Top comfort for work", offer: "Shop now", image: "https://images.unsplash.com/photo-1589384267710-7a259678a59a?auto=format&fit=crop&q=80&w=400" },
+                      { brand: "Bose Pro", tagline: "Bold sound acoustics", offer: "Min. 30% Off", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400" },
+                      { brand: "Apple Workstation", tagline: "MacBook Pro M3", offer: "From ₹1,599/d", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400" }
+                    ].map((b, idx) => (
+                      <div key={idx} className="flex-shrink-0 w-64 bg-slate-900/90 rounded-2xl overflow-hidden p-3 relative h-36 flex flex-col justify-between text-white shadow-md hover:scale-[1.02] transition-transform duration-200">
+                        <div className="absolute inset-0 opacity-40 bg-cover bg-center" style={{ backgroundImage: `url(${b.image})` }} />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-955 via-slate-955/60 to-transparent" />
+                        <div className="relative z-10 flex justify-between items-start">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-amber-500">{b.brand}</span>
+                          <span className="text-[8px] bg-white/20 text-white font-extrabold px-1.5 py-0.5 rounded uppercase">AD</span>
+                        </div>
+                        <div className="relative z-10 space-y-1">
+                          <p className="text-[11px] font-semibold text-slate-300 leading-tight">{b.tagline}</p>
+                          <p className="text-xs font-black uppercase text-white tracking-wide">{b.offer}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 4: Spotlight's On */}
+                <div className="bg-[#FACC15] rounded-2xl p-4 md:p-6 shadow-md text-slate-900 select-none">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-black uppercase tracking-wide">Spotlight's On</h3>
+                    <div className="bg-slate-955/10 hover:bg-slate-955/20 p-2 rounded-full cursor-pointer transition-colors">
+                      <ChevronRight className="w-4 h-4 text-slate-900" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { name: "Wedding Gowns", badge: "From ₹1,199/day", image: "https://images.unsplash.com/photo-1605001011156-cbf0b0f67a51?auto=format&fit=crop&q=80&w=400", action: "Shop now" },
+                      { name: "Studio Mics", badge: "Under ₹499/day", image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=400", action: "Pro Audio" },
+                      { name: "Camping Tents", badge: "Min. 40% Off", image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=400", action: "Coleman rigs" },
+                      { name: "PlayStation 5", badge: "Min. 50% Off", image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400", action: "Consoles & VR" },
+                    ].map((item, idx) => (
+                      <div key={idx} className="bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
+                        <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="pt-2 flex flex-col justify-end flex-grow">
+                          <p className="text-slate-900 text-xs font-black uppercase leading-tight line-clamp-1">{item.name}</p>
+                          <p className="text-slate-500 text-[10px] font-bold uppercase mt-0.5">{item.action}</p>
+                          <p className="text-[#0A5C36] text-[10.5px] font-black uppercase tracking-wider mt-1">{item.badge}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Row 5: Suggested For You */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Suggested For You</h3>
+                    <div className="bg-slate-200/60 hover:bg-slate-200/90 p-2 rounded-full cursor-pointer transition-colors select-none">
+                      <ChevronRight className="w-4 h-4 text-slate-700" />
+                    </div>
+                  </div>
+                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                    {catalogProducts.slice(0, 6).map((product, idx) => {
+                      const { rating } = getSimulatedRating(product.id)
+                      const { mrp, discount } = getSimulatedMRP(product.priceDaily)
+                      return (
+                        <div key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
+                          <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
+                            <img src={product.image || ''} alt={product.name} className="w-full h-full object-cover" />
+                            <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm" style={{ backgroundColor: '#047857' }}>
+                              {rating} <Star className="w-2.5 h-2.5 fill-current" />
+                            </span>
+                          </div>
+                          <div className="pt-2.5 flex flex-col justify-between flex-grow">
+                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
+                            <div className="mt-2 space-y-0.5 font-mono">
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-xs text-slate-450 line-through">₹{mrp}</span>
+                                <span className="text-sm font-black text-slate-955">₹{product.priceDaily.toLocaleString()}</span>
+                              </div>
+                              <p className="text-[9.5px] font-bold text-amber-600">with Coupon + more</p>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Row 6: Great Finds For You */}
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Great finds for you</h3>
+                    <p className="text-slate-400 text-[9px] font-extrabold uppercase tracking-wide mt-0.5">Sponsored</p>
+                  </div>
+                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                    {catalogProducts.slice(6, 12).map((product, idx) => {
+                      const { rating } = getSimulatedRating(product.id)
+                      const { mrp } = getSimulatedMRP(product.priceDaily)
+                      const bankOfferPrice = Math.round(product.priceDaily * 0.9)
+                      return (
+                        <div key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
+                          <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
+                            <img src={product.image || ''} alt={product.name} className="w-full h-full object-cover" />
+                            <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm" style={{ backgroundColor: '#047857' }}>
+                              {rating} <Star className="w-2.5 h-2.5 fill-current" />
+                            </span>
+                          </div>
+                          <div className="pt-2.5 flex flex-col justify-between flex-grow">
+                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
+                            <div className="mt-2 space-y-0.5 font-mono">
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-xs text-slate-455 line-through">₹{mrp}</span>
+                                <span className="text-sm font-black text-slate-955">₹{product.priceDaily.toLocaleString()}</span>
+                              </div>
+                              <p className="text-[9.5px] font-bold text-indigo-650">₹{bankOfferPrice.toLocaleString()} with Bank offer</p>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Explore All Rentals Header */}
+                <div className="pt-8 border-t border-slate-200">
+                  <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Explore All Rentals</h2>
                   <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Filter, sort, and rent premium gear & spaces directly</p>
                 </div>
-              </div>
 
-              {/* Grid Header & Sorting Controls */}
-              <div className="flex justify-between items-center bg-white border border-slate-200/80 rounded-xl px-4 py-3 shadow-sm" style={{ boxShadow: PREMIUM_BOX_SHADOW }}>
-                <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider font-sans">
-                  Found {catalogProducts.length} {catalogProducts.length === 1 ? 'Rentable Asset' : 'Rentable Assets'}
-                </span>
-                <CatalogSortSelect />
-              </div>
-
-              <div className="flex flex-col lg:flex-row gap-8">
-                
-                {/* Catalog Sidebar */}
-                <aside className="w-full lg:w-64 flex-shrink-0 space-y-6">
-                  {/* Card 1: Categories scroll block */}
-                  <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
-                    <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                      <h3 className="font-semibold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wide">
-                        <Filter className="w-4 h-4" /> Categories
-                      </h3>
-                    </div>
-                    <ScrollArea className="h-[320px] lg:h-[400px]">
-                      <div className="p-2 space-y-3">
-                        <Link href={buildFilterUrl({ category: null })}>
-                          <Button 
-                            variant="ghost" 
-                            className={`w-full justify-start text-xs h-8 ${!categorySlug ? "bg-slate-105 text-slate-900 font-semibold" : "text-slate-650 hover:text-slate-950"}`}
-                          >
-                            All Products
-                          </Button>
-                        </Link>
-
-                        {Object.entries(groupedCategories).map(([groupName, groupCats]) => (
-                          <div key={groupName} className="space-y-1">
-                            <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider px-2 pt-2 pb-0.5 border-t border-slate-100 first:border-0">
-                              {groupName}
-                            </h4>
-                            {groupCats.map((cat) => (
-                              <Link key={cat.id} href={buildFilterUrl({ category: cat.slug })}>
-                                <Button 
-                                  variant="ghost" 
-                                  className={`w-full justify-start text-xs h-7 px-2.5 py-1 text-left ${categorySlug === cat.slug ? "bg-amber-100 text-amber-950 font-semibold" : "text-slate-650 hover:text-slate-950"}`}
-                                >
-                                  <span className="truncate">{cat.name}</span>
-                                </Button>
-                              </Link>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </Card>
-
-                  {/* Card 2: Refine Filters */}
-                  <Card className="border-slate-200 shadow-sm bg-white overflow-hidden">
-                    <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                      <h3 className="font-semibold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wide">
-                        <Filter className="w-4 h-4" /> Refine Search
-                      </h3>
-                    </div>
-                    <div className="p-4 space-y-6">
-                      {/* Price Range */}
-                      <div className="space-y-2">
-                        <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Price Range (/day)</h4>
-                        <form action="/" method="GET" className="space-y-2">
-                          {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
-                          {searchQuery && <input type="hidden" name="query" value={searchQuery} />}
-                          {sort && <input type="hidden" name="sort" value={sort} />}
-                          {params?.rating && <input type="hidden" name="rating" value={params.rating} />}
-                          {vendorId && <input type="hidden" name="vendorId" value={vendorId} />}
-                          
-                          <div className="flex gap-2 items-center">
-                            <Input 
-                              name="minPrice" 
-                              type="number"
-                              placeholder="Min" 
-                              defaultValue={params?.minPrice || ''}
-                              className="h-8 text-xs px-2 shadow-none border-slate-200"
-                            />
-                            <span className="text-slate-400 text-xs">-</span>
-                            <Input 
-                              name="maxPrice" 
-                              type="number"
-                              placeholder="Max" 
-                              defaultValue={params?.maxPrice || ''}
-                              className="h-8 text-xs px-2 shadow-none border-slate-200"
-                            />
-                            <Button type="submit" size="sm" className="h-8 px-2.5 bg-slate-800 hover:bg-slate-950 text-white text-xs border-0 rounded-lg shrink-0 font-bold">
-                              Go
-                            </Button>
-                          </div>
-                        </form>
-                      </div>
-
-                      {/* Customer Reviews */}
-                      <div className="space-y-2">
-                        <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Customer Reviews</h4>
-                        <div className="space-y-1 flex flex-col">
-                          {[4, 3, 2].map((num) => (
-                            <Link 
-                              key={num} 
-                              href={buildFilterUrl({ rating: num.toString() })}
-                              className={`text-xs flex items-center gap-1.5 py-1 px-2 rounded-lg hover:bg-slate-50 transition-colors ${rating === num ? 'bg-amber-50 text-amber-950 font-bold border border-amber-200/50' : 'text-slate-650 hover:text-slate-950'}`}
-                            >
-                              <div className="flex text-amber-500 shrink-0">
-                                {Array.from({ length: 5 }).map((_, idx) => (
-                                  <Star 
-                                    key={idx} 
-                                    className={`w-3.5 h-3.5 ${idx < num ? 'fill-current' : 'text-slate-200'}`} 
-                                  />
-                                ))}
-                              </div>
-                              <span className="text-[10px] font-bold">& Up</span>
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Vendors List */}
-                      <div className="space-y-2">
-                        <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Rental Vendors</h4>
-                        <div className="space-y-1 flex flex-col max-h-[200px] overflow-y-auto">
-                          {vendors.map((v) => {
-                            const isSelected = vendorId === v.id
-                            return (
-                              <Link 
-                                key={v.id} 
-                                href={buildFilterUrl({ vendorId: isSelected ? null : v.id })}
-                                className={`text-xs text-left py-1.5 px-2 rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-between gap-2 border ${isSelected ? 'bg-amber-50 border-amber-200/50 text-amber-950 font-bold' : 'border-transparent text-slate-650 hover:text-slate-955'}`}
-                              >
-                                <span className="truncate">
-                                  {v.companyName || v.name || "Prime Partner"}
-                                </span>
-                                {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />}
-                              </Link>
-                            )
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Clear Filters Button */}
-                      {(params?.minPrice || params?.maxPrice || params?.rating || params?.vendorId) && (
-                        <div className="pt-2 border-t border-slate-100">
-                          <Link href={`/?${categorySlug ? `category=${categorySlug}` : ''}${searchQuery ? `&query=${encodeURIComponent(searchQuery)}` : ''}${sort ? `&sort=${sort}` : ''}`}>
-                            <Button variant="outline" className="w-full text-[10px] h-8 border-dashed border-slate-350 hover:bg-slate-50 text-slate-600 font-extrabold uppercase tracking-wider">
-                              Clear Filters
-                            </Button>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                </aside>
-
-                {/* Main Product Grid */}
-                <div className="flex-1 space-y-4">
+                {/* Normal Grid */}
+                <div className="w-full space-y-4">
                   {catalogProducts.length === 0 ? (
                     <div className="text-center py-24 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm">
                       <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1571,7 +1594,7 @@ export default async function HomePage({
                       </Link>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                       {catalogProducts.map((product) => {
                         if (!product) return null
                         const { rating, count } = getSimulatedRating(product.id)
@@ -1623,7 +1646,7 @@ export default async function HomePage({
                                 <span className="text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
                               </div>
 
-                              <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
+                              <p className="text-[11px] text-slate-505 leading-relaxed line-clamp-2">
                                 {product.description || "Premium equipment listed under platform safety guidelines."}
                               </p>
                             </CardHeader>
@@ -1651,9 +1674,104 @@ export default async function HomePage({
                     </div>
                   )}
                 </div>
-
               </div>
-            </section>
+            ) : (
+              <div className="w-full space-y-4">
+                {catalogProducts.length === 0 ? (
+                  <div className="text-center py-24 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm">
+                    <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Tag className="h-8 w-8 text-slate-300" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 font-sans">No rentable assets found</h3>
+                    <p className="text-slate-500 mt-1 mb-6 max-w-sm mx-auto text-xs font-semibold leading-relaxed">
+                      We couldn't find any listings matching your active filters. Try resetting the filters or modifying your search query.
+                    </p>
+                    <Link href="/">
+                      <Button variant="outline" className="border-slate-300 font-bold text-xs uppercase tracking-wide px-6 py-2.5">Clear All Filters</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {catalogProducts.map((product) => {
+                      if (!product) return null
+                      const { rating, count } = getSimulatedRating(product.id)
+                      const { mrp, discount } = getSimulatedMRP(product.priceDaily)
+                      const isWishlisted = userWishlistProductIds.includes(product.id)
+
+                      return (
+                        <Card 
+                          key={product.id} 
+                          className="group border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-amber-500/50 transition-all duration-200 rounded-xl relative"
+                          style={{ boxShadow: PREMIUM_BOX_SHADOW }}
+                        >
+                          {/* Header Image */}
+                          <div className="aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                            {product.image && product.image.startsWith("http") ? (
+                              <img 
+                                src={product.image} 
+                                alt={product.name} 
+                                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                              />
+                            ) : (
+                              <Building className="w-10 h-10 text-slate-300 animate-pulse" />
+                            )}
+                            
+                            <WishlistButton 
+                              productId={product.id} 
+                              initialIsWishlisted={isWishlisted} 
+                              variant="floating"
+                            />
+
+                            <Badge className="absolute top-3 right-3 bg-white/95 text-slate-800 uppercase font-black text-[9px] border border-slate-200 select-none shadow-sm hover:bg-white pointer-events-none">
+                              {product.category?.name || "General"}
+                            </Badge>
+                          </div>
+
+                          {/* Content Body */}
+                          <CardHeader className="p-4 pb-2 space-y-1.5 flex-1">
+                            <Link href={`/products/${product.id}`} className="block">
+                              <h4 className="text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">
+                                {product.name}
+                              </h4>
+                            </Link>
+
+                            <div className="flex items-center gap-1 select-none">
+                              <div className="flex items-center text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded text-[10px] font-extrabold border border-amber-200/40">
+                                <Star className="w-3 h-3 fill-current mr-0.5 shrink-0" />
+                                {rating}
+                              </div>
+                              <span className="text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
+                            </div>
+
+                            <p className="text-[11px] text-slate-505 leading-relaxed line-clamp-2">
+                              {product.description || "Premium equipment listed under platform safety guidelines."}
+                            </p>
+                          </CardHeader>
+
+                          {/* Price and rent triggers */}
+                          <div className="p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-4">
+                            <div className="flex items-baseline gap-1.5 flex-wrap select-text font-mono">
+                              <span className="text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
+                              <span className="text-[10px] text-slate-400 font-semibold">/day</span>
+                              <span className="text-[10px] text-slate-400 line-through">₹{mrp}</span>
+                              <span className="text-[10px] font-black text-emerald-600">({discount}% Off)</span>
+                            </div>
+
+                            <div className="select-none">
+                              <RentButton 
+                                productId={product.id} 
+                                price={product.priceDaily} 
+                                stock={product.totalStock} 
+                              />
+                            </div>
+                          </div>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </main>
         </>
       )}
