@@ -1693,192 +1693,38 @@ export default async function HomePage({
                   </div>
                 ) : (
                   <>
-                    {/* Theme-based Category Spotlight Section */}
+                                        {/* Theme-based Category Spotlight Section */}
                     {(() => {
                       const slug = categorySlug?.toLowerCase() || "";
-                      let themeBg = "from-[#0F172A] to-slate-800";
-                      let themeTitle = "Premium Rentals";
-                      let themeDesc = "Rent state of the art equipment and venues at best daily rates";
-                      
-                      let sectionA_title = "Trending Rentals";
-                      let sectionA_keywords: string[] = [];
-                      
-                      let sectionB_title = "Hot Picks For You";
-                      let sectionB_keywords: string[] = [];
+                      const isWedding = slug.includes("wedding") || slug.includes("fashion") || slug.includes("gown") || slug.includes("lehenga");
 
-                      let cardBadgeText = "Rent Deal";
+                      if (!isWedding) return null;
 
-                      let trustPerks = [
-                        { icon: <ShieldCheck className="w-5 h-5 text-amber-500" />, title: "Damage Covered", desc: "No charges for minor wear and tear" },
-                        { icon: <Clock className="w-5 h-5 text-indigo-500" />, title: "Flexible Duration", desc: "Extend or return gear anytime easily" },
-                        { icon: <Truck className="w-5 h-5 text-emerald-500" />, title: "Doorstep Delivery", desc: "Hassle-free shipping & reverse pickup" },
-                        { icon: <RotateCcw className="w-5 h-5 text-rose-500" />, title: "100% Refunds", desc: "Cancel booking 24h prior for full refund" },
+                      const themeBg = "from-[#581C87] via-[#701A75] to-[#9D174D]";
+                      const themeTitle = "Royal Wedding Store";
+                      const themeDesc = "Grand bridal couture, designer sherwanis, and luxury reception styling.";
+                      
+                      const sectionA_title = "Bridal Gowns & Lehengas";
+                      const sectionA_keywords = ["lehenga", "gown", "bridal", "saree", "dress", "gold", "embroidery"];
+                      
+                      const sectionB_title = "Sherwanis & Groom Suits";
+                      const sectionB_keywords = ["sherwani", "tuxedo", "suit", "groom", "jodhpur", "blazer"];
+
+                      const cardBadgeText = "Dry-Cleaned & Pressed";
+
+                      const trustPerks = [
+                        { icon: <Sparkles className="w-5 h-5 text-purple-600" />, title: "Sanitized & Altered", desc: "Professional dry-cleaning & custom alteration tailoring included" },
+                        { icon: <ShieldCheck className="w-5 h-5 text-amber-500" />, title: "₹0 Security Deposit", desc: "Rent seamlessly via digital Aadhaar/KYC verification" },
+                        { icon: <Truck className="w-5 h-5 text-emerald-500" />, title: "Home Fit Trials", desc: "Schedule sizing & trial delivery before the main wedding day" },
+                        { icon: <RotateCcw className="w-5 h-5 text-rose-500" />, title: "Free Pickups", desc: "Complimentary reverse courier collection from your doorstep" },
                       ];
 
-                      let howItWorks = [
-                        { step: "01", title: "Select Dates", desc: "Choose rental start & end dates in your cart setup panel." },
-                        { step: "02", title: "Instant KYC Verify", desc: "Do a quick Aadhaar KYC validation to drop cash security deposits." },
-                        { step: "03", title: "Doorstep Dispatch", desc: "Equipment is pre-calibrated & shipped directly to your location." },
-                        { step: "04", title: "Free Return Courier", desc: "Return packages easily; we schedule a free pickup post rental." },
+                      const howItWorks = [
+                        { step: "01", title: "Select Wedding Outfit", desc: "Choose from royal collections of premium bridal and groom couture." },
+                        { step: "02", title: "KYC & Custom Alteration", desc: "Confirm your sizes & Aadhaar verification for zero-security renting." },
+                        { step: "03", title: "Celebrate In Vibe", desc: "Outfit arrives sanitized, pressed, and sealed in customized garment bag." },
+                        { step: "04", title: "Reverse Pickup", desc: "No washing needed; pack outfit; we pick it up post event." },
                       ];
-
-                      if (slug.includes("wedding") || slug.includes("fashion") || slug.includes("gown") || slug.includes("lehenga")) {
-                        themeBg = "from-[#581C87] via-[#701A75] to-[#9D174D]";
-                        themeTitle = "Royal Wedding Store";
-                        themeDesc = "Grand bridal couture, designer sherwanis, and luxury reception styling.";
-                        
-                        sectionA_title = "Bridal Gowns & Lehengas";
-                        sectionA_keywords = ["lehenga", "gown", "bridal", "saree", "dress", "gold", "embroidery"];
-                        
-                        sectionB_title = "Sherwanis & Groom Suits";
-                        sectionB_keywords = ["sherwani", "tuxedo", "suit", "groom", "jodhpur", "blazer"];
-
-                        cardBadgeText = "Dry-Cleaned & Pressed";
-
-                        trustPerks = [
-                          { icon: <Sparkles className="w-5 h-5 text-purple-600" />, title: "Sanitized & Altered", desc: "Professional dry-cleaning & custom alteration tailoring included" },
-                          { icon: <ShieldCheck className="w-5 h-5 text-amber-500" />, title: "₹0 Security Deposit", desc: "Rent seamlessly via instant digital Aadhaar/KYC verification" },
-                          { icon: <Truck className="w-5 h-5 text-emerald-500" />, title: "Home Fit Trials", desc: "Schedule sizing & trial delivery before the main wedding day" },
-                          { icon: <RotateCcw className="w-5 h-5 text-rose-500" />, title: "Free Pickups", desc: "Complimentary reverse courier collection from your doorstep" },
-                        ];
-
-                        howItWorks = [
-                          { step: "01", title: "Select Wedding Outfit", desc: "Choose from royal collections of premium bridal and groom couture." },
-                          { step: "02", title: "KYC & Custom Alteration", desc: "Confirm your sizes & Aadhaar verification for zero-security renting." },
-                          { step: "03", title: "Celebrate In Vibe", desc: "Outfit arrives sanitized, pressed, and sealed in customized garment bag." },
-                          { step: "04", title: "Reverse Pickup", desc: "No washing needed; pack outfit; we pick it up post event." },
-                        ];
-                      } else if (slug.includes("camera") || slug.includes("lens") || slug.includes("mirrorless")) {
-                        themeBg = "from-slate-950 via-[#1E1B4B] to-slate-900";
-                        themeTitle = "Cine & Pro Camera Gear";
-                        themeDesc = "Cinema cameras, G-Master primes, and studio production stabilizers.";
-                        
-                        sectionA_title = "Camera Bodies & Cine Kits";
-                        sectionA_keywords = ["camera", "fx3", "komodo", "alpha", "eos", "dslr", "gopro", "drone", "mavic"];
-                        
-                        sectionB_title = "Prime Lenses & Focal Rigging";
-                        sectionB_keywords = ["lens", "focal", "g master", "rf", "f/", "mm", "zoom", "cine"];
-
-                        cardBadgeText = "Calibrated & Cleaned";
-
-                        trustPerks = [
-                          { icon: <Sparkles className="w-5 h-5 text-blue-600" />, title: "Sensor Calibrated", desc: "Cleaned and tested by certified lab technicians before dispatch" },
-                          { icon: <ShieldCheck className="w-5 h-5 text-emerald-500" />, title: "Accidental Protection", desc: "Special damage waiver covers accidental field drops or wear" },
-                          { icon: <Truck className="w-5 h-5 text-amber-500" />, title: "Next-Day Dispatch", desc: "Quick courier delivery ensures gear reaches before shoot call time" },
-                          { icon: <RotateCcw className="w-5 h-5 text-indigo-500" />, title: "Fully Rigged Ready", desc: "Units ship with pre-charged batteries, memory cards, & mounts" },
-                        ];
-
-                        howItWorks = [
-                          { step: "01", title: "Build Production Rig", desc: "Select mirrorless bodies, cinema lenses, rigs & wireless audio." },
-                          { step: "02", title: "KYC KYC Verification", desc: "Do instant e-KYC. Zero cash deposit for all verified operators." },
-                          { step: "03", title: "Execute Shoot", desc: "Deliveries ship in flight-safe shockproof cases ready to roll." },
-                          { step: "04", title: "Drop & Return", desc: "Pack gear in case. We pick up from set or home post production." },
-                        ];
-                      } else if (slug.includes("infra") || slug.includes("hall") || slug.includes("banquet")) {
-                        themeBg = "from-emerald-950 via-[#047857] to-[#10B981]";
-                        themeTitle = "Grand Venues & Banquet Halls";
-                        themeDesc = "Celebrate marriages and corporate milestones in premium spaces.";
-                        
-                        sectionA_title = "Banquets, Gardens & Lawns";
-                        sectionA_keywords = ["hall", "banquet", "lawn", "venue", "palace", "resort"];
-                        
-                        sectionB_title = "Light & Stage Infrastructure";
-                        sectionB_keywords = ["generator", "light", "stage", "fog", "dj", "ac", "infrastructure"];
-
-                        cardBadgeText = "Venue Space Checked";
-
-                        trustPerks = [
-                          { icon: <Sparkles className="w-5 h-5 text-emerald-600" />, title: "1-Hour Site Visit", desc: "Free physical visit and sound/AV check before finalizing dates" },
-                          { icon: <ShieldCheck className="w-5 h-5 text-amber-500" />, title: "Permit Verified", desc: "All safety certifications, fire permits & sound regulations cleared" },
-                          { icon: <Truck className="w-5 h-5 text-indigo-500" />, title: "Decor Layout Team", desc: "Dedicated on-site setup managers to handle stage styling & AV setup" },
-                          { icon: <RotateCcw className="w-5 h-5 text-rose-500" />, title: "Free Rescheduling", desc: "Reschedule venue dates 100% free up to 15 days before event" },
-                        ];
-
-                        howItWorks = [
-                          { step: "01", title: "Tour Virtual Hall", desc: "Select hall capacity, in-house catering, & styling layout options." },
-                          { step: "02", title: "Reserve the Date", desc: "Lock date instantly. Setup custom layout requirements." },
-                          { step: "03", title: "Decor Setup Dry-run", desc: "Our team coordinates and setups lights & stage AV before event." },
-                          { step: "04", title: "Enjoy Celebration", desc: "Hosting & post-event sanitation handles managed by on-site crew." },
-                        ];
-                      } else if (slug.includes("laptop") || slug.includes("computer") || slug.includes("pc")) {
-                        themeBg = "from-[#0F172A] via-[#1E3A8A] to-blue-900";
-                        themeTitle = "Laptops & Dev Workstations";
-                        themeDesc = "High computing configurations, MacBook Pros, and business laptops.";
-                        
-                        sectionA_title = "Workstations & Apple MacBooks";
-                        sectionA_keywords = ["macbook", "pro", "laptop", "thinkpad", "dell", "hp", "workstation"];
-                        
-                        sectionB_title = "Displays & Tech Addons";
-                        sectionB_keywords = ["monitor", "keyboard", "mouse", "docking", "display", "tablet"];
-
-                        cardBadgeText = "Fresh Clean OS Configured";
-
-                        trustPerks = [
-                          { icon: <Sparkles className="w-5 h-5 text-indigo-600" />, title: "Fresh OS Install", desc: "Custom pre-configured environments with developer toolchains" },
-                          { icon: <ShieldCheck className="w-5 h-5 text-emerald-500" />, title: "GST Corporate Lease", desc: "₹0 security deposit & easy monthly invoicing for GST companies" },
-                          { icon: <Truck className="w-5 h-5 text-amber-500" />, title: "On-site Swap Repair", desc: "Hardware fail? Instant onsite technician support or replacement unit" },
-                          { icon: <RotateCcw className="w-5 h-5 text-slate-500" />, title: "Data Cleansed Secure", desc: "All returns wiped clean using NIST-standard data deletion" },
-                        ];
-
-                        howItWorks = [
-                          { step: "01", title: "Pick CPU/RAM Spec", desc: "Choose Macbook Pro cores, RAM, SSD configurations." },
-                          { step: "02", title: "KYC & Zero Deposit", desc: "Complete e-KYC or link corporate GST for zero cash deposit." },
-                          { step: "03", title: "Work & Code", desc: "Nodes delivered pre-installed with your standard dev setup." },
-                          { step: "04", title: "Wipe & Return", desc: "Contract complete? We collect nodes & format hard-drives secure." },
-                        ];
-                      } else if (slug.includes("speaker") || slug.includes("audio") || slug.includes("sound")) {
-                        themeBg = "from-purple-950 via-indigo-950 to-slate-950";
-                        themeTitle = "Pro Sound & PA Systems";
-                        themeDesc = "Loud DJ systems, active speaker columns, and stage microphones.";
-                        
-                        sectionA_title = "Concert Speakers & Subwoofers";
-                        sectionA_keywords = ["jbl", "speaker", "subwoofer", "pa", "sound", "mixer"];
-                        
-                        sectionB_title = "Mics & Audio Capture";
-                        sectionB_keywords = ["mic", "rode", "wireless", "headphone", "audio", "microphone"];
-
-                        cardBadgeText = "Sound EQ Calibrated";
-
-                        trustPerks = [
-                          { icon: <Sparkles className="w-5 h-5 text-violet-600" />, title: "Acoustics Balanced", desc: "EQ levels calibrated for crisp, high-power sound at venue" },
-                          { icon: <ShieldCheck className="w-5 h-5 text-amber-500" />, title: "Full Rigging Cables", desc: "All required power cords, XLR cables, & speaker stands included" },
-                          { icon: <Truck className="w-5 h-5 text-emerald-500" />, title: "Sound Engineers Free", desc: "Professional engineers setup and balance levels on stage" },
-                          { icon: <RotateCcw className="w-5 h-5 text-rose-500" />, title: "All-Weather Active", desc: "Water-resistant enclosures perfect for poolside or outdoor events" },
-                        ];
-
-                        howItWorks = [
-                          { step: "01", title: "Choose Sound Package", desc: "Select PA systems, subwoofers, active columns, & mics." },
-                          { step: "02", title: "Date & Power Setup", desc: "Confirm booking schedule & venue power layouts." },
-                          { step: "03", title: "Engineer Installation", desc: "Crew deploys rigs, maps routing, & performs decibel balance." },
-                          { step: "04", title: "Breakdown Return", desc: "Post event, crew packs setup and returns to hub." },
-                        ];
-                      } else if (slug.includes("camp") || slug.includes("tent") || slug.includes("outdoor")) {
-                        themeBg = "from-emerald-950 via-teal-900 to-emerald-900";
-                        themeTitle = "Outdoor & Camping Gear";
-                        themeDesc = "Decathlon Quechua tents, sleeping bags, and trekking rigs.";
-                        
-                        sectionA_title = "Expedition Tents & Canopies";
-                        sectionA_keywords = ["tent", "canopy", "camping", "dome", "waterproof"];
-                        
-                        sectionB_title = "Survival Bags & Camping Kits";
-                        sectionB_keywords = ["sleeping", "bag", "grill", "cooler", "fog", "stove", "rucksack"];
-
-                        cardBadgeText = "Waterproof pressure tested";
-
-                        trustPerks = [
-                          { icon: <Sparkles className="w-5 h-5 text-emerald-600" />, title: "Tents Storm Tested", desc: "Double-layered canopy tested for high wind & rain resistance" },
-                          { icon: <ShieldCheck className="w-5 h-5 text-teal-600" />, title: "Sanitized Sleeping Bags", desc: "Expedition bags dry-cleaned & ozone-sanitized after every trip" },
-                          { icon: <Truck className="w-5 h-5 text-amber-500" />, title: "Full Survival Kits", desc: "Packs include ropes, tent pegs, basic tools, and camping manuals" },
-                          { icon: <RotateCcw className="w-5 h-5 text-slate-500" />, title: "No Mud Penalty", desc: "Return gears as-is; mud spots or normal trekking scuffs are free" },
-                        ];
-
-                        howItWorks = [
-                          { step: "01", title: "Build Trek Pack", desc: "Rent dome tents, trekking backpacks, sleeping bags, & lanterns." },
-                          { step: "02", title: "Confirm Basecamp Date", desc: "Lock hire period. Submit simple ID validation." },
-                          { step: "03", title: "Trek the Mountains", desc: "Lightweight packs delivered right to your basecamp or home." },
-                          { step: "04", title: "Drop post Trek", desc: "Ship back mud-scuffed gear. No cleaning required from hikers." },
-                        ];
-                      }
 
                       // Dynamic Filter Helper
                       const filterItems = (kws: string[]) => {
@@ -1917,7 +1763,7 @@ export default async function HomePage({
                             </div>
                           </div>
 
-                          {/* Dynamic Trust Perks Banner (IQ 200+) */}
+                          {/* Dynamic Trust Perks Banner */}
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {trustPerks.map((perk, i) => (
                               <div key={i} className="bg-white border border-slate-200/65 rounded-2xl p-4 flex flex-col justify-start space-y-2.5 shadow-sm hover:scale-[1.01] transition-transform duration-200">
@@ -1940,7 +1786,7 @@ export default async function HomePage({
                             <div className="flex justify-between items-center select-none">
                               <div>
                                 <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">{sectionA_title}</h3>
-                                <p className="text-slate-505 text-[10px] font-bold uppercase tracking-wider">Top Rated Asset Rentals</p>
+                                <p className="text-slate-550 text-[10px] font-bold uppercase tracking-wider">Top Rated Asset Rentals</p>
                               </div>
                               <span className="text-[10px] bg-[#0A5C36] text-white font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
                                 EXCELLENT CHOICE
@@ -1976,7 +1822,7 @@ export default async function HomePage({
                                         <div className="flex items-baseline gap-1 font-mono pt-1">
                                           <span className="text-[10px] text-slate-400 line-through">₹{mrp}</span>
                                           <span className="text-xs font-black text-slate-900">₹{product.priceDaily.toLocaleString()}</span>
-                                          <span className="text-[9px] text-slate-400 font-sans font-semibold">/d</span>
+                                          <span className="text-[9px] text-slate-450 font-sans font-semibold">/d</span>
                                         </div>
                                       </div>
                                     </div>
@@ -2057,7 +1903,7 @@ export default async function HomePage({
                                           Save {discount}%
                                         </span>
                                         <div className="flex items-baseline gap-1 font-mono pt-1">
-                                          <span className="text-[10px] text-slate-400 line-through">₹{mrp}</span>
+                                          <span className="text-[10px] text-slate-450 line-through">₹{mrp}</span>
                                           <span className="text-xs font-black text-slate-900">₹{product.priceDaily.toLocaleString()}</span>
                                           <span className="text-[9px] text-slate-400 font-sans font-semibold">/d</span>
                                         </div>
@@ -2072,11 +1918,18 @@ export default async function HomePage({
                       );
                     })()}
 
-                    {/* Explore Category Catalog Grid Header */}
-                    <div className="pt-8 border-t border-slate-200">
-                      <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Explore Category Catalog</h2>
-                      <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Filter, sort, and rent directly</p>
-                    </div>
+                                        {/* Explore Category Catalog Grid Header */}
+                    {(() => {
+                      const slug = categorySlug?.toLowerCase() || "";
+                      const isWedding = slug.includes("wedding") || slug.includes("fashion") || slug.includes("gown") || slug.includes("lehenga");
+                      if (!isWedding) return null;
+                      return (
+                        <div className="pt-8 border-t border-slate-200 mb-6">
+                          <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Explore Category Catalog</h2>
+                          <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Filter, sort, and rent directly</p>
+                        </div>
+                      );
+                    })()}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                       {catalogProducts.map((product) => {
