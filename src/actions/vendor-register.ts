@@ -4,6 +4,7 @@
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import nodemailer from "nodemailer"
+import twilio from "twilio"
 
 // Configure Nodemailer Transporter using environment variables or fallbacks
 const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com'
@@ -20,6 +21,11 @@ const transporter = nodemailer.createTransport({
     pass: smtpPass,
   },
 })
+
+// Configure Twilio using environment variables
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 
 /**
  * Generates and sends a 6-digit OTP to either Email or Phone.
@@ -86,10 +92,30 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
         }
       }
     } else {
-      // Phone OTP Simulation
+      // Print backup to terminal console for local developer access
       console.log("\n----------------------------------------------------------");
       console.log(`📱 [SMS SIMULATOR] MOBILE OTP FOR ${formattedValue}: ${otp}`);
       console.log("----------------------------------------------------------\n");
+
+      // Attempt Twilio SMS send
+      if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
+        try {
+          const client = twilio(twilioAccountSid, twilioAuthToken)
+          await client.messages.create({
+            body: `Your RentalKart Seller Hub OTP code is: ${otp}. It is valid for 10 minutes.`,
+            from: twilioPhoneNumber,
+            to: formattedValue
+          })
+          console.log(`✅ [TWILIO] SMS OTP successfully sent to ${formattedValue}`)
+        } catch (twilioErr) {
+          console.error("❌ TWILIO SMS SEND FAILURE:", twilioErr)
+          return {
+            success: true,
+            message: "OTP generated (SMS failed). Check server terminal logs for OTP.",
+            isLocalDemo: true
+          }
+        }
+      }
     }
 
     return { success: true, message: `OTP sent successfully to ${value}.` }

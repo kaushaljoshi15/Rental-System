@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { signIn } from "next-auth/react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { toast } from "sonner"
@@ -42,6 +43,11 @@ export default function VendorRegisterPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+
+  const handleGoogleSignIn = () => {
+    document.cookie = "next-auth.target-role=VENDOR; path=/; max-age=60; SameSite=Lax";
+    signIn("google", { callbackUrl: "/dashboard/vendor" });
+  }
 
   // OTP Verification States
   const [phoneOtp, setPhoneOtp] = useState("")
@@ -503,6 +509,42 @@ export default function VendorRegisterPage() {
                     {loading ? "Registering..." : "Register & Continue"} <ArrowRight className="w-4 h-4" />
                   </Button>
                 </form>
+
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white dark:bg-slate-950 px-2 text-slate-500 font-bold">Or continue with</span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleGoogleSignIn}
+                  className="w-full h-11 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 transition-all rounded-lg font-bold flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+                >
+                  <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" width="16" height="16">
+                    <path
+                      fill="#EA4335"
+                      d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.68 1.54 14.98 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.85 2.99c.9-2.7 3.4-4.51 6.76-4.51z"
+                    />
+                    <path
+                      fill="#4285F4"
+                      d="M23.49 12.27c0-.81-.07-1.59-.2-2.35H12v4.51h6.46c-.29 1.48-1.14 2.73-2.4 3.58l3.73 2.89c2.18-2.01 3.7-4.99 3.7-8.63z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.24 14.53c-.23-.69-.36-1.43-.36-2.2s.13-1.51.36-2.2L1.39 7.14C.5 8.93 0 10.91 0 13s.5 4.07 1.39 5.86l3.85-2.99c-.9-2.69-3.4-4.5-6.76-4.5z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.73-2.89c-1.04.7-2.38 1.11-4.23 1.11-3.36 0-5.86-1.81-6.76-4.51L1.39 16.8C3.37 20.69 7.35 23 12 23z"
+                    />
+                  </svg>
+                  Register with Google
+                </Button>
 
                 <div className="text-center text-xs text-slate-500 pt-4 border-t border-slate-100 dark:border-slate-800">
                   Already have a seller account?{" "}
