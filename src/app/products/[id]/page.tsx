@@ -31,6 +31,8 @@ const getCachedProduct = unstable_cache(
   { revalidate: 60, tags: ["products"] }
 );
 
+import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker";
+
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
@@ -60,6 +62,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+      <RecentlyViewedTracker productId={product.id} />
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
         

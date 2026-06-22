@@ -242,3 +242,46 @@ export async function updateCartDates(orderId: string, fromDate: Date, toDate: D
     return { success: false, message: "Failed to update rental window." }
   }
 }
+
+// --- UPDATE CART ITEM QUANTITY ---
+export async function updateCartItemQuantity(lineId: string, quantity: number) {
+  if (quantity < 1) {
+    return removeCartItem(lineId)
+  }
+
+  try {
+    const line = await prisma.orderLine.findUnique({
+      where: { id: lineId },
+      include: { product: true }
+    })
+    
+    if (!line) return { success: false, message: "Item not found." }
+
+    if (quantity > line.product.totalStock) {
+      return { success: false, message: `Only ${line.product.totalStock} units available.` }
+    }
+
+    await prisma.orderLine.update({
+      where: { id: lineId },
+      data: { quantity }
+    })
+
+    // Recalculate Total
+    const remainingLines = await prisma.orderLine.findMany({ 
+      where: { orderId: line.orderId } 
+    })
+    
+    const newTotal = remainingLines.reduce((acc, item) => acc + (item.price * item.quantity), 0)
+
+    await prisma.rentalOrder.update({
+      where: { id: line.orderId },
+      data: { totalAmount: newTotal }
+    })
+
+    revalidatePath("/")
+    return { success: true, message: "Quantity updated!" }
+  } catch (error) {
+    console.error("Update Cart Item Quantity Error:", error)
+    return { success: false, message: "Failed to update quantity." }
+  }
+}

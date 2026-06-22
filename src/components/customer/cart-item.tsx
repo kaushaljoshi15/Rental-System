@@ -1,9 +1,9 @@
 'use client'
 
 import { useTransition } from "react"
-import { Trash2 } from "lucide-react"
+import { Trash2, Minus, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { removeCartItem } from "@/actions/cart"
+import { removeCartItem, updateCartItemQuantity } from "@/actions/cart"
 import { toast } from "sonner"
 
 interface CartItemLine {
@@ -30,6 +30,17 @@ export function CartItem({ line, startDate, endDate }: CartItemProps) {
       const res = await removeCartItem(line.id)
       if (res.success) toast.success("Item removed from cart")
       else toast.error("Failed to remove item")
+    })
+  }
+
+  const handleUpdateQuantity = (newQty: number) => {
+    startTransition(async () => {
+      const res = await updateCartItemQuantity(line.id, newQty)
+      if (res.success) {
+        toast.success("Quantity updated")
+      } else {
+        toast.error(res.message || "Failed to update quantity")
+      }
     })
   }
 
@@ -63,9 +74,29 @@ export function CartItem({ line, startDate, endDate }: CartItemProps) {
         </div>
       </div>
 
-      {/* Quantity Indicator */}
-      <div className="text-xs text-slate-500 font-medium shrink-0 px-3 py-1 bg-slate-50 border border-slate-200/40 rounded-lg">
-        Qty: {line.quantity}
+      {/* Quantity Controls */}
+      <div className="flex items-center gap-1 shrink-0 border border-slate-200 bg-white rounded-xl shadow-sm p-1 select-none">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => handleUpdateQuantity(line.quantity - 1)}
+          disabled={isPending || line.quantity <= 1}
+          className="h-7 w-7 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 disabled:opacity-30 disabled:pointer-events-none transition-all"
+        >
+          <Minus className="w-3 h-3" />
+        </Button>
+        <span className="w-8 text-center text-xs font-bold text-slate-800 font-mono">
+          {line.quantity}
+        </span>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => handleUpdateQuantity(line.quantity + 1)}
+          disabled={isPending}
+          className="h-7 w-7 rounded-lg text-slate-500 hover:text-[#F59E0B] hover:bg-amber-50/50 disabled:opacity-30 disabled:pointer-events-none transition-all"
+        >
+          <Plus className="w-3 h-3" />
+        </Button>
       </div>
 
       {/* Pricing and Action buttons */}

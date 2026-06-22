@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Suspense } from "react"
 import { SearchBar } from "@/components/search-bar"
+import { CategoryBar } from "@/components/category-bar"
 import { 
   Search, 
   ShoppingCart, 
@@ -274,6 +275,7 @@ export async function Navbar() {
 
         </div>
       </div>
+      <CategoryBar />
     </header>
   )
 }

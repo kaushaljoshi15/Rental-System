@@ -55,6 +55,7 @@ import { SearchBar } from "@/components/search-bar"
 import { Suspense } from "react"
 import { RentButton } from "@/components/rent-button"
 import { HeroCarousel } from "@/components/hero-carousel"
+import { RecentlyViewedSection } from "@/components/recently-viewed-section"
 import { SettingsForm } from "@/components/customer/settings-form"
 import { AVATAR_PRESETS } from "@/lib/avatars"
 import { AddressForm } from "@/components/address-form"
@@ -247,6 +248,22 @@ export default async function HomePage({
   });
   const catalogProducts = searchResult.success && searchResult.data ? searchResult.data : [];
 
+  const allProductsForSearch = await prisma.product.findMany({
+    take: 40,
+    select: {
+      id: true,
+      name: true,
+      priceDaily: true,
+      image: true,
+      category: {
+        select: {
+          name: true,
+          slug: true
+        }
+      }
+    }
+  });
+
   let customerData: any = null
   let cartCount = 0
   let coupons: any[] = []
@@ -341,82 +358,7 @@ export default async function HomePage({
 
   const userWishlistProductIds = customerData?.wishlistItems.map((p: any) => p.id) || [];
 
-  // Preloaded category departments
-  const categoryGroups = [
-    {
-      title: "Clothes & Wedding Fashion",
-      description: "Bridal heavy lehengas, sherwanis, and gowns",
-      icon: "👗",
-      theme: "from-pink-500 to-rose-500",
-      categories: [
-        { name: "Bridal Lehenga", slug: "wedding-fashion", query: "lehenga", icon: "👑" },
-        { name: "Groom Sherwani", slug: "wedding-fashion", query: "sherwani", icon: "🤵" },
-        { name: "Reception Gown", slug: "wedding-fashion", query: "gown", icon: "💃" },
-        { name: "Tuxedo Suit", slug: "wedding-fashion", query: "tuxedo", icon: "👔" },
-        { name: "Bridal Jewelry", slug: "wedding-fashion", query: "jewelry", icon: "✨" },
-        { name: "Trail Dress", slug: "wedding-fashion", query: "trail", icon: "👗" }
-      ]
-    },
-    {
-      title: "Electric Items & Tech Gear",
-      description: "Cameras, laptops, audio systems, and gaming",
-      icon: "⚡",
-      theme: "from-blue-600 to-sky-500",
-      categories: [
-        { name: "Mirrorless Cams", slug: "mirrorless-cameras", query: "mirrorless", icon: "📷" },
-        { name: "DSLR Cameras", slug: "dslr-cameras", query: "dslr", icon: "📸" },
-        { name: "Laptops & Workstations", slug: "laptops", query: "macbook", icon: "💻" },
-        { name: "Gaming Consoles", slug: "gaming-consoles", query: "playstation", icon: "🎮" },
-        { name: "VR Headsets", slug: "vr-headsets", query: "quest", icon: "🥽" },
-        { name: "Projectors", slug: "projectors", query: "projector", icon: "📽️" },
-        { name: "Sound Systems", slug: "speakers", query: "sound", icon: "🔊" },
-        { name: "Karaoke Machines", slug: "karaoke-machines", query: "karaoke", icon: "🎤" },
-        { name: "Drones", slug: "drones", query: "drone", icon: "🛸" }
-      ]
-    },
-    {
-      title: "Event & Banquet Infrastructure",
-      description: "Stage lighting, banquet chairs, and generators",
-      icon: "🏛️",
-      theme: "from-amber-50 to-orange-500",
-      categories: [
-        { name: "Banquet Chairs", slug: "event-chairs", query: "chair", icon: "🪑" },
-        { name: "Tables", slug: "tables", query: "table", icon: "🪵" },
-        { name: "Stage Lighting", slug: "fog-machines", query: "lighting", icon: "💡" },
-        { name: "DJ Sound Setup", slug: "speakers", query: "sound", icon: "🎧" },
-        { name: "Special Effects", slug: "fog-machines", query: "fog", icon: "💨" },
-        { name: "Maharaja Couches", slug: "sofas", query: "couch", icon: "🛋️" },
-        { name: "Generators", slug: "generators", query: "generator", icon: "⚡" },
-        { name: "Buffet Warmers", slug: "event-infrastructure", query: "buffet", icon: "🍲" }
-      ]
-    },
-    {
-      title: "Travel & Camping Kits",
-      description: "High-altitude tents, sleeping bags, and action cams",
-      icon: "🏕️",
-      theme: "from-emerald-600 to-teal-500",
-      categories: [
-        { name: "Camping Tents", slug: "camping-tents", query: "tent", icon: "⛺" },
-        { name: "Sleeping Bags", slug: "sleeping-bags", query: "sleeping", icon: "🛌" },
-        { name: "Travel Rucksacks", slug: "camping-tents", query: "rucksack", icon: "🎒" },
-        { name: "GoPro Action Cams", slug: "action-cameras", query: "gopro", icon: "📹" },
-        { name: "Telescopes", slug: "camping-tents", query: "telescope", icon: "🔭" }
-      ]
-    },
-    {
-      title: "Medical, Gym & Heavy Tools",
-      description: "Oxygen concentrators, treadmills, and demolition hammers",
-      icon: "🏥",
-      theme: "from-purple-600 to-amber-500",
-      categories: [
-        { name: "Oxygen Concentrator", slug: "medical-equipment", query: "oxygen", icon: "🫁" },
-        { name: "ICU Hospital Bed", slug: "medical-equipment", query: "bed", icon: "🏥" },
-        { name: "Treadmills & Fitness", slug: "fitness-gear", query: "treadmill", icon: "🏃" },
-        { name: "Demolition Hammers", slug: "heavy-tools", query: "hammer", icon: "🔨" },
-        { name: "Pressure Washers", slug: "heavy-tools", query: "washer", icon: "🌀" }
-      ]
-    }
-  ]
+
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900">
@@ -1444,130 +1386,14 @@ export default async function HomePage({
           </div>
 
           {/* --- TOP SLIDER CAROUSEL (MYNTRA/FLIPKART INTERFACE) --- */}
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-            <HeroCarousel />
-          </section>
-
-          {/* --- EXCLUSIVE OFFER TILES (FLIPKART/MYNTRA PROMO GRID) --- */}
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-5" style={{ boxShadow: PREMIUM_BOX_SHADOW }}>
-              <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
-                <span className="text-xs font-black text-slate-850 uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" /> Exclusive Coupons & Offers
-                </span>
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase">Save up to 30%</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Offer 1 */}
-                <div className="bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-rose-450 transition-colors shadow-sm">
-                  <div>
-                    <span className="text-[9px] bg-rose-500 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">SEASON SPECIAL</span>
-                    <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">WEDDING APPAREL SALE</h4>
-                    <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Rent premium velvet bridal lehengas or sherwanis for up to 30% off.</p>
-                  </div>
-                  <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
-                    <span className="text-[10px] font-black text-rose-700 bg-rose-100 px-2 py-1 rounded border border-dashed border-rose-350">WEDDING30</span>
-                    <Link href="/?query=wedding" className="text-[10px] font-extrabold text-rose-600 uppercase hover:underline font-bold font-sans">Rent Now</Link>
-                  </div>
-                </div>
-
-                {/* Offer 2 */}
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-amber-450 transition-colors shadow-sm">
-                  <div>
-                    <span className="text-[9px] bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-black uppercase tracking-wider">FIRST RENT DEAL</span>
-                    <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">WELCOME BONUS</h4>
-                    <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Get flat ₹500 off on your very first camera kit or equipment rental checkout.</p>
-                  </div>
-                  <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
-                    <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-1 rounded border border-dashed border-amber-350">FLAT500</span>
-                    <Link href="/" className="text-[10px] font-extrabold text-amber-600 uppercase hover:underline font-bold font-sans">Claim</Link>
-                  </div>
-                </div>
-
-                {/* Offer 3 */}
-                <div className="bg-gradient-to-br from-blue-50 to-amber-50 border border-blue-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-blue-450 transition-colors shadow-sm">
-                  <div>
-                    <span className="text-[9px] bg-blue-500 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">CREATOR SAVER</span>
-                    <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">PRODUCTION BUNDLE</h4>
-                    <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Rent FX3, prime lenses, and audio accessories together for 10% off.</p>
-                  </div>
-                  <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
-                    <span className="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-1 rounded border border-dashed border-blue-350">CREATOR10</span>
-                    <Link href="/?query=camera" className="text-[10px] font-extrabold text-blue-600 uppercase hover:underline font-bold font-sans">Apply</Link>
-                  </div>
-                </div>
-
-                {/* Offer 4 */}
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/40 rounded-xl p-4 flex flex-col justify-between hover:border-emerald-450 transition-colors shadow-sm">
-                  <div>
-                    <span className="text-[9px] bg-emerald-500 text-white px-2 py-0.5 rounded font-black uppercase tracking-wider">LONG RENT DISCOUNT</span>
-                    <h4 className="text-xs font-black text-slate-850 uppercase mt-2 font-sans">4+ DAYS BOOKING</h4>
-                    <p className="text-[10px] text-slate-500 font-bold leading-normal mt-1">Unlock massive cumulative savings: Get 20% discount on longer hires.</p>
-                  </div>
-                  <div className="mt-4 pt-2 border-t border-slate-200/40 flex justify-between items-center">
-                    <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-1 rounded border border-dashed border-emerald-350">WEEKLY20</span>
-                    <Link href="/" className="text-[10px] font-extrabold text-emerald-600 uppercase hover:underline font-bold font-sans">Explore</Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
+            <HeroCarousel categorySlug={categorySlug} />
+            <RecentlyViewedSection allProducts={allProductsForSearch} userName={userName} />
           </section>
 
           {/* --- PUBLIC CUSTOMER INTERFACE MAIN CONTENT --- */}
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16">
             
-            {/* --- 1. GROUPED CATEGORIES (AMAZON / FLIPKART DEPARTMENT PARADIGM) --- */}
-            <section className="space-y-8">
-              <div className="flex justify-between items-end border-b border-slate-200 pb-3">
-                <div>
-                  <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight font-sans">Browse by department</h2>
-                  <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Explore grouped rental categories for easy access</p>
-                </div>
-                <Link href="/" className="text-xs font-extrabold text-amber-500 hover:underline uppercase tracking-wider flex items-center gap-1 font-sans">
-                  See all <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categoryGroups.map((group, groupIdx) => (
-                  <div 
-                    key={groupIdx} 
-                    className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-all duration-200" 
-                    style={{ boxShadow: PREMIUM_BOX_SHADOW }}
-                  >
-                    {/* Header Block */}
-                    <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                      <div>
-                        <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 uppercase tracking-wide">
-                          <span className="text-base">{group.icon}</span>
-                          {group.title}
-                        </h3>
-                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{group.description}</p>
-                      </div>
-                      <span className={`w-2.5 h-2.5 rounded-full bg-gradient-to-r ${group.theme}`} />
-                    </div>
-
-                    {/* Categories List */}
-                    <div className="p-4 flex-1 flex flex-wrap gap-2 content-start">
-                      {group.categories.map((cat, idx) => (
-                        <Link 
-                          key={idx} 
-                          href={cat.slug ? `/?category=${cat.slug}${cat.query ? `&query=${encodeURIComponent(cat.query)}` : ''}` : `/?query=${encodeURIComponent(cat.name)}`}
-                          className="group/tag flex items-center gap-1.5 px-3 py-1.5 bg-slate-550/5 hover:bg-amber-500 hover:text-slate-955 border border-slate-200/60 rounded-xl transition-all duration-150"
-                        >
-                          <span className="text-xs group-hover/tag:scale-110 transition-transform">{cat.icon}</span>
-                          <span className="text-[11px] font-bold text-slate-650 group-hover/tag:text-slate-955 transition-colors uppercase tracking-wide">
-                            {cat.name}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
             {/* --- 2. DYNAMIC DUAL COLUMN CATALOG WITH FILTERS --- */}
             <section className="space-y-6">
               <div className="flex justify-between items-end border-b border-slate-200 pb-3">
