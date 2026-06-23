@@ -293,7 +293,7 @@ export function SupportBot() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything..."
               onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
-              className="flex-1 bg-white border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-xs rounded-xl h-9"
+              className="flex-1 bg-white border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-xs rounded-xl h-9 text-slate-900 placeholder:text-slate-400"
             />
             <Button 
               onClick={() => handleSend(input)}

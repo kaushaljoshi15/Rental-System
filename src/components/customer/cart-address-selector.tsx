@@ -298,7 +298,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                       placeholder="Rahul Sharma"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="text-xs h-8.5 rounded-lg border-slate-200"
+                      className="text-xs h-8.5 rounded-lg border-slate-200 text-slate-900 bg-white placeholder:text-slate-400"
                     />
                   </div>
                   <div className="space-y-1">
@@ -309,7 +309,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                       placeholder="9876543210"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="text-xs h-8.5 rounded-lg border-slate-200"
+                      className="text-xs h-8.5 rounded-lg border-slate-200 text-slate-900 bg-white placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -323,7 +323,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                       placeholder="110001"
                       value={formData.pincode}
                       onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                      className="text-xs h-8.5 rounded-lg border-slate-200"
+                      className="text-xs h-8.5 rounded-lg border-slate-200 text-slate-900 bg-white placeholder:text-slate-400"
                     />
                   </div>
                   <div className="space-y-1">
@@ -334,7 +334,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                       placeholder="e.g. Indiranagar"
                       value={formData.locality}
                       onChange={(e) => setFormData({ ...formData, locality: e.target.value })}
-                      className="text-xs h-8.5 rounded-lg border-slate-200"
+                      className="text-xs h-8.5 rounded-lg border-slate-200 text-slate-900 bg-white placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -347,7 +347,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                     placeholder="e.g. 12 Parliament Street"
                     value={formData.areaStreet}
                     onChange={(e) => setFormData({ ...formData, areaStreet: e.target.value })}
-                    className="text-xs h-8.5 rounded-lg border-slate-200"
+                    className="text-xs h-8.5 rounded-lg border-slate-200 text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -360,7 +360,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                       placeholder="New Delhi"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="text-xs h-8.5 rounded-lg border-slate-200"
+                      className="text-xs h-8.5 rounded-lg border-slate-200 text-slate-900 bg-white placeholder:text-slate-400"
                     />
                   </div>
                   <div className="space-y-1">
@@ -369,10 +369,10 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                       id="c-state"
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      className="flex h-8.5 w-full rounded-lg border border-slate-200 bg-background px-3 py-1.5 text-xs focus:outline-hidden"
+                      className="flex h-8.5 w-full rounded-lg border border-slate-200 bg-white text-slate-900 px-3 py-1.5 text-xs focus:outline-hidden"
                     >
                       {INDIAN_STATES.map((state) => (
-                        <option key={state} value={state}>{state}</option>
+                        <option key={state} value={state} className="bg-white text-slate-900">{state}</option>
                       ))}
                     </select>
                   </div>

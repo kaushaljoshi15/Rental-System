@@ -467,7 +467,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Rahul Sharma"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -479,7 +479,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543210"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -494,7 +494,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 110001"
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -506,7 +506,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Near Central Park"
                     value={formData.locality}
                     onChange={(e) => setFormData({ ...formData, locality: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -520,7 +520,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                   rows={3}
                   value={formData.areaStreet}
                   onChange={(e) => setFormData({ ...formData, areaStreet: e.target.value })}
-                  className="text-xs rounded-xl border-slate-200 min-h-[70px] focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                  className="text-xs rounded-xl border-slate-200 min-h-[70px] focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                 />
               </div>
 
@@ -534,7 +534,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. New Delhi"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -544,10 +544,10 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     id="state"
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="flex h-10 w-full rounded-xl border border-slate-200 bg-background px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B]"
+                    className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B]"
                   >
                     {INDIAN_STATES.map((state) => (
-                      <option key={state} value={state}>{state}</option>
+                      <option key={state} value={state} className="bg-white text-slate-900">{state}</option>
                     ))}
                   </select>
                 </div>
@@ -563,7 +563,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Opposite Public Park"
                     value={formData.landmark}
                     onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -575,7 +575,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543211"
                     value={formData.altPhone}
                     onChange={(e) => setFormData({ ...formData, altPhone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -648,7 +648,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     setShowForm(false)
                     setMsg(null)
                   }}
-                  className="font-extrabold text-xs h-10 px-6 rounded-xl border-slate-200 hover:bg-slate-50 transition-colors"
+                  className="font-extrabold text-xs h-10 px-6 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:text-slate-800 dark:hover:bg-slate-100 transition-colors"
                 >
                   Cancel
                 </Button>

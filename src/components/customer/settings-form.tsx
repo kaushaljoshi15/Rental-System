@@ -270,7 +270,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                     placeholder="Paste URL (https://...)"
                     value={profile.image}
                     onChange={(e) => setProfile({ ...profile, image: e.target.value })}
-                    className="text-xs rounded-xl h-8.5 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-8.5 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </CardContent>
@@ -305,7 +305,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. Rahul"
                           value={profile.firstName}
                           onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -316,7 +316,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. Sharma"
                           value={profile.lastName}
                           onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -362,7 +362,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. 15/08/1995"
                           value={profile.birthday}
                           onChange={(e) => setProfile({ ...profile, birthday: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -403,7 +403,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         placeholder="e.g. +91 98765 43210"
                         value={profile.phoneNumber}
                         onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
-                        className="text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                        className="text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                       />
                       <Button type="button" variant="outline" className="h-10 text-xs font-bold border-slate-250 hover:bg-slate-50 text-slate-700 shrink-0 rounded-xl transition-colors">
                         Change
@@ -423,7 +423,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. 9876543211"
                           value={profile.alternatePhone}
                           onChange={(e) => setProfile({ ...profile, alternatePhone: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -432,7 +432,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           id="altHint"
                           type="text"
                           placeholder="e.g. Father, Spouse"
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -557,7 +557,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       placeholder="e.g. 5000"
                       value={loadAmount}
                       onChange={(e) => setLoadAmount(e.target.value)}
-                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
                     />
                     
                     {/* Prest Recharge Amount Pills */}
@@ -581,12 +581,12 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       id="method"
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-background px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B] disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      <option value="CREDIT_CARD">Credit Card</option>
-                      <option value="DEBIT_CARD">Debit Card</option>
-                      <option value="UPI">BHIM UPI (GPay/Paytm)</option>
-                      <option value="NET_BANKING">Net Banking</option>
+                      <option value="CREDIT_CARD" className="bg-white text-slate-900">Credit Card</option>
+                      <option value="DEBIT_CARD" className="bg-white text-slate-900">Debit Card</option>
+                      <option value="UPI" className="bg-white text-slate-900">BHIM UPI (GPay/Paytm)</option>
+                      <option value="NET_BANKING" className="bg-white text-slate-900">Net Banking</option>
                     </select>
                   </div>
 
@@ -633,7 +633,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       placeholder="Search transactions..."
                       value={txSearch}
                       onChange={(e) => setTxSearch(e.target.value)}
-                      className="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-[#F59E0B] bg-slate-50/50"
+                      className="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-[#F59E0B] bg-slate-50/50 text-slate-900 placeholder:text-slate-400"
                     />
                     <svg
                       className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400"
