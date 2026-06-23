@@ -272,34 +272,41 @@ export default async function HomePage({
 
   if (isLoggedIn && session?.user?.email) {
     try {
+      // Optimize database query time by only including relations required for the active tab
+      const includeOrders = activeTab === "orders";
+      const includeWallet = activeTab === "wallet" || activeTab === "profile" || activeTab === "addresses" || activeTab === "saved-cards" || activeTab === "saved-upi";
+      const includeNotifications = activeTab === "notifications";
+
       const user = await prisma.user.findUnique({
         where: { email: session.user.email },
         include: {
-          orders: {
+          orders: includeOrders ? {
             where: { status: { not: "QUOTATION" } },
             include: { lines: { include: { product: { include: { vendor: true } } } }, invoice: true },
             orderBy: { createdAt: 'desc' }
-          },
-          walletTransactions: {
+          } : undefined,
+          walletTransactions: includeWallet ? {
             orderBy: { createdAt: 'desc' }
-          },
+          } : undefined,
           wishlist: true,
-          notifications: {
+          notifications: includeNotifications ? {
             orderBy: { createdAt: 'desc' }
-          }
+          } : undefined
         }
       });
       
       if (user) {
-        // Load coupons dynamically from DB
-        coupons = await prisma.coupon.findMany({
-          where: { isActive: true },
-          orderBy: { createdAt: 'desc' }
-        });
+        if (activeTab === "coupons") {
+          // Load coupons dynamically from DB
+          coupons = await prisma.coupon.findMany({
+            where: { isActive: true },
+            orderBy: { createdAt: 'desc' }
+          });
+        }
 
         // Seed default notifications dynamically if database is empty
-        let userNotifs = user.notifications;
-        if (userNotifs.length === 0) {
+        let userNotifs = user.notifications || [];
+        if (includeNotifications && userNotifs.length === 0) {
           await seedDefaultNotificationsIfEmpty(user.id);
 
           // Re-fetch to get database IDs and dates
@@ -309,7 +316,7 @@ export default async function HomePage({
           });
         }
 
-        const cart = await prisma.rentalOrder.findFirst({
+        const cart = activeTab === "cart" ? await prisma.rentalOrder.findFirst({
           where: { 
             userId: user.id,
             status: "QUOTATION" 
@@ -320,24 +327,41 @@ export default async function HomePage({
               orderBy: { id: 'asc' }
             }
           }
-        });
+        }) : null;
 
         if (cart) {
           cartCount = cart.lines.reduce((acc, line) => acc + line.quantity, 0);
         }
 
-        const wishlistRecords = await prisma.wishlistItem.findMany({
-          where: { userId: user.id },
-          include: {
-            product: {
-              include: { category: true, vendor: true }
-            }
-          },
-          orderBy: { createdAt: "desc" }
-        });
-        const wishlistItems = wishlistRecords.map((item) => item.product);
+        let wishlistItems: any[] = [];
+        let userWishlistProductIds: string[] = [];
 
-        customerData = { user: { ...user, notifications: userNotifs }, cart, wishlistItems };
+        if (activeTab === "wishlist") {
+          const wishlistRecords = await prisma.wishlistItem.findMany({
+            where: { userId: user.id },
+            include: {
+              product: {
+                include: { category: true, vendor: true }
+              }
+            },
+            orderBy: { createdAt: "desc" }
+          });
+          wishlistItems = wishlistRecords.map((item) => item.product);
+          userWishlistProductIds = wishlistItems.map((p: any) => p.id);
+        } else {
+          const wishlistRecords = await prisma.wishlistItem.findMany({
+            where: { userId: user.id },
+            select: { productId: true }
+          });
+          userWishlistProductIds = wishlistRecords.map((r) => r.productId);
+        }
+
+        customerData = { 
+          user: { ...user, notifications: userNotifs }, 
+          cart, 
+          wishlistItems, 
+          wishlistProductIds: userWishlistProductIds 
+        };
       }
     } catch (e) {
       console.error("Error loading customer data on homepage:", e);
@@ -358,7 +382,7 @@ export default async function HomePage({
     return { mrp, discount }
   }
 
-  const userWishlistProductIds = customerData?.wishlistItems.map((p: any) => p.id) || [];
+  const userWishlistProductIds = customerData?.wishlistProductIds || [];
 
 
 
