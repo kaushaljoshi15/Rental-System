@@ -518,7 +518,7 @@ export default async function HomePage({
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 flex-1 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left Sidebar Navigation Card */}
-              <aside className="lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md">
+              <aside className="hidden lg:block lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md">
                 
                 {/* Profile Card Summary */}
                 <div className="flex items-center gap-3.5 pb-4 border-b border-slate-800/60">
@@ -712,8 +712,39 @@ export default async function HomePage({
                 </nav>
               </aside>
 
-              {/* Right Tab Viewport */}
               <div className="lg:col-span-9 space-y-6 pt-2.5">
+                
+                {/* Mobile Tab Selector (Only shown on mobile screen sizes) */}
+                <div className="lg:hidden flex overflow-x-auto no-scrollbar gap-2 pb-3 select-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  {[
+                    { id: "orders", label: "Orders", icon: Package },
+                    { id: "wishlist", label: "Wishlist", icon: Heart },
+                    { id: "notifications", label: "Notifications", icon: Bell },
+                    { id: "event-planner", label: "Planner", icon: CalendarIcon },
+                    { id: "profile", label: "Profile", icon: User },
+                    { id: "addresses", label: "Addresses", icon: MapPin },
+                    { id: "wallet", label: "Wallet", icon: CreditCard },
+                    { id: "saved-cards", label: "Cards", icon: CreditCard },
+                    { id: "saved-upi", label: "UPI", icon: Phone }
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.id || (item.id === "wallet" && (activeTab === "saved-cards" || activeTab === "saved-upi"));
+                    return (
+                      <a
+                        key={item.id}
+                        href={`/?tab=${item.id}`}
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider shrink-0 transition-all border ${
+                          isActive
+                            ? "bg-[#F59E0B] border-[#F59E0B] text-slate-950 shadow-sm"
+                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                        <span>{item.label}</span>
+                      </a>
+                    );
+                  })}
+                </div>
 
             {/* Tab: Orders */}
             {activeTab === "orders" && (() => {
