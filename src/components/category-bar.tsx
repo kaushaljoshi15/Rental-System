@@ -82,7 +82,7 @@ export function CategoryBar() {
             }
             
             return (
-              <Link 
+              <a 
                 href={url} 
                 key={idx}
                 className="flex flex-col items-center group/item cursor-pointer text-center shrink-0 flex-1 min-w-[75px]"
@@ -106,7 +106,7 @@ export function CategoryBar() {
                 >
                   {cat.name}
                 </span>
-              </Link>
+              </a>
             )
           })}
         </div>

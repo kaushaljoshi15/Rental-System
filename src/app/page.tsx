@@ -514,7 +514,7 @@ export default async function HomePage({
                   <div>
                     <p className="px-3 text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2.5">My Workspace</p>
                     <div className="space-y-1.5">
-                      <Link
+                      <a
                         href="/?tab=orders"
                         className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "orders"
@@ -533,9 +533,9 @@ export default async function HomePage({
                             {customerData.user.orders.length}
                           </span>
                         )}
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=wishlist"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "wishlist"
@@ -545,9 +545,9 @@ export default async function HomePage({
                       >
                         <Heart className="w-4 h-4 shrink-0" />
                         My Wishlist
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=notifications"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "notifications"
@@ -557,9 +557,9 @@ export default async function HomePage({
                       >
                         <Bell className="w-4 h-4 shrink-0" />
                         Notifications
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=event-planner"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "event-planner"
@@ -569,14 +569,14 @@ export default async function HomePage({
                       >
                         <CalendarIcon className="w-4 h-4 shrink-0" />
                         Event Planner
-                      </Link>
+                      </a>
                     </div>
                   </div>
 
                   <div>
                     <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Account Settings</p>
                     <div className="space-y-1.5">
-                      <Link
+                      <a
                         href="/?tab=profile"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "profile"
@@ -586,9 +586,9 @@ export default async function HomePage({
                       >
                         <User className="w-4 h-4 shrink-0" />
                         Personal Details
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=addresses"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "addresses"
@@ -598,14 +598,14 @@ export default async function HomePage({
                       >
                         <MapPin className="w-4 h-4 shrink-0" />
                         Saved Addresses
-                      </Link>
+                      </a>
                     </div>
                   </div>
 
                   <div>
                     <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Payments & Perks</p>
                     <div className="space-y-1.5">
-                      <Link
+                      <a
                         href="/?tab=wallet"
                         className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "wallet"
@@ -622,9 +622,9 @@ export default async function HomePage({
                         }`}>
                           ₹{customerData.user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </span>
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=coupons"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "coupons"
@@ -634,9 +634,9 @@ export default async function HomePage({
                       >
                         <Ticket className="w-4 h-4 shrink-0" />
                         Available Coupons
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=gift-cards"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "gift-cards"
@@ -646,9 +646,9 @@ export default async function HomePage({
                       >
                         <Gift className="w-4 h-4 shrink-0" />
                         Gift Cards
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=saved-cards"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "saved-cards"
@@ -658,9 +658,9 @@ export default async function HomePage({
                       >
                         <CreditCard className="w-4 h-4 shrink-0" />
                         Saved Cards
-                      </Link>
+                      </a>
 
-                      <Link
+                      <a
                         href="/?tab=saved-upi"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "saved-upi"
@@ -670,7 +670,7 @@ export default async function HomePage({
                       >
                         <Phone className="w-4 h-4 shrink-0" />
                         Saved UPI
-                      </Link>
+                      </a>
                     </div>
                   </div>
 
