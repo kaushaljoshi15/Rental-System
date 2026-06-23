@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { LogoutLink } from "@/components/logout-button"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -674,13 +675,12 @@ export default async function HomePage({
                   </div>
 
                   <div className="pt-4 border-t border-slate-800/60">
-                    <Link
-                      href="/api/auth/signout"
+                    <LogoutLink
                       className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide text-[#F59E0B]/85 hover:bg-rose-950/20 hover:text-rose-400 transition-colors border-l-2 border-transparent"
                     >
                       <LogOut className="w-4 h-4 shrink-0 text-rose-450" />
                       Sign Out Account
-                    </Link>
+                    </LogoutLink>
                   </div>
                 </nav>
               </aside>

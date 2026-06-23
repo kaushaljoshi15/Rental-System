@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
+import { LogoutLink } from "@/components/logout-button"
 import { Suspense } from "react"
 import { SearchBar } from "@/components/search-bar"
 import { CategoryBar } from "@/components/category-bar"
@@ -156,10 +157,10 @@ export async function Navbar() {
                   </div>
                   
                   {/* Logout Row */}
-                  <Link href="/api/auth/signout" className="flex items-center gap-2.5 px-5 py-3.5 hover:bg-rose-50/40 text-rose-600 hover:text-rose-700 transition-all font-bold border-t border-slate-100">
+                  <LogoutLink className="flex items-center gap-2.5 px-5 py-3.5 hover:bg-rose-50/40 text-rose-600 hover:text-rose-700 transition-all font-bold border-t border-slate-100">
                     <LogOut className="w-4 h-4" />
                     <span>Logout Account</span>
-                  </Link>
+                  </LogoutLink>
                 </div>
               </div>
             </div>

@@ -67,6 +67,9 @@ export const authOptions: NextAuthOptions = {
           const cookieStore = await cookies();
           const targetRole = cookieStore.get("next-auth.target-role")?.value || "CUSTOMER";
 
+          const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
+          const isMasterAdminEmail = user.email.toLowerCase() === RESERVED_ADMIN_EMAIL.toLowerCase();
+
           const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
           });
@@ -82,14 +85,20 @@ export const authOptions: NextAuthOptions = {
                 email: user.email,
                 name: user.name || user.email.split("@")[0],
                 password: hashedPassword,
-                role: targetRole,
+                role: isMasterAdminEmail ? "ADMIN" : targetRole,
                 emailVerified: new Date(),
                 image: user.image || null,
               },
             });
           } else {
-            // Upgrade existing CUSTOMER to VENDOR if they sign in from vendor portal
-            if (targetRole === "VENDOR" && existingUser.role === "CUSTOMER") {
+            // Upgrade to ADMIN if the master admin logs in but is currently not set as ADMIN in DB
+            if (isMasterAdminEmail && existingUser.role !== "ADMIN") {
+              await prisma.user.update({
+                where: { email: user.email },
+                data: { role: "ADMIN" },
+              });
+            } else if (targetRole === "VENDOR" && existingUser.role === "CUSTOMER") {
+              // Upgrade existing CUSTOMER to VENDOR if they sign in from vendor portal
               await prisma.user.update({
                 where: { email: user.email },
                 data: { role: "VENDOR" },

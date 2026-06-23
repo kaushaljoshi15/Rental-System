@@ -99,16 +99,28 @@ export async function searchHalls(filters: SearchFilters) {
         idFilter.notIn = unavailableProductIds
       }
       if (query) {
-        // Execute raw query for pg_trgm similarity matching
-        const matchingProducts = await prisma.$queryRaw<{ id: string }[]>`
-          SELECT id FROM "Product"
-          WHERE similarity(name, ${query}) > 0.25
-             OR similarity(description, ${query}) > 0.25
-             OR name ILIKE ${`%${query}%`}
-             OR description ILIKE ${`%${query}%`}
-             OR city ILIKE ${`%${query}%`}
-             OR address ILIKE ${`%${query}%`}
-        `
+        let matchingProducts: { id: string }[] = []
+        try {
+          // Execute raw query for pg_trgm similarity matching
+          matchingProducts = await prisma.$queryRaw<{ id: string }[]>`
+            SELECT id FROM "Product"
+            WHERE similarity(name, ${query}) > 0.25
+               OR similarity(description, ${query}) > 0.25
+               OR name ILIKE ${`%${query}%`}
+               OR description ILIKE ${`%${query}%`}
+               OR city ILIKE ${`%${query}%`}
+               OR address ILIKE ${`%${query}%`}
+          `
+        } catch (rawError) {
+          // Fallback to standard ILIKE search if pg_trgm is not enabled in the database
+          matchingProducts = await prisma.$queryRaw<{ id: string }[]>`
+            SELECT id FROM "Product"
+            WHERE name ILIKE ${`%${query}%`}
+               OR description ILIKE ${`%${query}%`}
+               OR city ILIKE ${`%${query}%`}
+               OR address ILIKE ${`%${query}%`}
+          `
+        }
         const trigramProductIds = matchingProducts.map((p) => p.id)
 
         if (trigramProductIds.length === 0) {

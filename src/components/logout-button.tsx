@@ -17,3 +17,21 @@ export default function LogoutButton() {
   );
 }
 
+export function LogoutLink({ className, children }: { className?: string; children: React.ReactNode }) {
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    signOut({ callbackUrl: "/login" });
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleLogout}
+      className={`text-left bg-transparent border-none cursor-pointer outline-none focus:outline-none p-0 ${className || ""}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+
