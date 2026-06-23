@@ -196,8 +196,50 @@ export default async function HomePage({
   const rating = params.rating ? parseFloat(params.rating) : undefined
   const vendorId = params.vendorId
 
-  // Fetch Categories for Sidebar via Cache
-  const allCategories = await getCachedCategories();
+  // Fetch Categories for Sidebar, vendors, products base, and user data in parallel
+  const includeOrders = activeTab === "orders";
+  const includeWallet = activeTab === "wallet" || activeTab === "profile" || activeTab === "addresses" || activeTab === "saved-cards" || activeTab === "saved-upi";
+  const includeNotifications = activeTab === "notifications";
+
+  const [allCategories, vendors, allProductsForSearch, user] = await Promise.all([
+    getCachedCategories(),
+    prisma.user.findMany({
+      where: { role: "VENDOR" },
+      select: { id: true, name: true, companyName: true }
+    }),
+    prisma.product.findMany({
+      take: 40,
+      select: {
+        id: true,
+        name: true,
+        priceDaily: true,
+        image: true,
+        category: {
+          select: {
+            name: true,
+            slug: true
+          }
+        }
+      }
+    }),
+    (isLoggedIn && session?.user?.email) ? prisma.user.findUnique({
+      where: { email: session.user.email },
+      include: {
+        orders: includeOrders ? {
+          where: { status: { not: "QUOTATION" } },
+          include: { lines: { include: { product: { include: { vendor: true } } } }, invoice: true },
+          orderBy: { createdAt: 'desc' }
+        } : undefined,
+        walletTransactions: includeWallet ? {
+          orderBy: { createdAt: 'desc' }
+        } : undefined,
+        wishlist: true,
+        notifications: includeNotifications ? {
+          orderBy: { createdAt: 'desc' }
+        } : undefined
+      }
+    }) : Promise.resolve(null)
+  ]);
 
   // Dynamic grouping logic
   const groupedCategories: Record<string, typeof allCategories> = {};
@@ -207,12 +249,6 @@ export default async function HomePage({
       groupedCategories[group] = [];
     }
     groupedCategories[group].push(cat);
-  });
-
-  // Fetch list of active vendors
-  const vendors = await prisma.user.findMany({
-    where: { role: "VENDOR" },
-    select: { id: true, name: true, companyName: true }
   });
 
   // Helper to build URL with preserved search parameters
@@ -237,134 +273,101 @@ export default async function HomePage({
     return `/?${currentParams.toString()}`;
   };
 
-  // Fetch products via searchHalls action
+  // Fetch search results and customer sub-queries in parallel
   const selectedCategory = allCategories.find(c => c.slug === categorySlug);
-  const searchResult = await searchHalls({
-    query: searchQuery,
-    categoryId: selectedCategory?.id,
-    minPrice,
-    maxPrice,
-    rating,
-    vendorId,
-    sort
-  });
-  const catalogProducts = searchResult.success && searchResult.data ? searchResult.data : [];
+  
+  const [searchResult, customerSubQueries] = await Promise.all([
+    searchHalls({
+      query: searchQuery,
+      categoryId: selectedCategory?.id,
+      minPrice,
+      maxPrice,
+      rating,
+      vendorId,
+      sort
+    }),
+    user ? Promise.all([
+      // Fetch Coupons
+      activeTab === "coupons" ? prisma.coupon.findMany({
+        where: { isActive: true },
+        orderBy: { createdAt: 'desc' }
+      }) : Promise.resolve([]),
 
-  const allProductsForSearch = await prisma.product.findMany({
-    take: 40,
-    select: {
-      id: true,
-      name: true,
-      priceDaily: true,
-      image: true,
-      category: {
-        select: {
-          name: true,
-          slug: true
-        }
-      }
-    }
-  });
-
-  let customerData: any = null
-  let cartCount = 0
-  let coupons: any[] = []
-
-  if (isLoggedIn && session?.user?.email) {
-    try {
-      // Optimize database query time by only including relations required for the active tab
-      const includeOrders = activeTab === "orders";
-      const includeWallet = activeTab === "wallet" || activeTab === "profile" || activeTab === "addresses" || activeTab === "saved-cards" || activeTab === "saved-upi";
-      const includeNotifications = activeTab === "notifications";
-
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-        include: {
-          orders: includeOrders ? {
-            where: { status: { not: "QUOTATION" } },
-            include: { lines: { include: { product: { include: { vendor: true } } } }, invoice: true },
-            orderBy: { createdAt: 'desc' }
-          } : undefined,
-          walletTransactions: includeWallet ? {
-            orderBy: { createdAt: 'desc' }
-          } : undefined,
-          wishlist: true,
-          notifications: includeNotifications ? {
-            orderBy: { createdAt: 'desc' }
-          } : undefined
-        }
-      });
-      
-      if (user) {
-        if (activeTab === "coupons") {
-          // Load coupons dynamically from DB
-          coupons = await prisma.coupon.findMany({
-            where: { isActive: true },
-            orderBy: { createdAt: 'desc' }
-          });
-        }
-
-        // Seed default notifications dynamically if database is empty
-        let userNotifs = user.notifications || [];
-        if (includeNotifications && userNotifs.length === 0) {
-          await seedDefaultNotificationsIfEmpty(user.id);
-
-          // Re-fetch to get database IDs and dates
-          userNotifs = await prisma.notification.findMany({
-            where: { userId: user.id },
-            orderBy: { createdAt: "desc" }
-          });
-        }
-
-        const cart = activeTab === "cart" ? await prisma.rentalOrder.findFirst({
-          where: { 
-            userId: user.id,
-            status: "QUOTATION" 
-          },
-          include: { 
-            lines: {
-              include: { product: true },
-              orderBy: { id: 'asc' }
-            }
+      // Fetch Cart
+      activeTab === "cart" ? prisma.rentalOrder.findFirst({
+        where: { 
+          userId: user.id,
+          status: "QUOTATION" 
+        },
+        include: { 
+          lines: {
+            include: { product: true },
+            orderBy: { id: 'asc' }
           }
-        }) : null;
-
-        if (cart) {
-          cartCount = cart.lines.reduce((acc, line) => acc + line.quantity, 0);
         }
+      }) : Promise.resolve(null),
 
-        let wishlistItems: any[] = [];
-        let userWishlistProductIds: string[] = [];
+      // Fetch Wishlist Items
+      activeTab === "wishlist" ? prisma.wishlistItem.findMany({
+        where: { userId: user.id },
+        include: {
+          product: {
+            include: { category: true, vendor: true }
+          }
+        },
+        orderBy: { createdAt: "desc" }
+      }) : prisma.wishlistItem.findMany({
+        where: { userId: user.id },
+        select: { productId: true }
+      })
+    ]) : Promise.resolve([[], null, []])
+  ]);
 
-        if (activeTab === "wishlist") {
-          const wishlistRecords = await prisma.wishlistItem.findMany({
-            where: { userId: user.id },
-            include: {
-              product: {
-                include: { category: true, vendor: true }
-              }
-            },
-            orderBy: { createdAt: "desc" }
-          });
-          wishlistItems = wishlistRecords.map((item) => item.product);
-          userWishlistProductIds = wishlistItems.map((p: any) => p.id);
-        } else {
-          const wishlistRecords = await prisma.wishlistItem.findMany({
-            where: { userId: user.id },
-            select: { productId: true }
-          });
-          userWishlistProductIds = wishlistRecords.map((r) => r.productId);
-        }
+  const catalogProducts = searchResult.success && searchResult.data ? searchResult.data : [];
+  
+  let customerData: any = null;
+  let cartCount = 0;
+  let coupons: any[] = [];
 
-        customerData = { 
-          user: { ...user, notifications: userNotifs }, 
-          cart, 
-          wishlistItems, 
-          wishlistProductIds: userWishlistProductIds 
-        };
+  if (user) {
+    try {
+      const [couponsData, cart, wishlistData] = customerSubQueries as [any[], any, any[]];
+      coupons = couponsData;
+
+      // Seed default notifications dynamically if database is empty
+      let userNotifs = user.notifications || [];
+      if (includeNotifications && userNotifs.length === 0) {
+        await seedDefaultNotificationsIfEmpty(user.id);
+
+        // Re-fetch to get database IDs and dates
+        userNotifs = await prisma.notification.findMany({
+          where: { userId: user.id },
+          orderBy: { createdAt: "desc" }
+        });
       }
+
+      if (cart) {
+        cartCount = cart.lines.reduce((acc: number, line: any) => acc + line.quantity, 0);
+      }
+
+      let wishlistItems: any[] = [];
+      let userWishlistProductIds: string[] = [];
+
+      if (activeTab === "wishlist") {
+        wishlistItems = wishlistData;
+        userWishlistProductIds = wishlistItems.map((p: any) => p.id);
+      } else {
+        userWishlistProductIds = wishlistData.map((r: any) => r.productId);
+      }
+
+      customerData = { 
+        user: { ...user, notifications: userNotifs }, 
+        cart, 
+        wishlistItems, 
+        wishlistProductIds: userWishlistProductIds 
+      };
     } catch (e) {
-      console.error("Error loading customer data on homepage:", e);
+      console.error("Error setting customer data on homepage:", e);
     }
   }
 
