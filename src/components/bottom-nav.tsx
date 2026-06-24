@@ -17,7 +17,7 @@ export function BottomNav({ isLoggedIn, cartCount }: BottomNavProps) {
   const currentTab = searchParams.get("tab")
   
   const isHomeActive = pathname === "/" && !currentTab
-  const isAccountActive = currentTab && ["profile", "orders", "wishlist", "notifications", "addresses", "wallet", "saved-cards", "saved-upi", "event-planner"].includes(currentTab)
+  const isAccountActive = currentTab && ["account", "profile", "orders", "wishlist", "notifications", "addresses", "wallet", "saved-cards", "saved-upi", "event-planner", "coupons", "gift-cards"].includes(currentTab)
   const isCartActive = currentTab === "cart"
 
   const handleCategoriesClick = (e: React.MouseEvent) => {
@@ -55,7 +55,7 @@ export function BottomNav({ isLoggedIn, cartCount }: BottomNavProps) {
       </Link>
 
       <Link 
-        href={isLoggedIn ? "/?tab=profile" : "/login"} 
+        href={isLoggedIn ? "/?tab=account" : "/login"} 
         className={`flex flex-col items-center justify-center gap-0.5 flex-grow h-full transition-colors ${
           isAccountActive ? "text-[#F59E0B]" : "text-slate-400 hover:text-slate-200"
         }`}

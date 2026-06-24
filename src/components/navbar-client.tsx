@@ -31,7 +31,6 @@ interface NavbarClientProps {
 }
 
 export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarClientProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<"account" | "more" | null>(null)
   const accountRef = useRef<HTMLDivElement>(null)
   const moreRef = useRef<HTMLDivElement>(null)
@@ -39,11 +38,6 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
   const toggleDropdown = (dropdown: "account" | "more") => {
     setActiveDropdown(activeDropdown === dropdown ? null : dropdown)
   }
-
-  // Close mobile menu when switching tabs or loading pages
-  useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [])
 
   // Close desktop dropdowns on click-away
   useEffect(() => {
@@ -64,7 +58,7 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
 
   return (
     <>
-      {/* Desktop user controls, and Mobile Hamburger trigger */}
+      {/* Desktop user controls */}
       <div className="flex items-center gap-4 sm:gap-6">
         
         {/* Persistent Cart Icon */}
@@ -123,15 +117,15 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   <div className="p-2.5 divide-y divide-slate-100 text-left">
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">My Workspace</p>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <Package className="w-4 h-4 text-slate-400" />
                         <span>Orders & Bookings</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <Heart className="w-4 h-4 text-slate-400" />
                         <span>My Wishlist</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <Bell className="w-4 h-4 text-slate-400" />
                         <span>Notifications</span>
                       </Link>
@@ -139,15 +133,15 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                     
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Settings & Payments</p>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <User className="w-4 h-4 text-slate-400" />
                         <span>Personal Details</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>Cards & Checkout</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <MapPin className="w-4 h-4 text-slate-400" />
                         <span>Saved Addresses</span>
                       </Link>
@@ -155,11 +149,11 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
 
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Rewards & Perks</p>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <Ticket className="w-4 h-4 text-slate-400" />
                         <span>Available Coupons</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                         <Gift className="w-4 h-4 text-slate-400" />
                         <span>Claim Gift Cards</span>
                       </Link>
@@ -211,27 +205,27 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   
                   {/* Links List */}
                   <div className="space-y-1">
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                       <User className="w-4 h-4 text-slate-400" />
                       <span>My Profile</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                       <Package className="w-4 h-4 text-slate-400" />
                       <span>Orders</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                       <Heart className="w-4 h-4 text-slate-400" />
                       <span>Wishlist</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                       <Store className="w-4 h-4 text-slate-400" />
                       <span>Become a Seller</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                       <Headphones className="w-4 h-4 text-slate-400" />
                       <span>24x7 Customer Care</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                       <Calendar className="w-4 h-4 text-slate-400" />
                       <span>Event Planner</span>
                     </Link>
@@ -259,19 +253,19 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
             }`}>
               <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 py-2.5 text-slate-700 text-xs overflow-hidden relative text-left">
                 <div className="py-1">
-                  <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-amber-600 transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-amber-600 transition-colors font-bold text-slate-655 font-semibold">
                     <Store className="w-4 h-4 text-slate-400" />
                     <span>Become a Seller</span>
                   </Link>
-                  <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                     <Bell className="w-4 h-4 text-slate-400" />
                     <span>Notification Settings</span>
                   </Link>
-                  <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                     <Headphones className="w-4 h-4 text-slate-400" />
                     <span>24x7 Customer Care</span>
                   </Link>
-                  <Link onClick={() => setActiveDropdown(null)} href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
                     <Calendar className="w-4 h-4 text-slate-400" />
                     <span>Event Planner</span>
                   </Link>
@@ -280,135 +274,7 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
             </div>
           </div>
         </div>
-
-        {/* Mobile Hamburger Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-1 text-slate-200 hover:text-white transition-colors cursor-pointer"
-          aria-label="Toggle Menu"
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6 text-[#F59E0B]" /> : <Menu className="w-6 h-6" />}
-        </button>
       </div>
-
-      {/* Mobile Drawer Overlay Menu */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 top-16 bg-slate-955/95 z-40 md:hidden animate-in fade-in duration-200 overflow-y-auto pb-10">
-          {/* Mobile Search Bar */}
-          <div className="p-4 border-b border-slate-800/80">
-            <SearchBar isDark={true} placeholder="Search equipment, sound systems, halls..." />
-          </div>
-
-          <div className="p-5 space-y-6 text-left">
-            {/* User Session Info in Drawer */}
-            {isLoggedIn ? (
-              <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-4 flex items-center gap-3">
-                <div className="h-11 w-11 rounded-full bg-amber-100 text-amber-950 flex items-center justify-center font-black text-base border border-amber-200">
-                  {userName.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-extrabold text-slate-100 truncate">{userName}</p>
-                  <p className="text-xs text-slate-400 truncate mt-0.5">{email || "customer@rentkart.com"}</p>
-                </div>
-                <span className="text-[9px] bg-amber-500/10 border border-amber-500/30 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">
-                  Client
-                </span>
-              </div>
-            ) : (
-              <div className="bg-slate-900 border border-slate-800/80 rounded-2xl p-4 text-center space-y-3">
-                <div>
-                  <p className="text-sm font-extrabold text-slate-100">Welcome to RentalKart</p>
-                  <p className="text-xs text-slate-400 mt-1">Rent professional gear and banquet halls.</p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Link href="/login" className="flex items-center justify-center bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs">
-                    Sign In
-                  </Link>
-                  <Link href="/register" className="flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-200 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs">
-                    Register
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* Menu Links */}
-            <div className="space-y-5">
-              {isLoggedIn && (
-                <>
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">My Workspace</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link href="/?tab=orders" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
-                        <Package className="w-4 h-4 text-[#F59E0B]" />
-                        <span>Orders</span>
-                      </Link>
-                      <Link href="/?tab=wishlist" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
-                        <Heart className="w-4 h-4 text-[#F59E0B]" />
-                        <span>Wishlist</span>
-                      </Link>
-                      <Link href="/?tab=notifications" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
-                        <Bell className="w-4 h-4 text-[#F59E0B]" />
-                        <span>Notifications</span>
-                      </Link>
-                      <Link href="/?tab=event-planner" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
-                        <Calendar className="w-4 h-4 text-[#F59E0B]" />
-                        <span>Event Planner</span>
-                      </Link>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Settings & Wallet</p>
-                    <div className="space-y-1 bg-slate-900 border border-slate-800/50 rounded-xl p-2">
-                      <Link href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
-                        <User className="w-4 h-4 text-slate-400" />
-                        <span>Personal Details</span>
-                      </Link>
-                      <Link href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
-                        <MapPin className="w-4 h-4 text-slate-400" />
-                        <span>Saved Addresses</span>
-                      </Link>
-                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
-                        <CreditCard className="w-4 h-4 text-slate-400" />
-                        <span>Wallet (₹{cartCount.toLocaleString()})</span>
-                      </Link>
-                      <Link href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
-                        <Ticket className="w-4 h-4 text-slate-400" />
-                        <span>Coupons</span>
-                      </Link>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* General Links */}
-              <div className="space-y-2">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Hubs & Help</p>
-                <div className="space-y-1 bg-slate-900 border border-slate-800/50 rounded-xl p-2">
-                  <Link href="/seller-center" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
-                    <Store className="w-4 h-4 text-slate-400" />
-                    <span>Become a Seller</span>
-                  </Link>
-                  <Link href="#support" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
-                    <Headphones className="w-4 h-4 text-slate-400" />
-                    <span>24x7 Customer Care</span>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Mobile Logout */}
-              {isLoggedIn && (
-                <div className="pt-4 border-t border-slate-800">
-                  <LogoutLink className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 hover:text-rose-600 hover:bg-rose-500/20 transition-all font-bold text-xs">
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout Account</span>
-                  </LogoutLink>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </>
   )
 }

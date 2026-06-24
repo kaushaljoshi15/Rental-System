@@ -233,7 +233,7 @@ export default async function HomePage({
 
   // Fetch Categories for Sidebar, vendors, products base, and user data in parallel
   const includeOrders = activeTab === "orders";
-  const includeWallet = activeTab === "wallet" || activeTab === "profile" || activeTab === "addresses" || activeTab === "saved-cards" || activeTab === "saved-upi";
+  const includeWallet = activeTab === "wallet" || activeTab === "profile" || activeTab === "addresses" || activeTab === "saved-cards" || activeTab === "saved-upi" || activeTab === "account";
   const includeNotifications = activeTab === "notifications";
 
   const [allCategories, vendors, allProductsForSearch, user] = await Promise.all([
@@ -732,37 +732,217 @@ export default async function HomePage({
 
               <div className="lg:col-span-9 space-y-6 pt-2.5">
                 
-                {/* Mobile Tab Selector (Only shown on mobile screen sizes) */}
-                <div className="lg:hidden flex overflow-x-auto no-scrollbar gap-2 pb-3 select-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  {[
-                    { id: "orders", label: "Orders", icon: Package },
-                    { id: "wishlist", label: "Wishlist", icon: Heart },
-                    { id: "notifications", label: "Notifications", icon: Bell },
-                    { id: "event-planner", label: "Planner", icon: CalendarIcon },
-                    { id: "profile", label: "Profile", icon: User },
-                    { id: "addresses", label: "Addresses", icon: MapPin },
-                    { id: "wallet", label: "Wallet", icon: CreditCard },
-                    { id: "saved-cards", label: "Cards", icon: CreditCard },
-                    { id: "saved-upi", label: "UPI", icon: Phone }
-                  ].map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeTab === item.id || (item.id === "wallet" && (activeTab === "saved-cards" || activeTab === "saved-upi"));
-                    return (
-                      <Link
-                        key={item.id}
-                        href={`/?tab=${item.id}`}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider shrink-0 transition-all border ${
-                          isActive
-                            ? "bg-[#F59E0B] border-[#F59E0B] text-slate-950 shadow-sm"
-                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                        }`}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                        <span>{item.label}</span>
+                {/* Mobile Navigation Header */}
+                {activeTab === "account" ? (
+                  null
+                ) : (
+                  <div className="lg:hidden mb-5">
+                    <Link
+                      href="/?tab=account"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 text-white hover:text-[#F59E0B] rounded-xl text-xs font-black uppercase tracking-wider transition-colors shadow-sm select-none"
+                    >
+                      <span>← Back to Account Menu</span>
+                    </Link>
+                  </div>
+                )}
+
+            {/* Tab: Account (Mobile consolidated Account Dashboard) */}
+            {activeTab === "account" && (
+              <>
+                {/* Mobile View: Premium Consolidated Account Dashboard */}
+                <div className="lg:hidden space-y-6 animate-in fade-in duration-300">
+                  {/* Profile Header */}
+                  <div className="bg-[#0F172A] text-slate-100 rounded-3xl p-6 border border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.12)] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="flex items-center gap-4">
+                      <div className="relative shrink-0">
+                        <img
+                          src={customerData.user.image || AVATAR_PRESETS[0].url}
+                          alt="Profile Avatar"
+                          className="w-16 h-16 rounded-full border-2 border-[#F59E0B] object-cover ring-2 ring-amber-500/10 ring-offset-2 ring-offset-[#0F172A]"
+                        />
+                        <div className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-[#0F172A] rounded-full animate-pulse" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-black text-white truncate">{customerData.user.name}</span>
+                          <span className="text-[9px] bg-amber-500/10 border border-[#F59E0B]/30 text-[#F59E0B] px-2 py-0.5 rounded-full font-black uppercase tracking-wider shrink-0 animate-pulse">
+                            Client
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-400 truncate mt-1">{customerData.user.email}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Wallet Balance Info */}
+                    <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                      <div>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Active Wallet Balance</p>
+                        <p className="text-lg font-black text-[#F59E0B] mt-0.5">₹{customerData.user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                      </div>
+                      <Link href="/?tab=wallet">
+                        <Button size="sm" className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-750 font-bold text-xs h-8 rounded-xl px-4">
+                          Add Funds
+                        </Button>
                       </Link>
-                    );
-                  })}
+                    </div>
+                  </div>
+
+                  {/* 2x2 Action Cards */}
+                  <div className="grid grid-cols-2 gap-3.5">
+                    <Link href="/?tab=orders" className="bg-white border border-slate-200/60 rounded-2xl p-4 flex flex-col justify-between h-24 hover:border-amber-300 transition-colors shadow-[0_2px_8px_rgba(0,0,0,0.02)] group">
+                      <div className="bg-amber-55/10 text-[#F59E0B] w-8 h-8 rounded-xl flex items-center justify-center font-bold">
+                        <Package className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider">My Workspace</p>
+                        <p className="text-xs font-bold text-slate-850 mt-1">Orders & Bookings</p>
+                      </div>
+                    </Link>
+                    
+                    <Link href="/?tab=wishlist" className="bg-white border border-slate-200/60 rounded-2xl p-4 flex flex-col justify-between h-24 hover:border-amber-300 transition-colors shadow-[0_2px_8px_rgba(0,0,0,0.02)] group">
+                      <div className="bg-rose-500/10 text-rose-500 w-8 h-8 rounded-xl flex items-center justify-center font-bold">
+                        <Heart className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider">Favorites</p>
+                        <p className="text-xs font-bold text-slate-850 mt-1">My Wishlist</p>
+                      </div>
+                    </Link>
+
+                    <Link href="/?tab=coupons" className="bg-white border border-slate-200/60 rounded-2xl p-4 flex flex-col justify-between h-24 hover:border-amber-300 transition-colors shadow-[0_2px_8px_rgba(0,0,0,0.02)] group">
+                      <div className="bg-emerald-55/10 text-emerald-500 w-8 h-8 rounded-xl flex items-center justify-center font-bold">
+                        <Ticket className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider">Rewards</p>
+                        <p className="text-xs font-bold text-slate-850 mt-1">Available Coupons</p>
+                      </div>
+                    </Link>
+
+                    <Link href="/?tab=event-planner" className="bg-white border border-slate-200/60 rounded-2xl p-4 flex flex-col justify-between h-24 hover:border-amber-300 transition-colors shadow-[0_2px_8px_rgba(0,0,0,0.02)] group">
+                      <div className="bg-purple-55/10 text-purple-500 w-8 h-8 rounded-xl flex items-center justify-center font-bold">
+                        <CalendarIcon className="w-4.5 h-4.5" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-slate-400 font-black uppercase tracking-wider">Organizer</p>
+                        <p className="text-xs font-bold text-slate-850 mt-1">Event Planner</p>
+                      </div>
+                    </Link>
+                  </div>
+
+                  {/* Settings chevron list */}
+                  <div className="space-y-4">
+                    <div className="bg-white border border-slate-200/60 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                      <div className="p-4 border-b border-slate-100 bg-slate-50/40">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Account Settings</p>
+                      </div>
+                      <div className="divide-y divide-slate-100">
+                        <Link href="/?tab=profile" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <User className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Personal Details</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+                        
+                        <Link href="/?tab=addresses" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <MapPin className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Saved Addresses</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+
+                        <Link href="/?tab=notifications" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Bell className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Notification Settings</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-slate-200/60 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                      <div className="p-4 border-b border-slate-100 bg-slate-50/40">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Payments & Perks</p>
+                      </div>
+                      <div className="divide-y divide-slate-100">
+                        <Link href="/?tab=wallet" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <CreditCard className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Wallet & Transaction Ledger</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+
+                        <Link href="/?tab=gift-cards" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Gift className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Gift Cards</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+
+                        <Link href="/?tab=saved-cards" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <CreditCard className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Saved Cards</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+
+                        <Link href="/?tab=saved-upi" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Phone className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Saved UPI Handles</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-slate-200/60 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                      <div className="p-4 border-b border-slate-100 bg-slate-50/40">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Help & Feedback</p>
+                      </div>
+                      <div className="divide-y divide-slate-100">
+                        <Link href="#support" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <HelpCircle className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">24x7 Customer Care</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sign Out Card */}
+                  <div className="pt-2 pb-6">
+                    <LogoutLink className="flex items-center justify-center gap-2.5 w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 hover:text-rose-700 border border-rose-200 py-3.5 rounded-2xl font-black text-xs uppercase tracking-wider transition-all">
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out Account</span>
+                    </LogoutLink>
+                  </div>
                 </div>
+
+                {/* Desktop View: Show Personal Details directly to fill screen nicely */}
+                <div className="hidden lg:block space-y-6">
+                  <div>
+                    <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Personal Details</h1>
+                    <p className="text-slate-500 text-xs mt-0.5">Manage your contact number, user picture, and core account credentials.</p>
+                  </div>
+                  <SettingsForm 
+                    initialUser={customerData.user} 
+                    transactions={customerData.user.walletTransactions} 
+                    defaultTab="profile" 
+                    key="profile-desktop-account"
+                  />
+                </div>
+              </>
+            )}
 
             {/* Tab: Orders */}
             {activeTab === "orders" && (() => {
