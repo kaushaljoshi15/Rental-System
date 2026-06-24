@@ -64,7 +64,7 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
         {/* Persistent Cart Icon */}
         <Link 
           href={isLoggedIn ? "/?tab=cart" : "/login"} 
-          className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] relative p-1.5 transition-all group font-bold text-xs sm:text-sm"
+          className="hidden md:flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] relative p-1.5 transition-all group font-bold text-xs sm:text-sm"
         >
           <div className="relative">
             <ShoppingCart className="w-5 h-5 text-[#F59E0B] transition-transform group-hover:scale-105" />

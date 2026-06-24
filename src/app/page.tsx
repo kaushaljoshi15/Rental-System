@@ -49,7 +49,8 @@ import {
   LogOut,
   Tag,
   Filter,
-  ImageOff
+  ImageOff,
+  Store
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { SearchBar } from "@/components/search-bar"
@@ -905,9 +906,17 @@ export default async function HomePage({
 
                     <div className="bg-white border border-slate-200/60 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
                       <div className="p-4 border-b border-slate-100 bg-slate-50/40">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Help & Feedback</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Help & Vendor Hub</p>
                       </div>
                       <div className="divide-y divide-slate-100">
+                        <Link href="/seller-center" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Store className="w-4 h-4 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">Become a Seller</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-400" />
+                        </Link>
+
                         <Link href="#support" className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
                           <div className="flex items-center gap-3">
                             <HelpCircle className="w-4 h-4 text-slate-400" />
