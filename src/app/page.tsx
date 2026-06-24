@@ -81,6 +81,7 @@ import { CartDatePicker } from "@/components/customer/cart-date-picker"
 import { CartAddressSelector } from "@/components/customer/cart-address-selector"
 import { GiftCardsManager, SavedCardsManager, SavedUpiManager } from "@/components/customer/payment-managers"
 import { RentalSimulator } from "@/components/rental-simulator"
+import { MobileCategories } from "@/components/mobile-categories"
 
 // Cache helper for category lists
 const getCachedCategories = unstable_cache(
@@ -410,9 +411,43 @@ export default async function HomePage({
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900 overflow-x-clip">
-      <Navbar />
+      {activeTab === "categories" ? (
+        <div className="hidden md:block">
+          <Navbar />
+        </div>
+      ) : (
+        <Navbar />
+      )}
 
-      {isLoggedIn && activeTab && customerData?.user ? (
+      {activeTab === "categories" ? (
+        <>
+          <div className="md:hidden flex-1 flex flex-col">
+            <MobileCategories 
+              categories={allCategories} 
+              products={allProductsForSearch}
+              cartCount={cartCount}
+              isLoggedIn={isLoggedIn}
+            />
+          </div>
+          <div className="hidden md:block flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-8">All Rental Categories</h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {allCategories.map((cat) => (
+                <Link 
+                  key={cat.id} 
+                  href={`/?category=${cat.slug}`}
+                  className="bg-white border border-slate-200/80 rounded-3xl p-6 flex flex-col items-center justify-center text-center hover:shadow-lg transition-all group cursor-pointer"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#F59E0B] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200">
+                    <Sliders className="w-8 h-8" />
+                  </div>
+                  <span className="font-bold text-slate-800 text-sm">{cat.name}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : isLoggedIn && activeTab && customerData?.user ? (
         activeTab === "cart" ? (
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 flex-1 w-full">
             {(() => {

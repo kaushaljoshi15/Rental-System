@@ -27,19 +27,35 @@ export async function prismaRetry<T>(fn: () => Promise<T>, retries = 3, delay = 
       return await fn()
     } catch (err: any) {
       lastError = err
-      const msg = (err instanceof Error ? err.message : String(err)) || ""
-      const code = (err && typeof err === 'object' && 'code' in err) ? String(err.code) : ""
+      
+      // Robust error message extraction safe from VM realm boundaries
+      let msg = ""
+      if (err) {
+        if (typeof err === "string") {
+          msg = err
+        } else if (typeof err === "object") {
+          msg = err.message || err.error || String(err) || ""
+        }
+      }
+      
+      const code = (err && typeof err === "object" && "code" in err) ? String(err.code) : ""
       
       const isConnectionError = 
         msg.includes("closed the connection") || 
         msg.includes("connection pool") ||
         msg.includes("Can't reach database") ||
         msg.includes("Server has closed the connection") ||
-        code === "P2024" || // Prisma connection pool timeout
-        code === "P1017"    // Prisma server closed connection
+        msg.includes("pooler") ||
+        msg.includes("supabase") ||
+        msg.includes("6543") ||
+        code === "P2024" || // Connection pool timeout
+        code === "P1017" || // Server closed connection
+        code === "P1001" || // Can't reach database server
+        code === "P1008"    // Operations timed out
       
       if (isConnectionError && i < retries) {
-        console.warn(`[Prisma Retry] Connection issue encountered: "${msg.split('\n')[0]}". Retrying in ${delay}ms... (Attempt ${i + 1}/${retries})`)
+        const errorLine = msg.split('\n')[0] || "Unknown Database Connection Error"
+        console.warn(`[Prisma Retry] Connection issue encountered: "${errorLine}". Retrying in ${delay}ms... (Attempt ${i + 1}/${retries})`)
         await new Promise((resolve) => setTimeout(resolve, delay))
         continue
       }
