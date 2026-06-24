@@ -1644,12 +1644,7 @@ export default async function HomePage({
         </main>
       )) : (
         <>
-          {/* Mobile Search Bar (Only shown on mobile) */}
-          <div className="bg-white px-4 py-3 md:hidden border-b border-slate-200">
-            <Suspense fallback={<div className="h-10 bg-slate-550/10 border border-slate-200 rounded-xl animate-pulse w-full" />}>
-              <SearchBar isDark={false} placeholder="Search equipment or halls to rent..." />
-            </Suspense>
-          </div>
+
 
           {/* --- TOP SLIDER CAROUSEL (MYNTRA/FLIPKART INTERFACE) --- */}
           <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">

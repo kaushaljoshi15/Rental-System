@@ -3,7 +3,7 @@
 import React from "react"
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
-import { Home, LayoutGrid, User, ShoppingCart } from "lucide-react"
+import { Home, LayoutGrid, User, Package } from "lucide-react"
 
 interface BottomNavProps {
   isLoggedIn: boolean
@@ -17,8 +17,8 @@ export function BottomNav({ isLoggedIn, cartCount }: BottomNavProps) {
   const currentTab = searchParams.get("tab")
   
   const isHomeActive = pathname === "/" && !currentTab
-  const isAccountActive = currentTab && ["account", "profile", "orders", "wishlist", "notifications", "addresses", "wallet", "saved-cards", "saved-upi", "event-planner", "coupons", "gift-cards"].includes(currentTab)
-  const isCartActive = currentTab === "cart"
+  const isRentalsActive = currentTab === "orders"
+  const isAccountActive = currentTab && ["account", "profile", "wishlist", "notifications", "addresses", "wallet", "saved-cards", "saved-upi", "event-planner", "coupons", "gift-cards"].includes(currentTab) && currentTab !== "orders"
 
   const handleCategoriesClick = (e: React.MouseEvent) => {
     if (pathname === "/") {
@@ -34,51 +34,50 @@ export function BottomNav({ isLoggedIn, cartCount }: BottomNavProps) {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#0F172A] border-t border-slate-800/80 h-14 flex items-center justify-around md:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.3)] select-none">
+    <div className="fixed bottom-4 left-4 right-4 z-50 bg-[#0F172A]/95 backdrop-blur-md border border-slate-800/80 h-16 rounded-2xl flex items-center justify-around md:hidden shadow-[0_12px_36px_rgba(0,0,0,0.5)] px-2 select-none">
       <Link 
         href="/" 
-        className={`flex flex-col items-center justify-center gap-0.5 flex-grow h-full transition-colors ${
-          isHomeActive ? "text-[#F59E0B]" : "text-slate-400 hover:text-slate-200"
+        className={`flex flex-col items-center justify-center gap-0.5 px-3.5 py-1.5 rounded-xl transition-all duration-250 ${
+          isHomeActive 
+            ? "text-[#F59E0B] bg-amber-500/10 font-bold scale-105" 
+            : "text-slate-400 hover:text-slate-200"
         }`}
       >
-        <Home className="w-5 h-5" />
-        <span className="text-[9px] font-black uppercase tracking-wider">Home</span>
+        <Home className="w-5.5 h-5.5" />
+        <span className="text-[8px] font-black uppercase tracking-wider">Home</span>
       </Link>
 
       <Link 
         href="/#category-bar" 
         onClick={handleCategoriesClick}
-        className={`flex flex-col items-center justify-center gap-0.5 flex-grow h-full transition-colors text-slate-400 hover:text-slate-200`}
+        className="flex flex-col items-center justify-center gap-0.5 px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all duration-250"
       >
-        <LayoutGrid className="w-5 h-5" />
-        <span className="text-[9px] font-black uppercase tracking-wider">Categories</span>
+        <LayoutGrid className="w-5.5 h-5.5" />
+        <span className="text-[8px] font-black uppercase tracking-wider">Categories</span>
+      </Link>
+
+      <Link 
+        href={isLoggedIn ? "/?tab=orders" : "/login"} 
+        className={`flex flex-col items-center justify-center gap-0.5 px-3.5 py-1.5 rounded-xl transition-all duration-250 ${
+          isRentalsActive 
+            ? "text-[#F59E0B] bg-amber-500/10 font-bold scale-105" 
+            : "text-slate-400 hover:text-slate-200"
+        }`}
+      >
+        <Package className="w-5.5 h-5.5" />
+        <span className="text-[8px] font-black uppercase tracking-wider">Rentals</span>
       </Link>
 
       <Link 
         href={isLoggedIn ? "/?tab=account" : "/login"} 
-        className={`flex flex-col items-center justify-center gap-0.5 flex-grow h-full transition-colors ${
-          isAccountActive ? "text-[#F59E0B]" : "text-slate-400 hover:text-slate-200"
+        className={`flex flex-col items-center justify-center gap-0.5 px-3.5 py-1.5 rounded-xl transition-all duration-250 ${
+          isAccountActive 
+            ? "text-[#F59E0B] bg-amber-500/10 font-bold scale-105" 
+            : "text-slate-400 hover:text-slate-200"
         }`}
       >
-        <User className="w-5 h-5" />
-        <span className="text-[9px] font-black uppercase tracking-wider">Account</span>
-      </Link>
-
-      <Link 
-        href={isLoggedIn ? "/?tab=cart" : "/login"} 
-        className={`flex flex-col items-center justify-center gap-0.5 flex-grow h-full transition-colors relative ${
-          isCartActive ? "text-[#F59E0B]" : "text-slate-400 hover:text-slate-200"
-        }`}
-      >
-        <div className="relative">
-          <ShoppingCart className="w-5 h-5" />
-          {cartCount > 0 && (
-            <span className="absolute -top-1.5 -right-2.5 bg-rose-500 text-white rounded-full text-[8px] h-3.5 w-3.5 flex items-center justify-center font-bold px-0.5">
-              {cartCount}
-            </span>
-          )}
-        </div>
-        <span className="text-[9px] font-black uppercase tracking-wider">Cart</span>
+        <User className="w-5.5 h-5.5" />
+        <span className="text-[8px] font-black uppercase tracking-wider">Account</span>
       </Link>
     </div>
   )

@@ -73,6 +73,12 @@ export async function Navbar() {
             cartCount={cartCount} 
           />
         </div>
+        {/* Mobile Search Bar (Only shown on mobile screen sizes, between header row and categories) */}
+        <div className="bg-[#0F172A] px-4 pb-3.5 pt-1 md:hidden border-b border-slate-800/60 text-white">
+          <Suspense fallback={<div className="h-10 bg-slate-850/50 rounded-xl animate-pulse w-full" />}>
+            <SearchBar isDark={true} placeholder="Search equipment or halls to rent..." />
+          </Suspense>
+        </div>
         <CategoryBar />
       </header>
       <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />

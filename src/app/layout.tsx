@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <div className="pb-14 md:pb-0 min-h-screen flex flex-col">
+          <div className="pb-24 md:pb-0 min-h-screen flex flex-col">
             {children}
           </div>
           <SupportBot />
