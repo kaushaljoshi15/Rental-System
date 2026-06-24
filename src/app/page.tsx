@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
+import { prisma, prismaRetry } from "@/lib/prisma"
 import Link from "next/link"
 import { LogoutLink } from "@/components/logout-button"
 import { Button } from "@/components/ui/button"
@@ -84,9 +84,9 @@ import { RentalSimulator } from "@/components/rental-simulator"
 // Cache helper for category lists
 const getCachedCategories = unstable_cache(
   async () => {
-    return await prisma.category.findMany({
+    return await prismaRetry(() => prisma.category.findMany({
       orderBy: { name: 'asc' }
-    });
+    }));
   },
   ["categories-list"],
   { revalidate: 60, tags: ["categories"] }
@@ -95,10 +95,10 @@ const getCachedCategories = unstable_cache(
 // Cache helper for vendors list
 const getCachedVendors = unstable_cache(
   async () => {
-    return await prisma.user.findMany({
+    return await prismaRetry(() => prisma.user.findMany({
       where: { role: "VENDOR" },
       select: { id: true, name: true, companyName: true }
-    });
+    }));
   },
   ["vendors-list"],
   { revalidate: 300, tags: ["vendors"] }
@@ -107,7 +107,7 @@ const getCachedVendors = unstable_cache(
 // Cache helper for recent products
 const getCachedRecentProducts = unstable_cache(
   async () => {
-    return await prisma.product.findMany({
+    return await prismaRetry(() => prisma.product.findMany({
       take: 40,
       select: {
         id: true,
@@ -121,7 +121,7 @@ const getCachedRecentProducts = unstable_cache(
           }
         }
       }
-    });
+    }));
   },
   ["recent-products-list"],
   { revalidate: 120, tags: ["products"] }

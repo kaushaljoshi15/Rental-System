@@ -15,3 +15,36 @@ if (typeof window === 'undefined') {
     await prisma.$disconnect()
   })
 }
+
+/**
+ * Executes a Prisma query with automatic retry logic for transient database connection drops
+ * or serverless database wake-up delays (e.g. Neon/Supabase database sleep).
+ */
+export async function prismaRetry<T>(fn: () => Promise<T>, retries = 3, delay = 1500): Promise<T> {
+  let lastError: any
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn()
+    } catch (err: any) {
+      lastError = err
+      const msg = (err instanceof Error ? err.message : String(err)) || ""
+      const code = (err && typeof err === 'object' && 'code' in err) ? String(err.code) : ""
+      
+      const isConnectionError = 
+        msg.includes("closed the connection") || 
+        msg.includes("connection pool") ||
+        msg.includes("Can't reach database") ||
+        msg.includes("Server has closed the connection") ||
+        code === "P2024" || // Prisma connection pool timeout
+        code === "P1017"    // Prisma server closed connection
+      
+      if (isConnectionError && i < retries) {
+        console.warn(`[Prisma Retry] Connection issue encountered: "${msg.split('\n')[0]}". Retrying in ${delay}ms... (Attempt ${i + 1}/${retries})`)
+        await new Promise((resolve) => setTimeout(resolve, delay))
+        continue
+      }
+      throw err
+    }
+  }
+  throw lastError
+}

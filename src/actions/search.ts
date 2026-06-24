@@ -1,6 +1,6 @@
 'use server'
 
-import { prisma } from "@/lib/prisma"
+import { prisma, prismaRetry } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 
 interface SearchFilters {
@@ -102,7 +102,7 @@ export async function searchHalls(filters: SearchFilters) {
         let matchingProducts: { id: string }[] = []
         try {
           // Execute raw query for pg_trgm similarity matching
-          matchingProducts = await prisma.$queryRaw<{ id: string }[]>`
+          matchingProducts = await prismaRetry(() => prisma.$queryRaw<{ id: string }[]>`
             SELECT id FROM "Product"
             WHERE similarity(name, ${query}) > 0.25
                OR similarity(description, ${query}) > 0.25
@@ -110,16 +110,16 @@ export async function searchHalls(filters: SearchFilters) {
                OR description ILIKE ${`%${query}%`}
                OR city ILIKE ${`%${query}%`}
                OR address ILIKE ${`%${query}%`}
-          `
+          `)
         } catch (rawError) {
           // Fallback to standard ILIKE search if pg_trgm is not enabled in the database
-          matchingProducts = await prisma.$queryRaw<{ id: string }[]>`
+          matchingProducts = await prismaRetry(() => prisma.$queryRaw<{ id: string }[]>`
             SELECT id FROM "Product"
             WHERE name ILIKE ${`%${query}%`}
                OR description ILIKE ${`%${query}%`}
                OR city ILIKE ${`%${query}%`}
                OR address ILIKE ${`%${query}%`}
-          `
+          `)
         }
         const trigramProductIds = matchingProducts.map((p) => p.id)
 
@@ -177,7 +177,7 @@ export async function searchHalls(filters: SearchFilters) {
     }
 
     // 4. Execute query with relations
-    const halls = await prisma.product.findMany({
+    const halls = await prismaRetry(() => prisma.product.findMany({
       where: whereConditions,
       include: {
         category: true,
@@ -195,7 +195,7 @@ export async function searchHalls(filters: SearchFilters) {
         }
       },
       orderBy: orderByCondition
-    })
+    }))
 
     // 5. Map average rating fields
     let mappedHalls = halls.map(hall => {
