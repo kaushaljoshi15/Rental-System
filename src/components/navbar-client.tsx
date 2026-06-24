@@ -92,46 +92,46 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   <div className="p-2.5 divide-y divide-slate-100 text-left">
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">My Workspace</p>
-                      <a href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Package className="w-4 h-4 text-slate-400" />
                         <span>Orders & Bookings</span>
-                      </a>
-                      <a href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      </Link>
+                      <Link href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Heart className="w-4 h-4 text-slate-400" />
                         <span>My Wishlist</span>
-                      </a>
-                      <a href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      </Link>
+                      <Link href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Bell className="w-4 h-4 text-slate-400" />
                         <span>Notifications</span>
-                      </a>
+                      </Link>
                     </div>
                     
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Settings & Payments</p>
-                      <a href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <User className="w-4 h-4 text-slate-400" />
                         <span>Personal Details</span>
-                      </a>
-                      <a href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      </Link>
+                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>Cards & Checkout</span>
-                      </a>
-                      <a href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      </Link>
+                      <Link href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <MapPin className="w-4 h-4 text-slate-400" />
                         <span>Saved Addresses</span>
-                      </a>
+                      </Link>
                     </div>
 
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Rewards & Perks</p>
-                      <a href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Ticket className="w-4 h-4 text-slate-400" />
                         <span>Available Coupons</span>
-                      </a>
-                      <a href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      </Link>
+                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Gift className="w-4 h-4 text-slate-400" />
                         <span>Claim Gift Cards</span>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   
@@ -293,44 +293,44 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   <div className="space-y-2">
                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">My Workspace</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <a href="/?tab=orders" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
+                      <Link href="/?tab=orders" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
                         <Package className="w-4 h-4 text-[#F59E0B]" />
                         <span>Orders</span>
-                      </a>
-                      <a href="/?tab=wishlist" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
+                      </Link>
+                      <Link href="/?tab=wishlist" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
                         <Heart className="w-4 h-4 text-[#F59E0B]" />
                         <span>Wishlist</span>
-                      </a>
-                      <a href="/?tab=notifications" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
+                      </Link>
+                      <Link href="/?tab=notifications" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
                         <Bell className="w-4 h-4 text-[#F59E0B]" />
                         <span>Notifications</span>
-                      </a>
-                      <a href="/?tab=event-planner" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
+                      </Link>
+                      <Link href="/?tab=event-planner" className="flex flex-col p-3 rounded-xl bg-slate-900 border border-slate-800/50 text-slate-200 hover:text-[#F59E0B] font-bold text-xs gap-2">
                         <Calendar className="w-4 h-4 text-[#F59E0B]" />
                         <span>Event Planner</span>
-                      </a>
+                      </Link>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Settings & Wallet</p>
                     <div className="space-y-1 bg-slate-900 border border-slate-800/50 rounded-xl p-2">
-                      <a href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
+                      <Link href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
                         <User className="w-4 h-4 text-slate-400" />
                         <span>Personal Details</span>
-                      </a>
-                      <a href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
+                      </Link>
+                      <Link href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
                         <MapPin className="w-4 h-4 text-slate-400" />
                         <span>Saved Addresses</span>
-                      </a>
-                      <a href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
+                      </Link>
+                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
                         <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>Wallet (₹{cartCount.toLocaleString()})</span>
-                      </a>
-                      <a href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
+                      </Link>
+                      <Link href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-300 font-bold text-xs hover:text-[#F59E0B]">
                         <Ticket className="w-4 h-4 text-slate-400" />
                         <span>Coupons</span>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </>

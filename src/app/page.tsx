@@ -92,6 +92,41 @@ const getCachedCategories = unstable_cache(
   { revalidate: 60, tags: ["categories"] }
 );
 
+// Cache helper for vendors list
+const getCachedVendors = unstable_cache(
+  async () => {
+    return await prisma.user.findMany({
+      where: { role: "VENDOR" },
+      select: { id: true, name: true, companyName: true }
+    });
+  },
+  ["vendors-list"],
+  { revalidate: 300, tags: ["vendors"] }
+);
+
+// Cache helper for recent products
+const getCachedRecentProducts = unstable_cache(
+  async () => {
+    return await prisma.product.findMany({
+      take: 40,
+      select: {
+        id: true,
+        name: true,
+        priceDaily: true,
+        image: true,
+        category: {
+          select: {
+            name: true,
+            slug: true
+          }
+        }
+      }
+    });
+  },
+  ["recent-products-list"],
+  { revalidate: 120, tags: ["products"] }
+);
+
 // Category grouping helper to classify catalog departments
 function getCategoryGroup(slug: string): string {
   const s = slug.toLowerCase();
@@ -203,25 +238,8 @@ export default async function HomePage({
 
   const [allCategories, vendors, allProductsForSearch, user] = await Promise.all([
     getCachedCategories(),
-    prisma.user.findMany({
-      where: { role: "VENDOR" },
-      select: { id: true, name: true, companyName: true }
-    }),
-    prisma.product.findMany({
-      take: 40,
-      select: {
-        id: true,
-        name: true,
-        priceDaily: true,
-        image: true,
-        category: {
-          select: {
-            name: true,
-            slug: true
-          }
-        }
-      }
-    }),
+    getCachedVendors(),
+    getCachedRecentProducts(),
     (isLoggedIn && session?.user?.email) ? prisma.user.findUnique({
       where: { email: session.user.email },
       include: {
@@ -541,7 +559,7 @@ export default async function HomePage({
                   <div>
                     <p className="px-3 text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2.5">My Workspace</p>
                     <div className="space-y-1.5">
-                      <a
+                      <Link
                         href="/?tab=orders"
                         className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "orders"
@@ -560,9 +578,9 @@ export default async function HomePage({
                             {customerData.user.orders.length}
                           </span>
                         )}
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=wishlist"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "wishlist"
@@ -572,9 +590,9 @@ export default async function HomePage({
                       >
                         <Heart className="w-4 h-4 shrink-0" />
                         My Wishlist
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=notifications"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "notifications"
@@ -584,9 +602,9 @@ export default async function HomePage({
                       >
                         <Bell className="w-4 h-4 shrink-0" />
                         Notifications
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=event-planner"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "event-planner"
@@ -596,14 +614,14 @@ export default async function HomePage({
                       >
                         <CalendarIcon className="w-4 h-4 shrink-0" />
                         Event Planner
-                      </a>
+                      </Link>
                     </div>
                   </div>
 
                   <div>
                     <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Account Settings</p>
                     <div className="space-y-1.5">
-                      <a
+                      <Link
                         href="/?tab=profile"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "profile"
@@ -613,9 +631,9 @@ export default async function HomePage({
                       >
                         <User className="w-4 h-4 shrink-0" />
                         Personal Details
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=addresses"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "addresses"
@@ -625,14 +643,14 @@ export default async function HomePage({
                       >
                         <MapPin className="w-4 h-4 shrink-0" />
                         Saved Addresses
-                      </a>
+                      </Link>
                     </div>
                   </div>
 
                   <div>
                     <p className="px-3 text-[9px] font-black text-slate-550 uppercase tracking-widest mb-2.5">Payments & Perks</p>
                     <div className="space-y-1.5">
-                      <a
+                      <Link
                         href="/?tab=wallet"
                         className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "wallet"
@@ -649,9 +667,9 @@ export default async function HomePage({
                         }`}>
                           ₹{customerData.user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </span>
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=coupons"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "coupons"
@@ -661,9 +679,9 @@ export default async function HomePage({
                       >
                         <Ticket className="w-4 h-4 shrink-0" />
                         Available Coupons
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=gift-cards"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "gift-cards"
@@ -673,9 +691,9 @@ export default async function HomePage({
                       >
                         <Gift className="w-4 h-4 shrink-0" />
                         Gift Cards
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=saved-cards"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "saved-cards"
@@ -685,9 +703,9 @@ export default async function HomePage({
                       >
                         <CreditCard className="w-4 h-4 shrink-0" />
                         Saved Cards
-                      </a>
+                      </Link>
 
-                      <a
+                      <Link
                         href="/?tab=saved-upi"
                         className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${
                           activeTab === "saved-upi"
@@ -697,7 +715,7 @@ export default async function HomePage({
                       >
                         <Phone className="w-4 h-4 shrink-0" />
                         Saved UPI
-                      </a>
+                      </Link>
                     </div>
                   </div>
 
@@ -730,7 +748,7 @@ export default async function HomePage({
                     const Icon = item.icon;
                     const isActive = activeTab === item.id || (item.id === "wallet" && (activeTab === "saved-cards" || activeTab === "saved-upi"));
                     return (
-                      <a
+                      <Link
                         key={item.id}
                         href={`/?tab=${item.id}`}
                         className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider shrink-0 transition-all border ${
@@ -741,7 +759,7 @@ export default async function HomePage({
                       >
                         <Icon className="w-3.5 h-3.5" />
                         <span>{item.label}</span>
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>

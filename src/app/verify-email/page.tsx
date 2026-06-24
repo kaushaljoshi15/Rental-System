@@ -1,7 +1,7 @@
-// src/app/verify-email/page.tsx
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export default async function VerifyEmailPage({ 
   searchParams 
@@ -46,7 +46,7 @@ function ErrorCard({ message }: { message: string }) {
         </CardHeader>
         <CardContent>
           <p>{message}</p>
-          <a href="/login" className="mt-4 block text-blue-500 underline">Back to Login</a>
+          <Link href="/login" className="mt-4 block text-blue-500 underline">Back to Login</Link>
         </CardContent>
       </Card>
     </div>
