@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { LogoutLink } from "@/components/logout-button"
 import { SearchBar } from "@/components/search-bar"
@@ -32,10 +32,34 @@ interface NavbarClientProps {
 
 export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarClientProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [activeDropdown, setActiveDropdown] = useState<"account" | "more" | null>(null)
+  const accountRef = useRef<HTMLDivElement>(null)
+  const moreRef = useRef<HTMLDivElement>(null)
+
+  const toggleDropdown = (dropdown: "account" | "more") => {
+    setActiveDropdown(activeDropdown === dropdown ? null : dropdown)
+  }
 
   // Close mobile menu when switching tabs or loading pages
   useEffect(() => {
     setIsMobileMenuOpen(false)
+  }, [])
+
+  // Close desktop dropdowns on click-away
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node
+      if (
+        (accountRef.current && accountRef.current.contains(target)) ||
+        (moreRef.current && moreRef.current.contains(target))
+      ) {
+        return
+      }
+      setActiveDropdown(null)
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   return (
@@ -63,15 +87,22 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
         <div className="hidden md:flex items-center gap-6">
           {/* Authentication Dropdown */}
           {isLoggedIn ? (
-            <div className="relative group py-2">
-              <button className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors">
+            <div className="relative hover-dropdown-group py-2" ref={accountRef}>
+              <button 
+                onClick={() => toggleDropdown("account")}
+                className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors"
+              >
                 <User className="w-4 h-4 text-[#F59E0B]" />
                 <span className="max-w-[120px] truncate">{userName}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
-              <div className="absolute right-0 top-full pt-2 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50">
+              <div className={`absolute right-0 top-full pt-2 w-80 transition-all duration-200 transform z-50 hover-dropdown-panel ${
+                activeDropdown === "account"
+                  ? "opacity-100 visible translate-y-0"
+                  : "opacity-0 invisible translate-y-1"
+              }`}>
                 <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 text-slate-700 text-xs overflow-hidden relative">
                   
                   {/* User Profile Info Header */}
@@ -92,15 +123,15 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   <div className="p-2.5 divide-y divide-slate-100 text-left">
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">My Workspace</p>
-                      <Link href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Package className="w-4 h-4 text-slate-400" />
                         <span>Orders & Bookings</span>
                       </Link>
-                      <Link href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Heart className="w-4 h-4 text-slate-400" />
                         <span>My Wishlist</span>
                       </Link>
-                      <Link href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Bell className="w-4 h-4 text-slate-400" />
                         <span>Notifications</span>
                       </Link>
@@ -108,15 +139,15 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                     
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Settings & Payments</p>
-                      <Link href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <User className="w-4 h-4 text-slate-400" />
                         <span>Personal Details</span>
                       </Link>
-                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>Cards & Checkout</span>
                       </Link>
-                      <Link href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <MapPin className="w-4 h-4 text-slate-400" />
                         <span>Saved Addresses</span>
                       </Link>
@@ -124,11 +155,11 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
 
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Rewards & Perks</p>
-                      <Link href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Ticket className="w-4 h-4 text-slate-400" />
                         <span>Available Coupons</span>
                       </Link>
-                      <Link href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                         <Gift className="w-4 h-4 text-slate-400" />
                         <span>Claim Gift Cards</span>
                       </Link>
@@ -144,15 +175,22 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
               </div>
             </div>
           ) : (
-            <div className="relative group py-2">
-              <button className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors">
+            <div className="relative hover-dropdown-group py-2" ref={accountRef}>
+              <button 
+                onClick={() => toggleDropdown("account")}
+                className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors"
+              >
                 <User className="w-4 h-4 text-[#F59E0B]" />
                 <span>Account</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
-              <div className="absolute right-0 top-full pt-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50">
+              <div className={`absolute right-0 top-full pt-2 w-72 transition-all duration-200 transform z-50 hover-dropdown-panel ${
+                activeDropdown === "account"
+                  ? "opacity-100 visible translate-y-0"
+                  : "opacity-0 invisible translate-y-1"
+              }`}>
                 <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 text-slate-700 text-xs overflow-hidden p-4 relative text-left">
                   <div className="mb-4">
                     <p className="text-xs font-extrabold text-slate-900 leading-none">Welcome to RentalKart</p>
@@ -161,10 +199,10 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   
                   {/* Custom stacked buttons */}
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                    <Link href="/login" className="flex items-center justify-center bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs shadow-sm shadow-amber-100">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center justify-center bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs shadow-sm shadow-amber-100">
                       Sign In
                     </Link>
-                    <Link href="/register" className="flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-205 text-slate-700 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs">
+                    <Link onClick={() => setActiveDropdown(null)} href="/register" className="flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-205 text-slate-700 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs">
                       Register
                     </Link>
                   </div>
@@ -173,27 +211,27 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   
                   {/* Links List */}
                   <div className="space-y-1">
-                    <Link href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                       <User className="w-4 h-4 text-slate-400" />
                       <span>My Profile</span>
                     </Link>
-                    <Link href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                       <Package className="w-4 h-4 text-slate-400" />
                       <span>Orders</span>
                     </Link>
-                    <Link href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                       <Heart className="w-4 h-4 text-slate-400" />
                       <span>Wishlist</span>
                     </Link>
-                    <Link href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                       <Store className="w-4 h-4 text-slate-400" />
                       <span>Become a Seller</span>
                     </Link>
-                    <Link href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                       <Headphones className="w-4 h-4 text-slate-400" />
                       <span>24x7 Customer Care</span>
                     </Link>
-                    <Link href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                       <Calendar className="w-4 h-4 text-slate-400" />
                       <span>Event Planner</span>
                     </Link>
@@ -204,29 +242,36 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
           )}
 
           {/* More Dropdown */}
-          <div className="relative group py-2">
-            <button className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors">
+          <div className="relative hover-dropdown-group py-2" ref={moreRef}>
+            <button 
+              onClick={() => toggleDropdown("more")}
+              className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors"
+            >
               <span>More</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" />
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "more" ? "rotate-180" : ""}`} />
             </button>
             
             {/* Dropdown Panel */}
-            <div className="absolute right-0 top-full pt-2 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-1 group-hover:translate-y-0 z-50">
+            <div className={`absolute right-0 top-full pt-2 w-64 transition-all duration-200 transform z-50 hover-dropdown-panel ${
+              activeDropdown === "more"
+                ? "opacity-100 visible translate-y-0"
+                : "opacity-0 invisible translate-y-1"
+            }`}>
               <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 py-2.5 text-slate-700 text-xs overflow-hidden relative text-left">
                 <div className="py-1">
-                  <Link href="/seller-center" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-amber-600 transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-amber-600 transition-colors font-bold text-slate-650">
                     <Store className="w-4 h-4 text-slate-400" />
                     <span>Become a Seller</span>
                   </Link>
-                  <Link href="/?tab=notifications" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                     <Bell className="w-4 h-4 text-slate-400" />
                     <span>Notification Settings</span>
                   </Link>
-                  <Link href="#support" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                     <Headphones className="w-4 h-4 text-slate-400" />
                     <span>24x7 Customer Care</span>
                   </Link>
-                  <Link href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
+                  <Link onClick={() => setActiveDropdown(null)} href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-650">
                     <Calendar className="w-4 h-4 text-slate-400" />
                     <span>Event Planner</span>
                   </Link>

@@ -158,3 +158,16 @@
 .messages-scroll::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Touch-safe desktop dropdown rules */
+@media (hover: hover) {
+  .hover-dropdown-group:hover .hover-dropdown-panel {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
+  .hover-dropdown-group:hover .hover-dropdown-icon {
+    transform: rotate(180deg) !important;
+  }
+}
+

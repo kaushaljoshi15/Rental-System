@@ -159,7 +159,7 @@ export function SupportBot() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50">
       
       {/* Floating Chat Icon Button */}
       {/* Floating Chat Icon Button */}
@@ -201,7 +201,7 @@ export function SupportBot() {
 
       {/* Floating Chat Panel Widget */}
       {isOpen && (
-        <Card className="w-80 sm:w-96 h-[480px] border-slate-200 shadow-2xl flex flex-col bg-white overflow-hidden rounded-2xl animate-in slide-in-from-bottom-6 fade-in duration-300">
+        <Card className="w-[calc(100vw-2rem)] sm:w-96 h-[480px] border-slate-200 shadow-2xl flex flex-col bg-white overflow-hidden rounded-2xl animate-in slide-in-from-bottom-6 fade-in duration-300">
           
           {/* Header */}
           <div className="bg-slate-900 p-4 flex justify-between items-center text-white shrink-0 border-b border-slate-800 shadow-xs">

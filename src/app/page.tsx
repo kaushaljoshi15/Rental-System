@@ -1671,7 +1671,7 @@ export default async function HomePage({
                       </Link>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                       {catalogProducts.map((product) => {
                         if (!product) return null
                         const { rating, count } = getSimulatedRating(product.id)
@@ -1708,7 +1708,7 @@ export default async function HomePage({
                             </div>
 
                             {/* Content Body */}
-                            <CardHeader className="p-4 pb-2 space-y-1.5 flex-1">
+                            <CardHeader className="p-3 sm:p-4 pb-2 space-y-1.5 flex-1">
                               <Link href={`/products/${product.id}`} className="block">
                                 <h4 className="text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">
                                   {product.name}
@@ -1729,7 +1729,7 @@ export default async function HomePage({
                             </CardHeader>
 
                             {/* Price and rent triggers */}
-                            <div className="p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-4">
+                            <div className="p-3 sm:p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-3 sm:space-y-4">
                               <div className="flex items-baseline gap-1.5 flex-wrap select-text font-mono">
                                 <span className="text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
                                 <span className="text-[10px] text-slate-400 font-semibold">/day</span>
@@ -2007,7 +2007,7 @@ export default async function HomePage({
                       );
                     })()}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                       {catalogProducts.map((product) => {
                         if (!product) return null
                         const { rating, count } = getSimulatedRating(product.id)
@@ -2044,7 +2044,7 @@ export default async function HomePage({
                             </div>
 
                             {/* Content Body */}
-                            <CardHeader className="p-4 pb-2 space-y-1.5 flex-1">
+                            <CardHeader className="p-3 sm:p-4 pb-2 space-y-1.5 flex-1">
                               <Link href={`/products/${product.id}`} className="block">
                                 <h4 className="text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">
                                   {product.name}
@@ -2065,7 +2065,7 @@ export default async function HomePage({
                             </CardHeader>
 
                             {/* Price and rent triggers */}
-                            <div className="p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-4">
+                            <div className="p-3 sm:p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-3 sm:space-y-4">
                               <div className="flex items-baseline gap-1.5 flex-wrap select-text font-mono">
                                 <span className="text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
                                 <span className="text-[10px] text-slate-400 font-semibold">/day</span>

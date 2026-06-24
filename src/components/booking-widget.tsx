@@ -77,7 +77,7 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
   }
 
   return (
-    <Card className="p-6 border-slate-200 shadow-sm sticky top-24 bg-white">
+    <Card className="p-6 border-slate-200 shadow-sm lg:sticky lg:top-24 bg-white">
       {/* Header */}
       <div className="mb-6">
         <h3 className="font-semibold text-lg text-slate-900">Configure Rental</h3>

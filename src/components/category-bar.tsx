@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { 
   Sparkles, 
@@ -12,7 +12,9 @@ import {
   Shirt,
   Gamepad,
   Volume2,
-  Dumbbell
+  Dumbbell,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react"
 
 interface CategoryItem {
@@ -24,12 +26,23 @@ interface CategoryItem {
 
 export function CategoryBar() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [showLeftFade, setShowLeftFade] = useState(false)
+  const [showRightFade, setShowRightFade] = useState(true)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Track scroll parameters for horizontal overflow fade overlays
+  const handleScrollX = () => {
+    const container = scrollRef.current
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container
+      setShowLeftFade(scrollLeft > 5)
+      setShowRightFade(scrollLeft < scrollWidth - clientWidth - 5)
+    }
+  }
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScrollY = () => {
       const currentScroll = window.scrollY
-      // Hysteresis buffer to completely prevent jitter loop:
-      // Collapse at 80px, only expand back when scrolled all the way to top (< 15px)
       if (currentScroll > 80) {
         setIsScrolled(true)
       } else if (currentScroll < 15) {
@@ -37,8 +50,26 @@ export function CategoryBar() {
       }
     }
     
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScrollY, { passive: true })
+    return () => window.removeEventListener("scroll", handleScrollY)
+  }, [])
+
+  useEffect(() => {
+    const container = scrollRef.current
+    if (container) {
+      container.addEventListener("scroll", handleScrollX, { passive: true })
+      // Run initial check
+      handleScrollX()
+      
+      // Check again on window resize
+      window.addEventListener("resize", handleScrollX)
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScrollX)
+      }
+      window.removeEventListener("resize", handleScrollX)
+    }
   }, [])
 
   const categories: CategoryItem[] = [
@@ -62,12 +93,49 @@ export function CategoryBar() {
         }
       `}</style>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {/* Horizontal scroll left fade gradient */}
         <div 
+          className={`absolute left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-[#0F172A] to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+            showLeftFade ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        
+        {/* Left Scroll Button */}
+        {showLeftFade && (
+          <button 
+            onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" })}
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-slate-900/90 text-white p-1.5 border border-slate-700 hover:bg-slate-800 hover:text-amber-500 shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            aria-label="Scroll Left"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+        )}
+        
+        {/* Horizontal scroll right fade gradient */}
+        <div 
+          className={`absolute right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-[#0F172A] to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+            showRightFade ? "opacity-100" : "opacity-0"
+          }`}
+        />
+
+        {/* Right Scroll Button */}
+        {showRightFade && (
+          <button 
+            onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" })}
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-slate-900/90 text-white p-1.5 border border-slate-700 hover:bg-slate-800 hover:text-amber-500 shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            aria-label="Scroll Right"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        )}
+
+        <div 
+          ref={scrollRef}
           className={`flex justify-between items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth w-full transition-all duration-300 ${
             isScrolled ? "py-1.5" : "py-2.5"
           }`}
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
           {categories.map((cat, idx) => {
             const Icon = cat.icon
