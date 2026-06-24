@@ -74,7 +74,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
   const isOutOfStock = stock === 0
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1.5 sm:space-y-3">
       {/* Date Selection */}
       <Popover>
         <PopoverTrigger asChild>
@@ -82,14 +82,14 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
             variant="outline" 
             className="w-full h-auto p-0 border-0 hover:bg-transparent shadow-none block"
           >
-            <span className="grid grid-cols-2 gap-2 w-full">
+            <span className="grid grid-cols-2 gap-1.5 sm:gap-2 w-full">
               {/* Pick-Up Box */}
-              <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
-                <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+              <span className="p-1 sm:p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
+                <span className="block text-[8px] sm:text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5 sm:mb-1">
                   Pick-up Date
                 </span>
-                <span className="font-semibold text-slate-900 flex items-center gap-1.5 text-xs">
-                  <CalendarIcon className="w-3 h-3 text-amber-500 group-hover:scale-110 transition-transform shrink-0" />
+                <span className="font-semibold text-slate-900 flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs">
+                  <CalendarIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-500 group-hover:scale-110 transition-transform shrink-0" />
                   <span className="truncate">
                     {date?.from ? format(date.from, "MMM dd") : "Select"}
                   </span>
@@ -97,20 +97,20 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
               </span>
 
               {/* Return Box */}
-              <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
-                <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+              <span className="p-1 sm:p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
+                <span className="block text-[8px] sm:text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-0.5 sm:mb-1">
                   Return Date
                 </span>
-                <span className="font-semibold text-slate-900 flex items-center gap-1.5 text-xs">
-                  <CalendarIcon className="w-3 h-3 text-emerald-600 group-hover:scale-110 transition-transform shrink-0" />
+                <span className="font-semibold text-slate-900 flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs">
+                  <CalendarIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-600 group-hover:scale-110 transition-transform shrink-0" />
                   <span className="truncate">
                     {date?.to ? format(date.to, "MMM dd") : "Select"}
                   </span>
                 </span>
                 
                 {/* Edit Badge */}
-                <span className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Edit2 className="w-3 h-3 text-slate-400" />
+                <span className="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Edit2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400" />
                 </span>
               </span>
             </span>
@@ -133,7 +133,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
       <Button 
         onClick={handleRentClick}
         disabled={isOutOfStock || isPending}
-        className={`w-full transition-all duration-300 shadow-sm ${
+        className={`w-full h-8 sm:h-10 text-[10px] sm:text-xs transition-all duration-300 shadow-sm ${
           isAdded 
             ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
             : "bg-slate-900 hover:bg-amber-500 text-white"
@@ -141,17 +141,17 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
       >
         {isPending ? (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 animate-spin" />
             Adding...
           </>
         ) : isAdded ? (
           <>
-            <Check className="w-4 h-4 mr-2" />
+            <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
             Added
           </>
         ) : (
           <>
-            <ShoppingCart className="w-4 h-4 mr-2" /> 
+            <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" /> 
             {isOutOfStock ? 'Unavailable' : 'Rent Now'}
           </>
         )}

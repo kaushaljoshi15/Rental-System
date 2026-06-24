@@ -1685,7 +1685,7 @@ export default async function HomePage({
                             style={{ boxShadow: PREMIUM_BOX_SHADOW }}
                           >
                             {/* Header Image */}
-                            <div className="aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                            <div className="aspect-square sm:aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
                               {product.image && product.image.startsWith("http") ? (
                                 <img 
                                   src={product.image} 
@@ -1702,39 +1702,39 @@ export default async function HomePage({
                                 variant="floating"
                               />
 
-                              <Badge className="absolute top-3 right-3 bg-white/95 text-slate-800 uppercase font-black text-[9px] border border-slate-200 select-none shadow-sm hover:bg-white pointer-events-none">
+                              <Badge className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 bg-white/95 text-slate-800 uppercase font-black text-[8px] sm:text-[9px] border border-slate-200 select-none shadow-sm hover:bg-white pointer-events-none">
                                 {product.category?.name || "General"}
                               </Badge>
                             </div>
 
                             {/* Content Body */}
-                            <CardHeader className="p-3 sm:p-4 pb-2 space-y-1.5 flex-1">
+                            <CardHeader className="p-2 sm:p-4 pb-1 sm:pb-2 space-y-1 sm:space-y-1.5 flex-1">
                               <Link href={`/products/${product.id}`} className="block">
-                                <h4 className="text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">
+                                <h4 className="text-[10px] sm:text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[28px] sm:min-h-[32px]">
                                   {product.name}
                                 </h4>
                               </Link>
 
                               <div className="flex items-center gap-1 select-none">
-                                <div className="flex items-center text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded text-[10px] font-extrabold border border-amber-200/40">
-                                  <Star className="w-3 h-3 fill-current mr-0.5 shrink-0" />
+                                <div className="flex items-center text-amber-500 bg-amber-50 px-1 py-0.5 rounded text-[8px] sm:text-[10px] font-extrabold border border-amber-200/40">
+                                  <Star className="w-2.5 h-2.5 fill-current mr-0.5 shrink-0" />
                                   {rating}
                                 </div>
-                                <span className="text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
                               </div>
 
-                              <p className="text-[11px] text-slate-505 leading-relaxed line-clamp-2">
+                              <p className="hidden sm:block text-[11px] text-slate-505 leading-relaxed line-clamp-2">
                                 {product.description || "Premium equipment listed under platform safety guidelines."}
                               </p>
                             </CardHeader>
 
                             {/* Price and rent triggers */}
-                            <div className="p-3 sm:p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-3 sm:space-y-4">
-                              <div className="flex items-baseline gap-1.5 flex-wrap select-text font-mono">
-                                <span className="text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
-                                <span className="text-[10px] text-slate-400 font-semibold">/day</span>
-                                <span className="text-[10px] text-slate-400 line-through">₹{mrp}</span>
-                                <span className="text-[10px] font-black text-emerald-600">({discount}% Off)</span>
+                            <div className="p-2 sm:p-4 pt-1 sm:pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-1.5 sm:space-y-4">
+                              <div className="flex items-baseline gap-1 sm:gap-1.5 flex-wrap select-text font-mono">
+                                <span className="text-sm sm:text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold">/day</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 line-through">₹{mrp}</span>
+                                <span className="text-[9px] sm:text-[10px] font-black text-emerald-600">({discount}% Off)</span>
                               </div>
 
                               <div className="select-none">
@@ -2021,7 +2021,7 @@ export default async function HomePage({
                             style={{ boxShadow: PREMIUM_BOX_SHADOW }}
                           >
                             {/* Header Image */}
-                            <div className="aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                            <div className="aspect-square sm:aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
                               {product.image && product.image.startsWith("http") ? (
                                 <img 
                                   src={product.image} 
@@ -2038,39 +2038,39 @@ export default async function HomePage({
                                 variant="floating"
                               />
 
-                              <Badge className="absolute top-3 right-3 bg-white/95 text-slate-800 uppercase font-black text-[9px] border border-slate-200 select-none shadow-sm hover:bg-white pointer-events-none">
+                              <Badge className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 bg-white/95 text-slate-800 uppercase font-black text-[8px] sm:text-[9px] border border-slate-200 select-none shadow-sm hover:bg-white pointer-events-none">
                                 {product.category?.name || "General"}
                               </Badge>
                             </div>
 
                             {/* Content Body */}
-                            <CardHeader className="p-3 sm:p-4 pb-2 space-y-1.5 flex-1">
+                            <CardHeader className="p-2 sm:p-4 pb-1 sm:pb-2 space-y-1 sm:space-y-1.5 flex-1">
                               <Link href={`/products/${product.id}`} className="block">
-                                <h4 className="text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">
+                                <h4 className="text-[10px] sm:text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[28px] sm:min-h-[32px]">
                                   {product.name}
                                 </h4>
                               </Link>
 
                               <div className="flex items-center gap-1 select-none">
-                                <div className="flex items-center text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded text-[10px] font-extrabold border border-amber-200/40">
-                                  <Star className="w-3 h-3 fill-current mr-0.5 shrink-0" />
+                                <div className="flex items-center text-amber-500 bg-amber-50 px-1 py-0.5 rounded text-[8px] sm:text-[10px] font-extrabold border border-amber-200/40">
+                                  <Star className="w-2.5 h-2.5 fill-current mr-0.5 shrink-0" />
                                   {rating}
                                 </div>
-                                <span className="text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
                               </div>
 
-                              <p className="text-[11px] text-slate-505 leading-relaxed line-clamp-2">
+                              <p className="hidden sm:block text-[11px] text-slate-505 leading-relaxed line-clamp-2">
                                 {product.description || "Premium equipment listed under platform safety guidelines."}
                               </p>
                             </CardHeader>
 
                             {/* Price and rent triggers */}
-                            <div className="p-3 sm:p-4 pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-3 sm:space-y-4">
-                              <div className="flex items-baseline gap-1.5 flex-wrap select-text font-mono">
-                                <span className="text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
-                                <span className="text-[10px] text-slate-400 font-semibold">/day</span>
-                                <span className="text-[10px] text-slate-400 line-through">₹{mrp}</span>
-                                <span className="text-[10px] font-black text-emerald-600">({discount}% Off)</span>
+                            <div className="p-2 sm:p-4 pt-1 sm:pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-1.5 sm:space-y-4">
+                              <div className="flex items-baseline gap-1 sm:gap-1.5 flex-wrap select-text font-mono">
+                                <span className="text-sm sm:text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold">/day</span>
+                                <span className="text-[9px] sm:text-[10px] text-slate-400 line-through">₹{mrp}</span>
+                                <span className="text-[9px] sm:text-[10px] font-black text-emerald-600">({discount}% Off)</span>
                               </div>
 
                               <div className="select-none">
