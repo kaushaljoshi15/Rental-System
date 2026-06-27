@@ -82,6 +82,7 @@ import { CartAddressSelector } from "@/components/customer/cart-address-selector
 import { GiftCardsManager, SavedCardsManager, SavedUpiManager } from "@/components/customer/payment-managers"
 import { RentalSimulator } from "@/components/rental-simulator"
 import { MobileCategories } from "@/components/mobile-categories"
+import { BottomNav } from "@/components/bottom-nav"
 
 // Cache helper for category lists
 const getCachedCategories = unstable_cache(
@@ -428,6 +429,7 @@ export default async function HomePage({
               cartCount={cartCount}
               isLoggedIn={isLoggedIn}
             />
+            <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
           </div>
           <div className="hidden md:block flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-8">All Rental Categories</h1>
@@ -448,8 +450,8 @@ export default async function HomePage({
           </div>
         </>
       ) : isLoggedIn && activeTab && customerData?.user ? (
-        activeTab === "cart" ? (
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 flex-1 w-full">
+         activeTab === "cart" ? (
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-28 md:pb-8 flex-1 w-full">
             {(() => {
               const hasCartItems = customerData?.cart && customerData.cart.lines.length > 0;
               const cartStartDate = customerData?.cart?.startDate ? new Date(customerData.cart.startDate) : new Date();
@@ -568,8 +570,8 @@ export default async function HomePage({
               );
             })()}
           </main>
-        ) : (
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-8 flex-1 w-full">
+         ) : (
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-28 md:pb-8 flex-1 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left Sidebar Navigation Card */}
               <aside className="hidden lg:block lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md">
@@ -1679,14 +1681,12 @@ export default async function HomePage({
         </main>
       )) : (
         <>
-
-
           {/* --- TOP SLIDER CAROUSEL (MYNTRA/FLIPKART INTERFACE) --- */}
-          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
+          <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6 min-w-0">
             <HeroCarousel categorySlug={categorySlug} />
             <RecentlyViewedSection allProducts={allProductsForSearch} userName={userName} />
           </section>
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16">
+          <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16 min-w-0">
             {!categorySlug ? (
               <div className="space-y-16">
                 {/* Row 1: Top Selection */}
@@ -1697,14 +1697,14 @@ export default async function HomePage({
                       <ChevronRight className="w-4 h-4 text-white" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 md:grid md:grid-cols-4">
                     {[
                       { name: "Canon Pro DSLR", badge: "Most-loved", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400" },
                       { name: "JBL Concert Sound", badge: "Grab Or Gone", image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80&w=400" },
                       { name: "Designer Bridal Wear", badge: "Popular", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400" },
                       { name: "Executive Office Chairs", badge: "Best Picks", image: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=400" },
                     ].map((item, idx) => (
-                      <div key={idx} className="bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
+                      <div key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
                         <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
                           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                         </div>
@@ -1720,13 +1720,13 @@ export default async function HomePage({
                 {/* Row 2: Premium Rent Partners */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Premium Rent Partners</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 md:grid md:grid-cols-3">
                     {[
                       { brand: "Sony Cinema", offer: "Up to 40% Off", desc: "Pro video packages", image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=400" },
                       { brand: "Manyavar Groom", offer: "Up to 30% Off", desc: "Luxury wedding fashion", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=400" },
                       { brand: "DJI Enterprise", offer: "Flat 15% Off", desc: "Drones & stabilizers", image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&q=80&w=400" },
                     ].map((partner, idx) => (
-                      <div key={idx} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-3 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:shadow-md transition-all duration-200">
+                      <div key={idx} className="flex-shrink-0 w-64 md:w-auto bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-3 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:shadow-md transition-all duration-200">
                         <div className="aspect-[16/10] bg-slate-100 rounded-xl overflow-hidden relative shrink-0">
                           <img src={partner.image} alt={partner.brand} className="w-full h-full object-cover" />
                           <span className="absolute top-2.5 right-2.5 bg-slate-900/60 text-white font-extrabold text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full select-none">Partner</span>
@@ -1776,14 +1776,14 @@ export default async function HomePage({
                       <ChevronRight className="w-4 h-4 text-slate-900" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 md:grid md:grid-cols-4">
                     {[
                       { name: "Wedding Gowns", badge: "From ₹1,199/day", image: "https://images.unsplash.com/photo-1605001011156-cbf0b0f67a51?auto=format&fit=crop&q=80&w=400", action: "Shop now" },
                       { name: "Studio Mics", badge: "Under ₹499/day", image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=400", action: "Pro Audio" },
                       { name: "Camping Tents", badge: "Min. 40% Off", image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=400", action: "Coleman rigs" },
                       { name: "PlayStation 5", badge: "Min. 50% Off", image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400", action: "Consoles & VR" },
                     ].map((item, idx) => (
-                      <div key={idx} className="bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
+                      <div key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
                         <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
                           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                         </div>
@@ -1818,7 +1818,7 @@ export default async function HomePage({
                             </span>
                           </div>
                           <div className="pt-2.5 flex flex-col justify-between flex-grow">
-                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
+                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
                             <div className="mt-2 space-y-0.5 font-mono">
                               <div className="flex items-baseline gap-1">
                                 <span className="text-xs text-slate-450 line-through">₹{mrp}</span>
@@ -1853,7 +1853,7 @@ export default async function HomePage({
                             </span>
                           </div>
                           <div className="pt-2.5 flex flex-col justify-between flex-grow">
-                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 uppercase tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
+                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
                             <div className="mt-2 space-y-0.5 font-mono">
                               <div className="flex items-baseline gap-1">
                                 <span className="text-xs text-slate-455 line-through">₹{mrp}</span>
@@ -1890,7 +1890,7 @@ export default async function HomePage({
                       </Link>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 w-full">
                       {catalogProducts.map((product) => {
                         if (!product) return null
                         const { rating, count } = getSimulatedRating(product.id)
@@ -1900,11 +1900,11 @@ export default async function HomePage({
                         return (
                           <Card 
                             key={product.id} 
-                            className="group border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-amber-500/50 transition-all duration-200 rounded-xl relative"
+                            className="group border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-amber-500/50 transition-all duration-200 rounded-xl relative p-0 gap-0"
                             style={{ boxShadow: PREMIUM_BOX_SHADOW }}
                           >
                             {/* Header Image */}
-                            <div className="aspect-square sm:aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                            <div className="w-full aspect-square sm:aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
                               {product.image && product.image.startsWith("http") ? (
                                 <img 
                                   src={product.image} 
@@ -1929,7 +1929,7 @@ export default async function HomePage({
                             {/* Content Body */}
                             <CardHeader className="p-2 sm:p-4 pb-1 sm:pb-2 space-y-1 sm:space-y-1.5 flex-1">
                               <Link href={`/products/${product.id}`} className="block">
-                                <h4 className="text-[10px] sm:text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[28px] sm:min-h-[32px]">
+                                <h4 className="text-[10px] sm:text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 tracking-wide leading-tight min-h-[28px] sm:min-h-[32px]">
                                   {product.name}
                                 </h4>
                               </Link>
@@ -2104,7 +2104,7 @@ export default async function HomePage({
                                       </span>
                                     </div>
                                     <div className="pt-2 flex flex-col justify-between flex-grow space-y-1.5">
-                                      <h4 className="text-[11px] font-black text-slate-900 line-clamp-2 uppercase tracking-wide leading-tight min-h-[30px]">{product.name}</h4>
+                                      <h4 className="text-[11px] font-black text-slate-900 line-clamp-2 tracking-wide leading-tight min-h-[30px]">{product.name}</h4>
                                       
                                       <span className="text-[8px] bg-slate-100 border border-slate-200/60 text-slate-700 px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide w-fit block truncate">
                                         {cardBadgeText}
@@ -2187,7 +2187,7 @@ export default async function HomePage({
                                       </span>
                                     </div>
                                     <div className="pt-2 flex flex-col justify-between flex-grow space-y-1.5">
-                                      <h4 className="text-[11px] font-black text-slate-900 line-clamp-2 uppercase tracking-wide leading-tight min-h-[30px]">{product.name}</h4>
+                                      <h4 className="text-[11px] font-black text-slate-900 line-clamp-2 tracking-wide leading-tight min-h-[30px]">{product.name}</h4>
                                       
                                       <span className="text-[8px] bg-slate-100 border border-slate-200/60 text-slate-700 px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide w-fit block truncate">
                                         {cardBadgeText}
@@ -2226,7 +2226,7 @@ export default async function HomePage({
                       );
                     })()}
 
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 w-full">
                       {catalogProducts.map((product) => {
                         if (!product) return null
                         const { rating, count } = getSimulatedRating(product.id)
@@ -2236,11 +2236,11 @@ export default async function HomePage({
                         return (
                           <Card 
                             key={product.id} 
-                            className="group border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-amber-500/50 transition-all duration-200 rounded-xl relative"
+                            className="group border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-amber-500/50 transition-all duration-200 rounded-xl relative p-0 gap-0"
                             style={{ boxShadow: PREMIUM_BOX_SHADOW }}
                           >
                             {/* Header Image */}
-                            <div className="aspect-square sm:aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                            <div className="w-full aspect-square sm:aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
                               {product.image && product.image.startsWith("http") ? (
                                 <img 
                                   src={product.image} 
@@ -2265,7 +2265,7 @@ export default async function HomePage({
                             {/* Content Body */}
                             <CardHeader className="p-2 sm:p-4 pb-1 sm:pb-2 space-y-1 sm:space-y-1.5 flex-1">
                               <Link href={`/products/${product.id}`} className="block">
-                                <h4 className="text-[10px] sm:text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 uppercase tracking-wide leading-tight min-h-[28px] sm:min-h-[32px]">
+                                <h4 className="text-[10px] sm:text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 tracking-wide leading-tight min-h-[28px] sm:min-h-[32px]">
                                   {product.name}
                                 </h4>
                               </Link>
@@ -2313,7 +2313,7 @@ export default async function HomePage({
       )}
 
       {/* --- PREMIUM FOOTER --- */}
-      <footer className="bg-slate-900 text-slate-400 text-sm mt-auto border-t border-slate-800">
+      <footer className={`bg-slate-900 text-slate-400 text-sm mt-auto border-t border-slate-800 ${activeTab === "categories" ? "hidden md:block" : ""}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 select-text">
           <div className="space-y-4 select-none">
             <span className="text-lg font-extrabold text-white">RentKart</span>
@@ -2349,7 +2349,7 @@ export default async function HomePage({
             </ul>
           </div>
         </div>
-        <div className="border-t border-slate-800 py-6 text-center text-xs text-slate-650 bg-slate-950 select-none">
+        <div className="border-t border-slate-800 pt-6 pb-24 md:pb-6 text-center text-xs text-slate-650 bg-slate-950 select-none">
           © {new Date().getFullYear()} RentKart. All rights reserved.
         </div>
       </footer>

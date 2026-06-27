@@ -85,7 +85,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <div className="lg:col-span-7 space-y-6">
             
             {/* Main Product Image */}
-            <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm aspect-[4/3] relative flex items-center justify-center group">
+            <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm aspect-[4/3] relative flex items-center justify-center group w-full">
               {product.image && product.image.startsWith("http") ? (
                 <img 
                   src={product.image} 

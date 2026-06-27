@@ -77,7 +77,7 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
 
   return (
     <div 
-      className="relative w-full rounded-2xl p-5 border border-slate-800/80 shadow-sm overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950"
+      className="relative w-full rounded-2xl py-5 px-0 border border-slate-800/80 shadow-sm overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950"
     >
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
@@ -89,7 +89,7 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
       <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.04] pointer-events-none" />
 
       {/* Section Header */}
-      <div className="flex justify-between items-center mb-4 relative z-10">
+      <div className="flex justify-between items-center mb-4 relative z-10 px-5">
         <h2 className="text-base sm:text-lg font-black text-white tracking-tight uppercase font-sans">
           {titleText}
         </h2>
@@ -116,14 +116,14 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
       {/* Horizontal Cards Viewport */}
       <div 
         ref={scrollRef}
-        className="w-full flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar relative z-10 pb-1"
+        className="w-full flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar relative z-10 pb-1 px-5"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {items.map((product) => (
           <Link 
             href={`/products/${product.id}`} 
             key={product.id}
-            className="snap-start flex-shrink-0 w-[145px] sm:w-[175px] group"
+            className="snap-start flex-shrink-0 w-[160px] sm:w-[180px] group"
           >
             <div className="bg-white rounded-xl p-3 border border-slate-200/50 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between h-[225px]">
               {/* Product Image Box */}
@@ -141,7 +141,7 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
 
               {/* Text Description Box */}
               <div className="mt-2 text-left flex flex-col justify-between flex-grow">
-                <p className="text-[10.5px] font-bold text-slate-500 line-clamp-2 leading-snug uppercase tracking-wide">
+                <p className="text-[10.5px] font-bold text-slate-500 line-clamp-2 leading-snug tracking-wide">
                   {product.name}
                 </p>
                 <div className="pt-1 mt-auto flex items-baseline justify-between">

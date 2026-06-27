@@ -273,7 +273,7 @@ export function HeroCarousel({ categorySlug }: HeroCarouselProps) {
                   </div>
                   
                   <div className="space-y-0.5">
-                    <h3 className={`text-base font-black leading-tight tracking-tight uppercase line-clamp-1 max-w-[65%] ${slide.textClass}`}>
+                    <h3 className={`text-sm sm:text-base font-black leading-tight tracking-tight uppercase line-clamp-1 max-w-[64%] sm:max-w-[58%] ${slide.textClass}`}>
                       {slide.title}
                     </h3>
                     <p className={`text-sm font-black tracking-wide font-mono ${slide.offerClass}`}>
@@ -283,14 +283,14 @@ export function HeroCarousel({ categorySlug }: HeroCarouselProps) {
                 </div>
 
                 {/* Description Footer */}
-                <div className="relative z-10 text-left max-w-[65%]">
+                <div className="relative z-10 text-left max-w-[64%] sm:max-w-[58%]">
                   <p className={`text-[10px] leading-relaxed font-bold line-clamp-2 ${slide.subtextClass}`}>
                     {slide.description}
                   </p>
                 </div>
 
                 {/* Right Side Visual Image (AD styled) */}
-                <div className="absolute right-0 top-0 bottom-0 w-[38%] h-full pointer-events-none overflow-hidden">
+                <div className="absolute right-0 top-0 bottom-0 w-[34%] sm:w-[38%] h-full pointer-events-none overflow-hidden">
                   <img 
                     src={slide.imageUrl} 
                     alt={slide.title} 

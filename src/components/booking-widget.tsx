@@ -102,10 +102,10 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
               variant="outline" 
               className="w-full h-auto p-0 border-0 hover:bg-transparent shadow-none block"
             >
-              <span className="grid grid-cols-2 gap-3 w-full">
+              <span className="flex flex-col gap-2.5 sm:grid sm:grid-cols-2 sm:gap-3 w-full">
                 
                 {/* Pick-Up Box */}
-                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
+                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block w-full">
                    <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                      Pick-up Date
                    </span>
@@ -118,7 +118,7 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
                 </span>
 
                 {/* Return Box */}
-                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block h-full">
+                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block w-full">
                    <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                      Return Date
                    </span>
