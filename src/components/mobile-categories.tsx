@@ -368,22 +368,22 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
       `}</style>
 
       {/* 1. Header Bar */}
-      <div className="h-14 bg-white border-b border-slate-200/80 px-4 flex items-center justify-between shrink-0 shadow-sm">
+      <div className="h-14 bg-[#0F172A] border-b border-slate-800/80 px-4 flex items-center justify-between shrink-0 shadow-md">
         <div className="flex items-center gap-3">
-          <Link href="/" className="p-1 rounded-full hover:bg-slate-100 text-slate-700 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
+          <Link href="/" className="p-1.5 rounded-xl hover:bg-slate-800/40 text-slate-400 hover:text-white transition-colors">
+            <ArrowLeft className="w-5 h-5 text-[#F59E0B]" />
           </Link>
-          <span className="font-extrabold text-slate-900 text-base tracking-tight">All Categories</span>
+          <span className="font-extrabold text-white text-xs uppercase tracking-wider">All Categories</span>
         </div>
         
         <div className="flex items-center gap-2">
-          <Link href="/?tab=search" className="p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors">
+          <Link href="/?tab=search" className="p-2 rounded-xl hover:bg-slate-800/40 text-slate-400 hover:text-white transition-colors">
             <Search className="w-5 h-5" />
           </Link>
-          <Link href={isLoggedIn ? "/?tab=cart" : "/login"} className="p-2 rounded-full hover:bg-slate-100 text-slate-700 transition-colors relative">
-            <ShoppingCart className="w-5 h-5" />
+          <Link href={isLoggedIn ? "/?tab=cart" : "/login"} className="p-2 rounded-xl hover:bg-slate-800/40 text-slate-400 hover:text-white transition-colors relative">
+            <ShoppingCart className="w-5 h-5 text-slate-400" />
             {cartCount > 0 && (
-              <span className="absolute top-1 right-1 bg-[#F59E0B] text-[#0F172A] text-[9px] font-black h-4.5 w-4.5 rounded-full flex items-center justify-center border border-white">
+              <span className="absolute top-1 right-1 bg-[#F59E0B] text-[#0F172A] text-[9px] font-black h-4.5 w-4.5 rounded-full flex items-center justify-center border border-[#0F172A]">
                 {cartCount}
               </span>
             )}

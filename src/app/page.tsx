@@ -423,18 +423,18 @@ export default async function HomePage({
 
       {/* Reusable Mobile Header with Return/Back Option */}
       {activeTab && activeTab !== "categories" && (
-        <div className="md:hidden bg-white border-b border-slate-100 h-14 flex items-center px-4 sticky top-0 z-40 select-none shadow-xs">
+        <div className="md:hidden bg-[#0F172A] border-b border-slate-800/80 h-14 flex items-center px-4 sticky top-0 z-40 select-none shadow-md">
           <Link
             href={
               ["account", "cart"].includes(activeTab)
                 ? "/"
                 : "/?tab=account"
             }
-            className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-50 transition-colors"
+            className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800/40 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-[#F59E0B]" />
           </Link>
-          <span className="ml-2.5 font-bold text-slate-800 text-sm uppercase tracking-wide">
+          <span className="ml-2.5 font-extrabold text-white text-xs uppercase tracking-wider">
             {activeTab === "cart"
               ? "My Cart"
               : activeTab === "account"
@@ -475,7 +475,6 @@ export default async function HomePage({
               cartCount={cartCount}
               isLoggedIn={isLoggedIn}
             />
-            <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
           </div>
           <div className="hidden md:block flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-8">All Rental Categories</h1>
@@ -2421,6 +2420,7 @@ export default async function HomePage({
           © {new Date().getFullYear()} RentKart. All rights reserved.
         </div>
       </footer>
+      <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
     </div>
   )
 }
