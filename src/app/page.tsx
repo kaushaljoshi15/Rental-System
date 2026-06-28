@@ -1022,24 +1022,38 @@ export default async function HomePage({
                       <div className="lg:col-span-8 space-y-6">
                         
                         {/* Product list */}
-                        <Card className="border border-slate-200/60 shadow-xs rounded-2xl overflow-hidden bg-white">
+                        <Card className="border border-slate-200/55 shadow-xs rounded-2xl overflow-hidden bg-white">
                           <CardHeader className="border-b border-slate-100 bg-slate-50/40 p-4.5">
                             <CardTitle className="text-xs font-bold text-slate-800 uppercase tracking-wide">Items Rented</CardTitle>
                           </CardHeader>
-                          <CardContent className="p-0 divide-y divide-slate-100">
+                          <CardContent className="p-4 divide-y divide-slate-100/60 space-y-3">
                             {selectedOrder.lines.map((line: any) => (
-                              <div key={line.id} className="p-5 flex gap-4 items-start hover:bg-slate-50/20 transition-colors">
-                                <div className="w-20 h-15 bg-slate-550/5 border border-slate-150 rounded-xl overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-                                  {line.product.image ? (
-                                    <img src={line.product.image} alt={line.product.name} className="w-full h-full object-cover" />
-                                  ) : (
-                                    <Building className="w-6 h-6 text-slate-350" />
-                                  )}
+                              <div key={line.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40 p-3 rounded-xl border border-slate-100 transition-colors">
+                                <div className="flex gap-3 items-center min-w-0">
+                                  <div className="w-14 h-14 bg-white border border-slate-200/60 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-xs">
+                                    {line.product.image ? (
+                                      <img src={line.product.image} alt={line.product.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <Building className="w-5 h-5 text-slate-350" />
+                                    )}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-900 truncate uppercase tracking-wide">
+                                      {line.product.name}
+                                    </h4>
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-505">
+                                      <span className="font-semibold text-slate-700 font-mono">₹{line.price.toLocaleString()} / day</span>
+                                      <span className="text-slate-300">•</span>
+                                      <span className="font-medium">{line.quantity} Qty</span>
+                                    </div>
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase mt-1 select-none">
+                                      Vendor: <span className="text-[#F59E0B] font-bold">{line.product.vendor?.companyName || line.product.vendor?.name || "Prime Partner"}</span>
+                                    </p>
+                                  </div>
                                 </div>
-                                <div className="space-y-1 flex-grow min-w-0">
-                                  <h4 className="text-sm font-bold text-slate-900 truncate uppercase tracking-wide">{line.product.name}</h4>
-                                  <p className="text-[10px] font-bold text-slate-400 uppercase">Vendor: <span className="text-[#F59E0B]">{line.product.vendor?.companyName || line.product.vendor?.name || "Prime Partner"}</span></p>
-                                  <p className="text-[10.5px] text-slate-500 font-semibold font-mono">₹{line.price.toLocaleString()} / day x {line.quantity} Qty</p>
+                                <div className="flex sm:flex-col justify-between items-center sm:items-end border-t border-slate-100/60 sm:border-t-0 pt-2 sm:pt-0 shrink-0 text-xs">
+                                  <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
+                                  <span className="text-xs text-slate-750 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
                                 </div>
                               </div>
                             ))}
@@ -1050,8 +1064,9 @@ export default async function HomePage({
                         <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white p-6 relative overflow-hidden">
                           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide mb-8 border-b border-slate-100 pb-3">Rental Lifecycle Track</h3>
                           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-4">
-                            {/* Connected Track line */}
+                            {/* Connected Track line (Horizontal on desktop, Vertical on mobile) */}
                             <div className="absolute top-4.5 left-[12%] right-[12%] hidden md:block h-[2px] bg-slate-100" />
+                            <div className="absolute left-[17px] top-4.5 bottom-4.5 md:hidden w-[2px] bg-slate-100" />
                             
                             {[
                               { id: "PLACED", label: "Booking Placed", desc: "Verification success", active: true },
@@ -1208,62 +1223,62 @@ export default async function HomePage({
                 <div className="space-y-6">
                   <div>
                     <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase">Order Central</h1>
-                    <p className="text-slate-500 text-xs mt-0.5">Track your rental lifecycle: Quotations → Active Rentals → Returns.</p>
+                    <p className="text-slate-500 text-xs mt-0.5">Track your rental lifecycle: Quotations &rarr; Active Rentals &rarr; Returns.</p>
                   </div>
 
                   {/* Stats Overview */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4.5">
+                  <div className="grid grid-cols-3 gap-3 md:gap-4.5">
                     {/* Card 1: Pending Approval */}
-                    <div className="bg-gradient-to-b from-white to-slate-50/50 border border-slate-200/60 rounded-2xl p-5 flex flex-col justify-between shadow-xs hover:border-[#F59E0B]/30 hover:shadow-sm transition-all duration-300">
-                      <div className="flex justify-between items-start">
-                        <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-sans">
-                          Pending Approval
+                    <div className="bg-gradient-to-b from-[#0F172A]/5 to-transparent border border-slate-200/60 rounded-2xl p-3 md:p-5 flex flex-col justify-between shadow-xs hover:border-[#F59E0B]/30 hover:shadow-sm transition-all duration-300 relative overflow-hidden group select-none">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1.5">
+                        <span className="text-[8px] md:text-[10px] font-black text-slate-450 uppercase tracking-wider font-sans leading-none">
+                          Pending
                         </span>
-                        <div className="h-8 w-8 rounded-lg bg-slate-50 border border-slate-200/60 text-[#0F172A] flex items-center justify-center shadow-inner">
-                          <FileText className="w-4 h-4 text-slate-500" />
+                        <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-slate-50 border border-slate-200/60 text-slate-500 flex items-center justify-center shadow-inner shrink-0">
+                          <FileText className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-550" />
                         </div>
                       </div>
-                      <div className="mt-3">
-                        <h3 className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
+                      <div className="mt-2 md:mt-3">
+                        <h3 className="text-xl md:text-3xl font-extrabold text-slate-900 font-mono tracking-tight leading-none">
                           {customerData.user.orders.filter((o: any) => o.status === "PENDING").length}
                         </h3>
-                        <p className="text-[10px] text-slate-450 font-bold uppercase mt-1">Awaiting partner check</p>
+                        <p className="hidden md:block text-[10px] text-slate-450 font-bold uppercase mt-1">Awaiting partner check</p>
                       </div>
                     </div>
 
                     {/* Card 2: Active Rentals */}
-                    <div className="bg-gradient-to-b from-white to-slate-50/50 border border-slate-200/60 rounded-2xl p-5 flex flex-col justify-between shadow-xs hover:border-[#F59E0B]/30 hover:shadow-sm transition-all duration-300">
-                      <div className="flex justify-between items-start">
-                        <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-sans">
-                          Active Rentals
+                    <div className="bg-gradient-to-b from-[#0F172A]/5 to-transparent border border-slate-200/60 rounded-2xl p-3 md:p-5 flex flex-col justify-between shadow-xs hover:border-[#F59E0B]/30 hover:shadow-sm transition-all duration-300 relative overflow-hidden group select-none">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1.5">
+                        <span className="text-[8px] md:text-[10px] font-black text-slate-450 uppercase tracking-wider font-sans leading-none">
+                          Active
                         </span>
-                        <div className="h-8 w-8 rounded-lg bg-slate-50 border border-slate-200/60 text-[#0F172A] flex items-center justify-center shadow-inner">
-                          <Package className="w-4 h-4 text-slate-500" />
+                        <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-slate-50 border border-slate-200/60 text-slate-500 flex items-center justify-center shadow-inner shrink-0">
+                          <Package className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-550" />
                         </div>
                       </div>
-                      <div className="mt-3">
-                        <h3 className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
+                      <div className="mt-2 md:mt-3">
+                        <h3 className="text-xl md:text-3xl font-extrabold text-slate-900 font-mono tracking-tight leading-none">
                           {customerData.user.orders.filter((o: any) => o.status === "CONFIRMED" || o.status === "PICKED_UP").length}
                         </h3>
-                        <p className="text-[10px] text-slate-450 font-bold uppercase mt-1">Live bookings active</p>
+                        <p className="hidden md:block text-[10px] text-slate-450 font-bold uppercase mt-1">Live bookings active</p>
                       </div>
                     </div>
 
                     {/* Card 3: Total Completed */}
-                    <div className="bg-gradient-to-b from-white to-slate-50/50 border border-slate-200/60 rounded-2xl p-5 flex flex-col justify-between shadow-xs hover:border-[#F59E0B]/30 hover:shadow-sm transition-all duration-300">
-                      <div className="flex justify-between items-start">
-                        <span className="text-[10px] font-bold text-slate-450 uppercase tracking-wider font-sans">
-                          Total Completed
+                    <div className="bg-gradient-to-b from-emerald-500/5 to-transparent border border-slate-200/60 rounded-2xl p-3 md:p-5 flex flex-col justify-between shadow-xs hover:border-emerald-500/30 hover:shadow-sm transition-all duration-300 relative overflow-hidden group select-none">
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1.5">
+                        <span className="text-[8px] md:text-[10px] font-black text-emerald-650 uppercase tracking-wider font-sans leading-none">
+                          Completed
                         </span>
-                        <div className="h-8 w-8 rounded-lg bg-emerald-50/50 border border-emerald-100/60 text-emerald-600 flex items-center justify-center shadow-inner">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-emerald-50/50 border border-emerald-100/60 text-emerald-600 flex items-center justify-center shadow-inner shrink-0">
+                          <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-650" />
                         </div>
                       </div>
-                      <div className="mt-3">
-                        <h3 className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
+                      <div className="mt-2 md:mt-3">
+                        <h3 className="text-xl md:text-3xl font-extrabold text-slate-900 font-mono tracking-tight leading-none">
                           {customerData.user.orders.filter((o: any) => o.status === "RETURNED").length}
                         </h3>
-                        <p className="text-[10px] text-emerald-650 font-bold uppercase mt-1">Returned & audited</p>
+                        <p className="hidden md:block text-[10px] text-emerald-650 font-bold uppercase mt-1">Returned & audited</p>
                       </div>
                     </div>
                   </div>
@@ -1314,67 +1329,86 @@ export default async function HomePage({
                         };
 
                         return (
-                          <Card key={order.id} className="border border-slate-200/50 shadow-xs hover:shadow-sm transition-all rounded-2xl bg-white p-5 space-y-4">
+                          <Card key={order.id} className="border border-slate-200/55 shadow-xs hover:shadow-sm transition-all rounded-2xl bg-white p-5 space-y-4">
                             {/* Header Row */}
-                            <div className="flex justify-between items-center text-xs">
-                              <p className="font-bold text-slate-800 flex items-center gap-1.5">
-                                <Clock className="w-3.5 h-3.5 text-slate-400" />
-                                Rental Period: <span className="font-mono font-semibold text-slate-900">{start.toLocaleDateString()} — {end.toLocaleDateString()}</span> 
-                                <span className="text-slate-450 font-medium font-sans">({duration} {duration === 1 ? "day" : "days"})</span>
-                              </p>
-                              <span className="font-mono text-slate-400 font-medium">Ref: #{order.id.slice(-8).toUpperCase()}</span>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-b border-slate-100 pb-4">
+                              <div className="flex items-center gap-2.5">
+                                <div className="h-8 w-8 rounded-lg bg-slate-50 border border-slate-200/60 flex items-center justify-center text-slate-550 shrink-0 shadow-xs">
+                                  <Clock className="w-4 h-4 text-slate-400" />
+                                </div>
+                                <div>
+                                  <p className="text-[9px] text-slate-450 font-bold uppercase tracking-wider leading-none mb-0.5 select-none">Rental Period</p>
+                                  <p className="font-semibold text-slate-800 font-mono text-[11px] sm:text-xs">
+                                    {start.toLocaleDateString()} — {end.toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 sm:self-start select-none">
+                                <span className="bg-amber-500/10 text-[#F59E0B] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                  {duration} {duration === 1 ? "day" : "days"}
+                                </span>
+                                <span className="bg-slate-100 text-slate-500 font-mono text-[10px] font-bold px-2 py-0.5 rounded-md tracking-wider">
+                                  Ref: #{order.id.slice(-8).toUpperCase()}
+                                </span>
+                              </div>
                             </div>
 
-                            <div className="border-b border-slate-100/80" />
-
                             {/* Rented Assets list */}
-                            <div className="space-y-4.5">
+                            <div className="space-y-3">
                               {order.lines.map((line: any) => (
-                                <div key={line.id} className="flex gap-4 items-center justify-between">
-                                  <div className="flex gap-3.5 items-center min-w-0">
-                                    <div className="w-16 h-12 bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
+                                <div key={line.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40 p-3 rounded-xl border border-slate-100 transition-colors">
+                                  <div className="flex gap-3 items-center min-w-0">
+                                    <div className="w-14 h-14 bg-white border border-slate-200/60 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-xs">
                                       {line.product.image ? (
                                         <img src={line.product.image} alt={line.product.name} className="w-full h-full object-cover" />
                                       ) : (
-                                        <Building className="w-5 h-5 text-slate-300" />
+                                        <Building className="w-5 h-5 text-slate-350" />
                                       )}
                                     </div>
                                     <div className="min-w-0">
                                       <h4 className="text-xs font-bold text-slate-900 truncate uppercase tracking-wide">
                                         {line.product.name}
                                       </h4>
-                                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                                        ₹{line.price.toLocaleString()} / day × {line.quantity} Qty
-                                      </p>
+                                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-505">
+                                        <span className="font-semibold text-slate-700 font-mono">₹{line.price.toLocaleString()} / day</span>
+                                        <span className="text-slate-300">•</span>
+                                        <span className="font-medium">{line.quantity} Qty</span>
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="text-right shrink-0">
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Refundable Hold</p>
-                                    <p className="text-xs text-slate-700 font-mono font-bold mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</p>
+                                  <div className="flex sm:flex-col justify-between items-center sm:items-end border-t border-slate-100/60 sm:border-t-0 pt-2 sm:pt-0 shrink-0 text-xs">
+                                    <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
+                                    <span className="text-xs text-slate-750 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
                                   </div>
                                 </div>
                               ))}
                             </div>
 
-                            <div className="border-b border-slate-100/80" />
-
                             {/* Footer Details */}
-                            <div className="flex justify-between items-center flex-wrap gap-4 text-xs">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className={`h-2 w-2 rounded-full ${dotColors[order.status] || "bg-slate-400"}`} />
-                                <span className="font-bold text-slate-800">{statusLabels[order.status] || order.status}</span>
-                                <span className="text-slate-200 font-medium px-1">|</span>
-                                <span className="text-slate-500 font-bold">Total: <span className="text-slate-900 font-mono font-bold">₹{order.totalAmount.toLocaleString()}</span></span>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                              <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto text-xs">
+                                <div className="flex items-center gap-2 bg-slate-50 border border-slate-150 px-2.5 py-1 rounded-full select-none">
+                                  <span className={`h-2 w-2 rounded-full ${dotColors[order.status] || "bg-slate-400"} ring-2 ring-offset-1 ring-offset-white ${order.status === "PENDING" ? "ring-amber-200 animate-pulse" : order.status === "CONFIRMED" ? "ring-blue-200" : order.status === "PICKED_UP" ? "ring-purple-200" : order.status === "RETURNED" ? "ring-emerald-200" : "ring-rose-200"}`} />
+                                  <span className="font-extrabold text-slate-800 uppercase tracking-wider text-[9px] leading-none">
+                                    {statusLabels[order.status] || order.status}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-slate-455 font-bold uppercase tracking-wider text-[10px] select-none">Total Paid:</span>
+                                  <span className="text-slate-900 font-mono font-black text-sm">₹{order.totalAmount.toLocaleString()}</span>
+                                </div>
                               </div>
 
-                              <div className="flex items-center gap-2.5 shrink-0 ml-auto">
-                                <Link href={`/?tab=orders&orderId=${order.id}`}>
-                                  <Button variant="outline" size="sm" className="text-xs font-bold h-8.5 px-4 rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors shadow-xs">
+                              <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
+                                <Link href={`/?tab=orders&orderId=${order.id}`} className="flex-1 sm:flex-initial">
+                                  <Button variant="outline" size="sm" className="w-full text-xs font-black uppercase tracking-wider h-9 px-4 rounded-xl border-slate-250 hover:bg-slate-50 text-slate-700 transition-all shadow-xs cursor-pointer">
                                     View Details
                                   </Button>
                                 </Link>
                                 {["PENDING", "CONFIRMED"].includes(order.status) && (
-                                  <CancelButton orderId={order.id} />
+                                  <div className="flex-1 sm:flex-initial">
+                                    <CancelButton orderId={order.id} />
+                                  </div>
                                 )}
                               </div>
                             </div>
