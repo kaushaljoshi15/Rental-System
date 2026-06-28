@@ -1041,7 +1041,7 @@ export default async function HomePage({
                                     <h4 className="text-xs font-bold text-slate-900 truncate uppercase tracking-wide">
                                       {line.product.name}
                                     </h4>
-                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-505">
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-500">
                                       <span className="font-semibold text-slate-700 font-mono">₹{line.price.toLocaleString()} / day</span>
                                       <span className="text-slate-300">•</span>
                                       <span className="font-medium">{line.quantity} Qty</span>
@@ -1052,8 +1052,8 @@ export default async function HomePage({
                                   </div>
                                 </div>
                                 <div className="flex sm:flex-col justify-between items-center sm:items-end border-t border-slate-100/60 sm:border-t-0 pt-2 sm:pt-0 shrink-0 text-xs">
-                                  <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
-                                  <span className="text-xs text-slate-750 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
+                                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
+                                  <span className="text-xs text-slate-700 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
                                 </div>
                               </div>
                             ))}
@@ -1369,7 +1369,7 @@ export default async function HomePage({
                                       <h4 className="text-xs font-bold text-slate-900 truncate uppercase tracking-wide">
                                         {line.product.name}
                                       </h4>
-                                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-505">
+                                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-500">
                                         <span className="font-semibold text-slate-700 font-mono">₹{line.price.toLocaleString()} / day</span>
                                         <span className="text-slate-300">•</span>
                                         <span className="font-medium">{line.quantity} Qty</span>
@@ -1377,8 +1377,8 @@ export default async function HomePage({
                                     </div>
                                   </div>
                                   <div className="flex sm:flex-col justify-between items-center sm:items-end border-t border-slate-100/60 sm:border-t-0 pt-2 sm:pt-0 shrink-0 text-xs">
-                                    <span className="text-[10px] text-slate-450 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
-                                    <span className="text-xs text-slate-750 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
+                                    <span className="text-xs text-slate-700 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
                                   </div>
                                 </div>
                               ))}
@@ -1394,14 +1394,14 @@ export default async function HomePage({
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                  <span className="text-slate-455 font-bold uppercase tracking-wider text-[10px] select-none">Total Paid:</span>
+                                  <span className="text-slate-500 font-bold uppercase tracking-wider text-[10px] select-none">Total Paid:</span>
                                   <span className="text-slate-900 font-mono font-black text-sm">₹{order.totalAmount.toLocaleString()}</span>
                                 </div>
                               </div>
 
                               <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
                                 <Link href={`/?tab=orders&orderId=${order.id}`} className="flex-1 sm:flex-initial">
-                                  <Button variant="outline" size="sm" className="w-full text-xs font-black uppercase tracking-wider h-9 px-4 rounded-xl border-slate-250 hover:bg-slate-50 text-slate-700 transition-all shadow-xs cursor-pointer">
+                                  <Button variant="outline" size="sm" className="w-full text-xs font-black uppercase tracking-wider h-9 px-4 rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 transition-all shadow-xs cursor-pointer">
                                     View Details
                                   </Button>
                                 </Link>

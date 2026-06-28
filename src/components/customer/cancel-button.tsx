@@ -74,7 +74,7 @@ export function CancelButton({ orderId }: { orderId: string }) {
     <Button 
       variant="outline" 
       size="sm" 
-      className="text-red-650 hover:text-red-750 hover:bg-red-50 border-red-200 font-black text-xs uppercase tracking-wider h-9 rounded-xl transition-all px-4 w-full sm:w-auto cursor-pointer shadow-xs"
+      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 font-black text-xs uppercase tracking-wider h-9 rounded-xl transition-all px-4 w-full sm:w-auto cursor-pointer shadow-xs"
       onClick={() => setShowConfirm(true)}
     >
       Cancel Booking
