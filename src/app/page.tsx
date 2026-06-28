@@ -39,6 +39,7 @@ import {
   Phone,
   ArrowDownLeft,
   ArrowUpRight,
+  ArrowLeft,
   HelpCircle,
   Megaphone,
   Calendar as CalendarIcon,
@@ -412,12 +413,57 @@ export default async function HomePage({
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900 overflow-x-clip">
-      {activeTab === "categories" ? (
+      {activeTab ? (
         <div className="hidden md:block">
           <Navbar />
         </div>
       ) : (
         <Navbar />
+      )}
+
+      {/* Reusable Mobile Header with Return/Back Option */}
+      {activeTab && activeTab !== "categories" && (
+        <div className="md:hidden bg-white border-b border-slate-100 h-14 flex items-center px-4 sticky top-0 z-40 select-none shadow-xs">
+          <Link
+            href={
+              ["account", "cart"].includes(activeTab)
+                ? "/"
+                : "/?tab=account"
+            }
+            className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <span className="ml-2.5 font-bold text-slate-800 text-sm uppercase tracking-wide">
+            {activeTab === "cart"
+              ? "My Cart"
+              : activeTab === "account"
+              ? "My Account"
+              : activeTab === "orders"
+              ? "My Orders"
+              : activeTab === "wishlist"
+              ? "My Wishlist"
+              : activeTab === "notifications"
+              ? "My Notifications"
+              : activeTab === "profile"
+              ? "My Profile"
+              : activeTab === "addresses"
+              ? "My Addresses"
+              : activeTab === "wallet"
+              ? "My Wallet"
+              : activeTab === "saved-cards"
+              ? "Saved Cards"
+              : activeTab === "saved-upi"
+              ? "Saved UPI"
+              : activeTab === "event-planner"
+              ? "Event Planner"
+              : activeTab === "coupons"
+              ? "My Coupons"
+              : activeTab === "gift-cards"
+              ? "Gift Cards"
+              : activeTab}
+          </span>
+        </div>
       )}
 
       {activeTab === "categories" ? (
@@ -770,19 +816,7 @@ export default async function HomePage({
 
               <div className="lg:col-span-9 space-y-6 pt-2.5">
                 
-                {/* Mobile Navigation Header */}
-                {activeTab === "account" ? (
-                  null
-                ) : (
-                  <div className="lg:hidden mb-5">
-                    <Link
-                      href="/?tab=account"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 text-white hover:text-[#F59E0B] rounded-xl text-xs font-black uppercase tracking-wider transition-colors shadow-sm select-none"
-                    >
-                      <span>← Back to Account Menu</span>
-                    </Link>
-                  </div>
-                )}
+
 
             {/* Tab: Account (Mobile consolidated Account Dashboard) */}
             {activeTab === "account" && (
