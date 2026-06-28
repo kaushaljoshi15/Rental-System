@@ -2313,7 +2313,7 @@ export default async function HomePage({
       )}
 
       {/* --- PREMIUM FOOTER --- */}
-      <footer className={`bg-slate-900 text-slate-400 text-sm mt-auto border-t border-slate-800 ${activeTab === "categories" ? "hidden md:block" : ""}`}>
+      <footer className={`bg-slate-900 text-slate-400 text-sm mt-auto border-t border-slate-800 ${activeTab ? "hidden md:block" : ""}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 select-text">
           <div className="space-y-4 select-none">
             <span className="text-lg font-extrabold text-white">RentKart</span>
