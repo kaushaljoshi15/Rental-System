@@ -15,8 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rental System",
-  description: "Equipment Rental Management System",
+  title: "RentKart | Rent Anything, Anytime",
+  description: "RentKart is the best platform to rent electronics, furniture, and more. Fast, affordable, and secure.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "YOUR_GOOGLE_VERIFICATION_TOKEN",
+  },
 };
 
 export default function RootLayout({
