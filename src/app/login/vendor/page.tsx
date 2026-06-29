@@ -20,6 +20,8 @@ import {
   ArrowRight
 } from "lucide-react"
 
+import { Logo } from "@/components/logo"
+
 function VendorLoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -69,13 +71,9 @@ function VendorLoginForm() {
         <div className="absolute top-0 right-0 h-96 w-96 bg-[#F59E0B]/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2 shrink-0 group">
-          <div className="bg-[#F59E0B] p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
-            <ShoppingCart className="w-5 h-5" />
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
-            Rental<span className="text-[#F59E0B]">Kart</span> Seller Hub
-          </span>
+        <Link href="/" className="flex items-center gap-1.5 shrink-0 group transition-transform active:scale-95">
+          <Logo />
+          <span className="text-xs text-slate-400 font-normal uppercase tracking-wider ml-1">Seller Hub</span>
         </Link>
 
         {/* Dynamic seller portal info */}

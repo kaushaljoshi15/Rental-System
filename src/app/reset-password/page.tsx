@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { toast } from "sonner"
+import { Logo } from "@/components/logo"
 import Link from "next/link"
-import { Lock, ShoppingCart } from "lucide-react"
+import { Lock } from "lucide-react"
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams()
@@ -39,13 +40,8 @@ function ResetPasswordForm() {
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-slate-50 p-6">
       
       {/* Brand Header */}
-      <Link href="/" className="flex items-center gap-2 shrink-0 group mb-8">
-        <div className="bg-amber-500 p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
-          <ShoppingCart className="w-5 h-5" />
-        </div>
-        <span className="text-xl font-extrabold tracking-tight text-slate-900 transition-colors">
-          Rent<span className="text-amber-500">Kart</span>
-        </span>
+      <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95 mb-8">
+        <Logo textColor="#0f172a" />
       </Link>
 
       <Card className="w-full max-w-md shadow-xl border-slate-200 bg-white rounded-2xl overflow-hidden">

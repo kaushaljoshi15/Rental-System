@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma, prismaRetry } from "@/lib/prisma"
 import Link from "next/link"
+import { Logo } from "@/components/logo"
 import { LogoutLink } from "@/components/logout-button"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -2383,7 +2384,7 @@ export default async function HomePage({
       <footer className={`bg-slate-900 text-slate-400 text-sm mt-auto border-t border-slate-800 ${activeTab ? "hidden md:block" : ""}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 select-text">
           <div className="space-y-4 select-none">
-            <span className="text-lg font-extrabold text-white">RentKart</span>
+            <Logo className="h-6" />
             <p className="text-xs text-slate-550 leading-relaxed font-semibold">
               India&apos;s premier equipment & wedding venues renting marketplace. Grand banquet halls, AV sets, and concert rigs.
             </p>

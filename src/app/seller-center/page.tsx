@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Logo } from "@/components/logo"
 import { 
   Building, 
   Layers, 
@@ -7,7 +8,6 @@ import {
   Settings, 
   ShieldCheck, 
   ArrowRight,
-  ShoppingCart,
   Calendar,
   DollarSign
 } from "lucide-react"
@@ -19,13 +19,9 @@ export default function SellerCenterPage() {
       {/* Navbar */}
       <header className="bg-[#0F172A] text-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="bg-[#F59E0B] p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
-              <ShoppingCart className="w-5 h-5 text-[#0F172A]" />
-            </div>
-            <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
-              Rental<span className="text-[#F59E0B]">Kart</span> <span className="text-xs text-slate-400 font-normal uppercase tracking-wider ml-1">Seller Hub</span>
-            </span>
+          <Link href="/" className="flex items-center gap-1 group transition-transform active:scale-95">
+            <Logo />
+            <span className="text-xs text-slate-400 font-normal uppercase tracking-wider ml-1">Seller Hub</span>
           </Link>
           <div>
             <Link href="/login/vendor">

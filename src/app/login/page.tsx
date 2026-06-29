@@ -20,6 +20,8 @@ import {
   EyeOff
 } from "lucide-react"
 
+import { Logo } from "@/components/logo"
+
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -69,13 +71,8 @@ function LoginForm() {
         <div className="absolute top-0 right-0 h-96 w-96 bg-amber-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2 shrink-0 group">
-          <div className="bg-amber-500 p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
-            <ShoppingCart className="w-5 h-5" />
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
-            Rent<span className="text-amber-500">Kart</span>
-          </span>
+        <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95">
+          <Logo />
         </Link>
 
         {/* Dynamic SaaS details */}

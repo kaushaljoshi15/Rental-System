@@ -31,6 +31,8 @@ import {
   LockKeyhole
 } from "lucide-react"
 
+import { Logo } from "@/components/logo"
+
 export default function VendorRegisterPage() {
   const router = useRouter()
   const [step, setStep] = useState(1) // 1 or 2
@@ -99,8 +101,8 @@ export default function VendorRegisterPage() {
       toast.error(res.error)
     } else {
       setPhoneOtpSent(true)
-      setPhoneTimer(30)
-      toast.success(res.message || "OTP code sent to your mobile number. Check server console.")
+      setPhoneTimer(60)
+      toast.success("OTP sent to your phone!")
     }
   }
 
@@ -117,46 +119,42 @@ export default function VendorRegisterPage() {
       toast.error(res.error)
     } else {
       setEmailOtpSent(true)
-      setEmailTimer(30)
-      if (res.isLocalDemo) {
-        toast.warning(res.message)
-      } else {
-        toast.success(res.message || "OTP verification email sent. Check inbox.")
-      }
+      setEmailTimer(60)
+      toast.success("OTP sent to your email!")
     }
   }
 
   const handleVerifyPhoneOtp = async () => {
-    if (!phoneOtp) {
-      toast.error("Please enter the 6-digit verification code.")
+    if (!phoneOtp || phoneOtp.length < 6) {
+      toast.error("Please enter the 6-digit phone OTP.")
       return
     }
     setLoading(true)
     const res = await verifyOtpAction('PHONE', phone, phoneOtp)
     setLoading(false)
 
-    if (res.success) {
-      setPhoneVerified(true)
-      toast.success("Mobile number verified successfully!")
+    if (res.error) {
+      toast.error(res.error)
     } else {
-      toast.error(res.error || "Incorrect OTP code.")
+      setPhoneVerified(true)
+      toast.success("Phone verified successfully!")
     }
   }
 
   const handleVerifyEmailOtp = async () => {
-    if (!emailOtp) {
-      toast.error("Please enter the 6-digit verification code.")
+    if (!emailOtp || emailOtp.length < 6) {
+      toast.error("Please enter the 6-digit email OTP.")
       return
     }
     setLoading(true)
     const res = await verifyOtpAction('EMAIL', email, emailOtp)
     setLoading(false)
 
-    if (res.success) {
-      setEmailVerified(true)
-      toast.success("Email address verified successfully!")
+    if (res.error) {
+      toast.error(res.error)
     } else {
-      toast.error(res.error || "Incorrect OTP code.")
+      setEmailVerified(true)
+      toast.success("Email verified successfully!")
     }
   }
 
@@ -179,7 +177,7 @@ export default function VendorRegisterPage() {
   const handleStep1Submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!phoneVerified || !emailVerified) {
-      toast.error("Please verify both your mobile number and email ID first.")
+      toast.error("Please verify both phone and email with OTP before proceeding.")
       return
     }
     if (password !== confirmPassword) {
@@ -203,7 +201,7 @@ export default function VendorRegisterPage() {
       toast.error(res.error)
     } else if (res.userId) {
       setUserId(res.userId)
-      toast.success("Verification credentials verified! Proceeding to business details setup.")
+      toast.success("Identity verified! Now build your store details.")
       setStep(2)
     }
   }
@@ -239,13 +237,9 @@ export default function VendorRegisterPage() {
         <div className="absolute top-0 right-0 h-96 w-96 bg-[#F59E0B]/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
         
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2 shrink-0 group">
-          <div className="bg-[#F59E0B] p-2 rounded-lg text-slate-950 font-bold transition-all group-hover:scale-105">
-            <ShoppingCart className="w-5 h-5" />
-          </div>
-          <span className="text-xl font-extrabold tracking-tight text-white transition-colors group-hover:text-amber-400">
-            Rental<span className="text-[#F59E0B]">Kart</span> Seller Hub
-          </span>
+        <Link href="/" className="flex items-center gap-1.5 shrink-0 group transition-transform active:scale-95">
+          <Logo />
+          <span className="text-xs text-slate-400 font-normal uppercase tracking-wider ml-1">Seller Hub</span>
         </Link>
 
         {/* Info */}

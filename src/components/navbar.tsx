@@ -7,7 +7,7 @@ import { SearchBar } from "@/components/search-bar"
 import { CategoryBar } from "@/components/category-bar"
 import { NavbarClient } from "@/components/navbar-client"
 import { BottomNav } from "@/components/bottom-nav"
-import { ShoppingCart } from "lucide-react"
+import { Logo } from "@/components/logo"
 
 export async function Navbar() {
   const session = await getServerSession(authOptions)
@@ -47,15 +47,9 @@ export async function Navbar() {
       <header className="sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800 shadow-md text-white select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4">
           
-          {/* Polished Logo (Amber Accent Icon matching Vendor Portal) */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="bg-[#F59E0B] p-2 rounded-lg text-[#0F172A] font-bold transition-all duration-300 group-hover:scale-105 shadow-sm shadow-amber-500/20 relative overflow-hidden flex items-center justify-center h-10 w-10">
-              <ShoppingCart className="w-5 h-5 text-[#0F172A] z-10" />
-              <div className="absolute inset-0 bg-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <span className="text-xl font-extrabold tracking-tight select-none text-white">
-              Rent<span className="text-[#F59E0B]">Kart</span>
-            </span>
+          {/* Polished Logo (Amazon-style RentKart brand logo) */}
+          <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95">
+            <Logo />
           </Link>
 
           {/* Minimalist Search Bar (Linear/Stripe style) */}
