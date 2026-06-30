@@ -77,7 +77,7 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
 
   return (
     <div 
-      className="relative w-full rounded-2xl py-5 px-0 border border-slate-800/80 shadow-sm overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950"
+      className="relative w-full rounded-2xl py-5 px-0 border border-blue-900/40 shadow-sm overflow-hidden bg-gradient-to-br from-[#0b132b] via-[#1e3a8a]/85 to-[#0b132b]"
     >
       <style>{`
         .no-scrollbar::-webkit-scrollbar {

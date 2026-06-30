@@ -172,18 +172,18 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
       {/* Main Action Button */}
       <Button 
         size="lg" 
-        className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md h-12 text-sm font-extrabold rounded-xl transition-all duration-200"
+        className="w-full btn-beast h-12 text-sm font-extrabold rounded-xl cursor-pointer"
         onClick={handleRent}
         disabled={isPending || product.totalStock === 0}
       >
         {isPending ? (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin text-slate-950" />
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             Processing...
           </>
         ) : (
           <>
-            <ShoppingCart className="w-4 h-4 mr-2 text-slate-950" />
+            <ShoppingCart className="w-4 h-4 mr-2" />
             {product.totalStock > 0 ? "Add to Quotation" : "Out of Stock"}
           </>
         )}

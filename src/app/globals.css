@@ -48,24 +48,24 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: oklch(0.985 0.004 240);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
+  --primary: oklch(0.45 0.23 258);
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --secondary-foreground: oklch(0.45 0.23 258);
   --muted: oklch(0.968 0.007 247.896);
   --muted-foreground: oklch(0.554 0.046 257.417);
   --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --accent-foreground: oklch(0.45 0.23 258);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.929 0.013 255.508);
   --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --ring: oklch(0.45 0.23 258);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -119,15 +119,19 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground overflow-x-clip;
   }
 }
 
 @keyframes seesaw {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: rotate(-6deg);
   }
+
   50% {
     transform: rotate(6deg);
   }
@@ -140,6 +144,7 @@
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -148,13 +153,16 @@
 .messages-scroll::-webkit-scrollbar {
   width: 6px;
 }
+
 .messages-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .messages-scroll::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
 }
+
 .messages-scroll::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
@@ -166,8 +174,186 @@
     visibility: visible !important;
     transform: translateY(0) !important;
   }
+
   .hover-dropdown-group:hover .hover-dropdown-icon {
     transform: rotate(180deg) !important;
   }
 }
 
+/* Custom Premium Hover Animations */
+.hover-underline-center {
+  position: relative;
+}
+
+.hover-underline-center::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 50%;
+  background: linear-gradient(90deg, #F59E0B, #fbbf24);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform: translateX(-50%);
+}
+
+.hover-underline-center:hover::after,
+.group:hover .hover-underline-center::after,
+.group\/item:hover .hover-underline-center::after {
+  width: 100%;
+}
+
+.hover-bg-sweep-center {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hover-bg-sweep-center::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background-color: rgba(245, 158, 11, 0.08);
+  border-radius: 50%;
+  transition: all 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+.hover-bg-sweep-center:hover::before {
+  width: 150%;
+  height: 300%;
+  border-radius: 0;
+}
+
+/* Beast Level Hover Animations for Buttons - Rising Gold Overlay on Royal Blue Base */
+.btn-beast {
+  position: relative;
+  overflow: hidden !important;
+  background-color: #1e3a8a !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2) !important;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
+  z-index: 1;
+}
+
+.btn-beast::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #F59E0B, #fbbf24);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  z-index: -1;
+}
+
+.btn-beast:hover {
+  transform: translateY(-2px) scale(1.025) !important;
+  color: #0a0d1a !important;
+  border-color: #F59E0B !important;
+  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.45) !important;
+}
+
+.btn-beast:hover::before {
+  transform: scaleY(1);
+}
+
+.btn-beast:active {
+  transform: translateY(1px) scale(0.98) !important;
+}
+
+/* Ensure text and icons transition their color and hover states smoothly */
+.btn-beast,
+.btn-beast * {
+  transition: color 0.4s ease, stroke 0.4s ease, transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.btn-beast:hover svg {
+  stroke: #0a0d1a !important;
+  fill: none !important;
+  transform: scale(1.1) translateX(2px) !important;
+}
+
+/* Micro-Animations for Header Icons */
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.22); }
+  40% { transform: scale(0.92); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ring {
+  0% { transform: rotate(0); }
+  15% { transform: rotate(18deg); }
+  30% { transform: rotate(-18deg); }
+  45% { transform: rotate(12deg); }
+  60% { transform: rotate(-12deg); }
+  75% { transform: rotate(6deg); }
+  85% { transform: rotate(-6deg); }
+  100% { transform: rotate(0); }
+}
+
+@keyframes cart-bounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-4.5px) scaleY(1.08); }
+  70% { transform: translateY(1px) scaleY(0.92); }
+}
+
+.hover-heart:hover svg {
+  animation: heartbeat 0.65s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+.hover-bell:hover svg {
+  transform-origin: top center;
+  animation: ring 0.85s ease-in-out both;
+}
+
+.hover-cart:hover svg {
+  animation: cart-bounce 0.55s ease-in-out both;
+}
+
+/* Global Fixes for Tailwind Color Class Typos */
+.text-slate-505,
+.text-slate-550 {
+  color: #64748b !important; /* slate-500 */
+}
+
+.text-slate-650,
+.text-slate-655 {
+  color: #475569 !important; /* slate-600 */
+}
+
+.text-slate-850 {
+  color: #1e293b !important; /* slate-800 */
+}
+
+.text-amber-955 {
+  color: #78350f !important; /* amber-900 */
+}
+
+.text-amber-55 {
+  color: #d97706 !important; /* amber-600 */
+}
+
+.placeholder\:text-slate-650::placeholder,
+.placeholder\:text-slate-655::placeholder {
+  color: #475569 !important;
+}
+
+.bg-amber-55 {
+  background-color: #fef3c7 !important; /* amber-100 */
+}
+
+.border-slate-205 {
+  border-color: #e2e8f0 !important; /* slate-200 */
+}
+
+.border-rose-250 {
+  border-color: #fda4af !important; /* rose-300 */
+}

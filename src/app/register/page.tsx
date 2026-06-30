@@ -194,7 +194,7 @@ export default function RegisterPage() {
 
               <Button 
                 type="submit" 
-                className="w-full h-11 text-sm font-extrabold mt-4 bg-slate-900 hover:bg-indigo-600 text-white transition-all duration-200 rounded-lg shadow-sm" 
+                className="w-full h-11 text-sm font-extrabold mt-4 bg-primary hover:bg-amber-500 hover:text-slate-950 active:scale-[0.99] text-white transition-all duration-500 ease-out hover:scale-[1.01] rounded-lg shadow-sm" 
                 disabled={loading}
               >
                 {loading ? "Creating Account..." : "Register"}
@@ -214,7 +214,7 @@ export default function RegisterPage() {
               type="button"
               variant="outline"
               onClick={handleGoogleSignIn}
-              className="w-full h-11 border-slate-200 text-slate-700 hover:bg-slate-50 transition-all rounded-lg font-bold flex items-center justify-center gap-2"
+              className="w-full h-11 border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition-all duration-500 ease-out hover:scale-[1.01] hover:shadow-sm rounded-lg font-bold flex items-center justify-center gap-2"
             >
               <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" width="16" height="16">
                 <path

@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { BookingWidget } from "@/components/booking-widget";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowLeft, 
-  ShieldCheck, 
-  Truck, 
-  Star, 
-  Percent, 
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Truck,
+  Star,
+  Percent,
   Award,
   Info
 } from "lucide-react";
@@ -35,7 +35,7 @@ import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  
+
   const product = await getCachedProduct(id);
 
   if (!product) notFound();
@@ -65,7 +65,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       <RecentlyViewedTracker productId={product.id} />
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
-        
+
         {/* --- Breadcrumbs / Back navigation --- */}
         <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
           <Link href="/products">
@@ -80,22 +80,22 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         {/* --- 2-Column Product Layout --- */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* LEFT COLUMN: Image & Gallery (6 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            
+
             {/* Main Product Image */}
             <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm aspect-[4/3] relative flex items-center justify-center group w-full">
               {product.image && product.image.startsWith("http") ? (
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" 
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
                 />
               ) : (
                 <div className="text-slate-400 font-semibold uppercase tracking-wider">No Image Available</div>
               )}
-              
+
               <Badge className="absolute top-4 left-4 bg-slate-900/90 text-white shadow-md hover:bg-slate-900">
                 {product.category?.name || "Equipment"}
               </Badge>
@@ -106,10 +106,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               {[1, 2, 3, 4].map((num) => (
                 <div key={num} className="aspect-square bg-white rounded-lg border border-slate-200 overflow-hidden cursor-pointer hover:border-amber-500 transition-colors flex items-center justify-center p-1">
                   {product.image && product.image.startsWith("http") ? (
-                    <img 
-                      src={product.image} 
-                      alt={`Thumbnail ${num}`} 
-                      className="w-full h-full object-cover rounded opacity-80 hover:opacity-100 transition-opacity" 
+                    <img
+                      src={product.image}
+                      alt={`Thumbnail ${num}`}
+                      className="w-full h-full object-cover rounded opacity-80 hover:opacity-100 transition-opacity"
                     />
                   ) : (
                     <span className="text-[10px] text-slate-300 font-bold">IMAGE</span>
@@ -140,7 +140,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
           {/* RIGHT COLUMN: Product Information & Booking (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
-            
+
             {/* Title, Brand, Ratings */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
               <div className="flex justify-between items-start gap-4">
@@ -151,10 +151,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                   <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">{product.name}</h1>
                   <p className="text-xs text-slate-400 mt-1">Product ID: {product.id}</p>
                 </div>
-                <WishlistButton 
-                  productId={product.id} 
-                  initialIsWishlisted={isWishlisted} 
-                  variant="detail" 
+                <WishlistButton
+                  productId={product.id}
+                  initialIsWishlisted={isWishlisted}
+                  variant="detail"
                 />
               </div>
 

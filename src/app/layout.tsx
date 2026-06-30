@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SupportBot } from "@/components/support-bot";
+import { TopLoader } from "@/components/top-loader";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,10 +62,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <Suspense fallback={null}>
+            <TopLoader />
+          </Suspense>
           <div className="pb-24 md:pb-0 min-h-screen flex flex-col">
             {children}
           </div>
-          <SupportBot />
+          <Suspense fallback={null}>
+            <SupportBot />
+          </Suspense>
         </Providers>
       </body>
     </html>

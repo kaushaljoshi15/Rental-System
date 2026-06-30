@@ -299,10 +299,10 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
     reader.readAsDataURL(file)
   }
 
-  const inputBg = isDark ? "bg-slate-850 border-slate-700/50 text-white placeholder:text-slate-400" : "bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400"
-  const micColor = isListening ? "text-rose-500 animate-pulse bg-rose-500/10" : isDark ? "text-slate-400 hover:text-white" : "text-slate-550 hover:text-slate-900"
-  const cameraColor = isAnalyzing ? "text-[#F59E0B] animate-spin" : isDark ? "text-slate-400 hover:text-white" : "text-slate-550 hover:text-slate-900"
-  const xColor = isDark ? "text-slate-400 hover:text-white" : "text-slate-550 hover:text-slate-900"
+  const inputBg = isDark ? "bg-white/12 border-white/20 text-white placeholder:text-white/60 focus:bg-white/16" : "bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400"
+  const micColor = isListening ? "text-rose-400 animate-pulse bg-rose-500/10" : isDark ? "text-white/70 hover:text-white transition-colors duration-200" : "text-slate-550 hover:text-slate-900"
+  const cameraColor = isAnalyzing ? "text-[#F59E0B] animate-spin" : isDark ? "text-white/70 hover:text-white transition-colors duration-200" : "text-slate-550 hover:text-slate-900"
+  const xColor = isDark ? "text-white/70 hover:text-white transition-colors duration-200" : "text-slate-550 hover:text-slate-900"
 
   return (
     <div className={`relative ${className}`}>
@@ -327,7 +327,7 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
 
       <form onSubmit={handleSearchSubmit}>
         <div className="relative flex items-center">
-          <Search className={`absolute left-3.5 h-4 w-4 ${isDark ? "text-slate-400" : "text-slate-550"}`} />
+          <Search className={`absolute left-3.5 h-4 w-4 transition-opacity duration-200 ${isDark ? "text-white/60" : "text-slate-550"}`} />
           
           <input
             type="text"

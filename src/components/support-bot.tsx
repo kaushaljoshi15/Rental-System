@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { askSupportBot } from "@/actions/support"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { usePathname, useSearchParams } from "next/navigation"
 
 interface Message {
   id: string;
@@ -15,6 +16,27 @@ interface Message {
 }
 
 export function SupportBot() {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const tab = searchParams.get("tab")
+
+  const showSupportBot = React.useMemo(() => {
+    if (!pathname) return false;
+    
+    // Check if path is vendor settings or admin settings
+    if (pathname.includes("/settings")) {
+      return true;
+    }
+    
+    // For customers, check if they are on the homepage and active tab is settings/profile/account related
+    if (pathname === "/") {
+      const allowedTabs = ["profile", "account", "addresses", "wallet", "saved-cards", "saved-upi", "gift-cards"];
+      return allowedTabs.includes(tab || "");
+    }
+    
+    return false;
+  }, [pathname, tab]);
+
   const [isOpen, setIsOpen] = React.useState(false)
   const [messages, setMessages] = React.useState<Message[]>([
     {
@@ -157,6 +179,8 @@ export function SupportBot() {
       )
     })
   }
+
+  if (!showSupportBot) return null;
 
   return (
     <div className="fixed bottom-[88px] sm:bottom-6 right-4 sm:right-6 z-50">

@@ -2,22 +2,22 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
-import { 
-  Sparkles, 
-  Shirt, 
-  Camera, 
-  Laptop, 
-  Gamepad, 
-  Volume2, 
-  Sofa, 
-  Building, 
-  Tent, 
-  Dumbbell, 
-  Wrench, 
+import {
+  Sparkles,
+  Shirt,
+  Camera,
+  Laptop,
+  Gamepad,
+  Volume2,
+  Sofa,
+  Building,
+  Tent,
+  Dumbbell,
+  Wrench,
   Heart,
-  Search, 
-  ShoppingCart, 
-  ArrowLeft, 
+  Search,
+  ShoppingCart,
+  ArrowLeft,
   ChevronRight,
   Mic,
   Headphones,
@@ -106,36 +106,32 @@ function SidebarTabButton({ tab, isActive, onClick, buttonRef }: SidebarTabButto
     <button
       ref={buttonRef}
       onClick={onClick}
-      className={`w-full py-4.5 px-1.5 flex flex-col items-center justify-center gap-2 transition-all relative border-l-[3.5px] ${
-        isActive 
-          ? "bg-white text-blue-600 border-blue-600 font-extrabold shadow-[2px_0_8px_rgba(0,0,0,0.02)]" 
+      className={`w-full py-4.5 px-1.5 flex flex-col items-center justify-center gap-2 transition-all relative border-l-[3.5px] ${isActive
+          ? "bg-white text-blue-600 border-blue-600 font-extrabold shadow-[2px_0_8px_rgba(0,0,0,0.02)]"
           : "text-slate-500 border-transparent hover:bg-slate-100/50"
-      }`}
+        }`}
       style={{ WebkitTapHighlightColor: "transparent" }}
     >
-      <div 
-        className={`w-13 h-13 rounded-2xl flex items-center justify-center shadow-sm relative overflow-hidden transition-all duration-300 ${
-          isActive 
-            ? "bg-blue-50/50 border border-blue-200/40 scale-105 shadow-md shadow-blue-500/5" 
+      <div
+        className={`w-13 h-13 rounded-2xl flex items-center justify-center shadow-sm relative overflow-hidden transition-all duration-300 ${isActive
+            ? "bg-blue-50/50 border border-blue-200/40 scale-105 shadow-md shadow-blue-500/5"
             : "bg-slate-200/40 border border-slate-200/30 text-slate-500"
-        }`}
+          }`}
       >
         {tab.image && !imageError ? (
-          <img 
-            src={tab.image} 
-            alt={tab.name} 
+          <img
+            src={tab.image}
+            alt={tab.name}
             onError={() => setImageError(true)}
-            className={`w-full h-full object-cover transition-all duration-350 ${
-              isActive ? "scale-110 saturate-[1.1]" : "scale-100 saturate-[0.85] opacity-90"
-            }`} 
+            className={`w-full h-full object-cover transition-all duration-350 ${isActive ? "scale-110 saturate-[1.1]" : "scale-100 saturate-[0.85] opacity-90"
+              }`}
           />
         ) : (
           <TabIcon className={`w-5 h-5 transition-all duration-300 ${isActive ? "text-blue-650 scale-110" : "text-slate-500"}`} />
         )}
       </div>
-      <span className={`text-[9px] leading-tight text-center tracking-tight px-1 transition-colors duration-200 ${
-        isActive ? "text-slate-900 font-extrabold" : "text-slate-600 font-semibold"
-      }`}>
+      <span className={`text-[9px] leading-tight text-center tracking-tight px-1 transition-colors duration-200 ${isActive ? "text-slate-900 font-extrabold" : "text-slate-600 font-semibold"
+        }`}>
         {tab.name}
       </span>
     </button>
@@ -213,18 +209,18 @@ function SubcategoryCard({ subcat, onClick }: { subcat: Category; onClick?: () =
   const SubIcon = getSubcategoryIcon(subcat.slug)
 
   return (
-    <Link 
+    <Link
       href={`/?category=${subcat.slug}`}
       onClick={onClick}
       className="flex flex-col items-center text-center group"
     >
       <div className="w-14 h-14 rounded-full bg-slate-50 border border-slate-100 hover:bg-slate-100/50 hover:border-slate-200 flex items-center justify-center shadow-sm relative overflow-hidden transition-all duration-200">
         {subcat.image && !imageError ? (
-          <img 
-            src={subcat.image} 
-            alt={subcat.name} 
+          <img
+            src={subcat.image}
+            alt={subcat.name}
             onError={() => setImageError(true)}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <SubIcon className="w-5 h-5 text-slate-500 group-hover:text-blue-600 transition-colors" />
@@ -284,9 +280,9 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
       const containerHeight = container.clientHeight
       const elementOffsetTop = activeElement.offsetTop
       const elementHeight = activeElement.clientHeight
-      
+
       const targetScrollTop = elementOffsetTop - (containerHeight / 2) + (elementHeight / 2)
-      
+
       container.scrollTo({
         top: targetScrollTop,
         behavior: "smooth"
@@ -368,22 +364,22 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
       `}</style>
 
       {/* 1. Header Bar */}
-      <div className="h-14 bg-[#0F172A] border-b border-slate-800/80 px-4 flex items-center justify-between shrink-0 shadow-md">
+      <div className="h-14 bg-white border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.04)] px-4 flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-3">
-          <Link href="/" className="p-1.5 rounded-xl hover:bg-slate-800/40 text-slate-400 hover:text-white transition-colors">
+          <Link href="/" className="p-1.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-[#1d4ed8] transition-colors">
             <ArrowLeft className="w-5 h-5 text-[#F59E0B]" />
           </Link>
-          <span className="font-extrabold text-white text-xs uppercase tracking-wider">All Categories</span>
+          <span className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">All Categories</span>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <Link href="/?tab=search" className="p-2 rounded-xl hover:bg-slate-800/40 text-slate-400 hover:text-white transition-colors">
+          <Link href="/?tab=search" className="p-2 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-[#1d4ed8] transition-colors">
             <Search className="w-5 h-5" />
           </Link>
-          <Link href={isLoggedIn ? "/?tab=cart" : "/login"} className="p-2 rounded-xl hover:bg-slate-800/40 text-slate-400 hover:text-white transition-colors relative">
-            <ShoppingCart className="w-5 h-5 text-slate-400" />
+          <Link href={isLoggedIn ? "/?tab=cart" : "/login"} className="p-2 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-[#1d4ed8] transition-colors relative">
+            <ShoppingCart className="w-5 h-5 text-slate-600 hover:text-[#1d4ed8]" />
             {cartCount > 0 && (
-              <span className="absolute top-1 right-1 bg-[#F59E0B] text-[#0F172A] text-[9px] font-black h-4.5 w-4.5 rounded-full flex items-center justify-center border border-[#0F172A]">
+              <span className="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-black h-4.5 w-4.5 rounded-full flex items-center justify-center border border-white">
                 {cartCount}
               </span>
             )}
@@ -393,9 +389,9 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
 
       {/* 2. Split Navigation Body */}
       <div className="flex-1 flex overflow-hidden">
-        
+
         {/* Left Sidebar Menu */}
-        <div 
+        <div
           ref={sidebarRef}
           className="w-[100px] bg-slate-50 border-r border-slate-200/60 overflow-y-auto sidebar-scrollbar pt-2 pb-24 shrink-0 relative"
         >
@@ -418,12 +414,12 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
         </div>
 
         {/* Right Content Panel */}
-        <div 
+        <div
           ref={rightPanelRef}
           className="flex-1 bg-white overflow-y-auto px-4 pt-4 pb-28 content-scrollbar"
         >
           <div key={activeParentTab} className="animate-category-fade space-y-6">
-            
+
             {/* A. VIEW FOR: "FOR YOU" */}
             {activeParentTab === "for-you" && (
               <>
@@ -433,21 +429,21 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
                   <div className="grid grid-cols-3 gap-2.5">
                     <Link href="/?sort=recent" className="flex flex-col items-center group">
                       <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex flex-col items-center justify-center text-white p-2.5 shadow-md shadow-orange-500/10 hover:scale-102 transition-transform duration-200">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">GOAT<br/>SALE</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">GOAT<br />SALE</span>
                       </div>
                       <span className="text-[9px] text-slate-500 font-semibold mt-1.5 leading-none">Coming soon</span>
                     </Link>
 
                     <Link href="/?category=laptops" className="flex flex-col items-center group">
                       <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex flex-col items-center justify-center text-white p-2.5 shadow-md shadow-emerald-500/10 hover:scale-102 transition-transform duration-200">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">BACK TO<br/>CAMPUS</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">BACK TO<br />CAMPUS</span>
                       </div>
                       <span className="text-[9px] text-slate-500 font-semibold mt-1.5 leading-none">Sale is live</span>
                     </Link>
 
                     <Link href="/?category=wedding-fashion" className="flex flex-col items-center group">
                       <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex flex-col items-center justify-center text-white p-2.5 shadow-md shadow-pink-500/10 hover:scale-102 transition-transform duration-200">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">GLAM UP<br/>SALE</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">GLAM UP<br />SALE</span>
                       </div>
                       <span className="text-[9px] text-slate-500 font-semibold mt-1.5 leading-none">Sale live!</span>
                     </Link>
@@ -465,8 +461,8 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
 
                   <div className="grid grid-cols-2 gap-3">
                     {products.slice(0, 5).map((prod) => (
-                      <Link 
-                        key={prod.id} 
+                      <Link
+                        key={prod.id}
                         href={`/products/${prod.id}`}
                         className="border border-slate-200/80 rounded-2xl p-2.5 hover:shadow-md transition-all flex flex-col justify-between group"
                       >
@@ -486,10 +482,10 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
                         <p className="text-[10px] font-extrabold text-[#F59E0B]">₹{prod.priceDaily}/day</p>
                       </Link>
                     ))}
-                    
+
                     {/* View All Card */}
-                    <Link 
-                      href="/" 
+                    <Link
+                      href="/"
                       className="border border-dashed border-slate-300 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center gap-2 hover:bg-slate-50 transition-all cursor-pointer"
                     >
                       <div className="h-10 w-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -536,7 +532,7 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
                     <h3 className="text-sm font-extrabold tracking-tight mb-1">{activeTabInfo.name}</h3>
                     <p className="text-[9px] leading-tight text-slate-550 mb-2">High-performance premium rentals at unmatched rates.</p>
                   </div>
-                  <Link 
+                  <Link
                     href={activeTabInfo.subcategories.length > 0 ? `/?category=${activeTabInfo.subcategories[0]}` : "/"}
                     className="z-10 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg w-max shadow-md hover:bg-slate-850 active:scale-95 transition-all"
                   >
@@ -566,8 +562,8 @@ export function MobileCategories({ categories, products, cartCount, isLoggedIn }
                     <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest mb-3">Top Rentals</h3>
                     <div className="grid grid-cols-2 gap-3">
                       {activeProducts.map((prod) => (
-                        <Link 
-                          key={prod.id} 
+                        <Link
+                          key={prod.id}
                           href={`/products/${prod.id}`}
                           className="border border-slate-200/85 rounded-2xl p-2.5 hover:shadow-md transition-all flex flex-col justify-between group"
                         >

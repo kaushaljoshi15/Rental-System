@@ -131,14 +131,14 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
           </PopoverContent>
         </Popover>
 
-        {/* Rent Button */}
         <Button 
           onClick={handleRentClick}
           disabled={isOutOfStock || isPending}
+          variant={isAdded ? "default" : "beast"}
           className={`w-full h-10 text-xs transition-all duration-300 shadow-sm ${
             isAdded 
               ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
-              : "bg-slate-900 hover:bg-amber-500 text-white"
+              : ""
           }`}
         >
           {isPending ? (
@@ -188,14 +188,14 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
               </Popover>
             </div>
             
-            {/* CTA Button */}
             <Button 
               onClick={handleRentClick}
               disabled={isOutOfStock || isPending}
+              variant={isAdded ? "default" : "beast"}
               className={`w-full h-8 text-[10px] transition-all duration-300 shadow-sm ${
                 isAdded 
                   ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
-                  : "bg-slate-900 hover:bg-amber-500 text-white"
+                  : ""
               }`}
             >
               {isPending ? (
@@ -222,7 +222,8 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
             <PopoverTrigger asChild>
               <Button 
                 disabled={isOutOfStock}
-                className="w-full h-8 text-[10px] bg-slate-900 hover:bg-amber-550 text-white transition-all duration-300 shadow-sm"
+                variant="beast"
+                className="w-full h-8 text-[10px] shadow-sm"
               >
                 <ShoppingCart className="w-3 h-3 mr-1" />
                 {isOutOfStock ? 'Unavailable' : 'Select Dates'}

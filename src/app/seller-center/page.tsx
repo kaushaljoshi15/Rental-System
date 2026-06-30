@@ -17,15 +17,15 @@ export default function SellerCenterPage() {
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-900 select-none text-slate-900 dark:text-slate-100 flex flex-col font-sans">
       
       {/* Navbar */}
-      <header className="bg-[#0F172A] text-white shadow-md">
+      <header className="bg-white border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.05)] text-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-1 group transition-transform active:scale-95">
-            <Logo />
-            <span className="text-xs text-slate-400 font-normal uppercase tracking-wider ml-1">Seller Hub</span>
+            <Logo textColor="#0f172a" />
+            <span className="text-xs text-slate-500 font-bold uppercase tracking-wider ml-1">Seller Hub</span>
           </Link>
           <div>
             <Link href="/login/vendor">
-              <Button className="bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-sm px-5 py-2">
+              <Button className="btn-beast font-black text-xs uppercase tracking-wider rounded-xl px-5 py-2 cursor-pointer h-9">
                 Login to Seller Hub
               </Button>
             </Link>

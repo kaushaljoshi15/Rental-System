@@ -86,7 +86,7 @@ export function CategoryBar() {
   ]
 
   return (
-    <div className="w-full bg-[#0F172A] border-t border-slate-800/80 relative z-40">
+    <div className="w-full bg-white/95 backdrop-blur-md border-t border-slate-100 relative z-40 shadow-xs">
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -96,7 +96,7 @@ export function CategoryBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Horizontal scroll left fade gradient */}
         <div 
-          className={`absolute left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-[#0F172A] to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+          className={`absolute left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
             showLeftFade ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -105,7 +105,7 @@ export function CategoryBar() {
         {showLeftFade && (
           <button 
             onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" })}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-slate-900/90 text-white p-1.5 border border-slate-700 hover:bg-slate-800 hover:text-amber-500 shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-1.5 border border-slate-200 hover:bg-slate-50 hover:text-[#1d4ed8] shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
             aria-label="Scroll Left"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -114,7 +114,7 @@ export function CategoryBar() {
         
         {/* Horizontal scroll right fade gradient */}
         <div 
-          className={`absolute right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-[#0F172A] to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+          className={`absolute right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
             showRightFade ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -123,7 +123,7 @@ export function CategoryBar() {
         {showRightFade && (
           <button 
             onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" })}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-slate-900/90 text-white p-1.5 border border-slate-700 hover:bg-slate-800 hover:text-amber-500 shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-1.5 border border-slate-200 hover:bg-slate-50 hover:text-[#1d4ed8] shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
             aria-label="Scroll Right"
           >
             <ChevronRight className="w-4 h-4" />
@@ -153,22 +153,22 @@ export function CategoryBar() {
               <Link 
                 href={url} 
                 key={idx}
-                className="flex flex-col items-center group/item cursor-pointer text-center shrink-0 flex-1 min-w-[75px]"
+                className="flex flex-col items-center group/item cursor-pointer text-center shrink-0 flex-1 min-w-[75px] py-1"
               >
                 {/* Icon Box - Collapses smoothly when scrolled */}
                 <div 
-                  className={`rounded-lg bg-slate-800/30 group-hover/item:bg-[#F59E0B]/10 transition-all duration-300 ease-in-out ${
+                  className={`rounded-lg bg-slate-50 border border-slate-100 group-hover/item:bg-blue-50/50 group-hover/item:border-blue-200/50 transition-all duration-300 ease-in-out ${
                     isScrolled 
                       ? "max-h-0 opacity-0 overflow-hidden p-0 mb-0 scale-75 select-none pointer-events-none" 
-                      : "p-1 opacity-100 max-h-8 mb-1"
+                      : "p-1.5 opacity-100 max-h-8 mb-1.5"
                   }`}
                 >
-                  <Icon className="w-4 h-4 text-slate-400 group-hover/item:text-[#F59E0B] group-hover/item:scale-105 transition-all duration-200" />
+                  <Icon className="w-4 h-4 text-slate-500 group-hover/item:text-[#1d4ed8] group-hover/item:scale-110 transition-all duration-300" />
                 </div>
                 
                 {/* Category Name Label */}
                 <span 
-                  className={`font-extrabold text-slate-400 group-hover/item:text-white uppercase tracking-wider transition-all duration-300 font-sans ${
+                  className={`font-extrabold text-slate-500 group-hover/item:text-[#1d4ed8] uppercase tracking-wider transition-all duration-300 font-sans hover-underline-center ${
                     isScrolled ? "text-[9px] py-0.5" : "text-[10px]"
                   }`}
                 >

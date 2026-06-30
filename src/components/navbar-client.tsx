@@ -58,37 +58,77 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
 
   return (
     <>
-      {/* Desktop user controls */}
-      <div className="flex items-center gap-4 sm:gap-6">
+      {/* Desktop/Mobile user controls container */}
+      <div className="flex items-center">
         
-        {/* Persistent Cart Icon */}
-        <Link 
-          href={isLoggedIn ? "/?tab=cart" : "/login"} 
-          className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] relative p-1.5 transition-all group font-bold text-xs sm:text-sm"
-        >
-          <div className="relative">
-            <ShoppingCart className="w-5 h-5 text-[#F59E0B] transition-transform group-hover:scale-105" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full text-[9px] h-4 w-4 flex items-center justify-center font-bold px-1">
-                {cartCount}
-              </span>
-            )}
-          </div>
-          <span className="hidden sm:inline">Cart</span>
-        </Link>
+        {/* Mobile-only Icons (Fulfilling header space, with uniform gap) */}
+        <div className="flex md:hidden items-center gap-5 mr-1 select-none">
+          {/* Wishlist */}
+          <Link 
+            href={isLoggedIn ? "/?tab=wishlist" : "/login"} 
+            prefetch={true}
+            className="text-slate-700 hover:text-[#1d4ed8] transition-colors relative p-1 active:scale-95 duration-200 hover-heart"
+            aria-label="Wishlist"
+          >
+            <Heart className="w-5.5 h-5.5 text-slate-700 hover:text-[#1d4ed8]" />
+          </Link>
+          
+          {/* Notifications */}
+          <Link 
+            href={isLoggedIn ? "/?tab=notifications" : "/login"} 
+            prefetch={true}
+            className="text-slate-700 hover:text-[#1d4ed8] transition-colors relative p-1 active:scale-95 duration-200 hover-bell"
+            aria-label="Notifications"
+          >
+            <Bell className="w-5.5 h-5.5 text-slate-700 hover:text-[#1d4ed8]" />
+          </Link>
+
+          {/* Cart Icon */}
+          <Link 
+            href={isLoggedIn ? "/?tab=cart" : "/login"} 
+            prefetch={true}
+            className="text-slate-700 hover:text-[#1d4ed8] transition-colors relative p-1 active:scale-95 duration-200 hover-cart"
+            aria-label="Cart"
+          >
+            <div className="relative">
+              <ShoppingCart className="w-5.5 h-5.5 text-slate-700 hover:text-[#1d4ed8]" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full text-[8px] font-black h-3.5 w-3.5 flex items-center justify-center border border-white">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+          </Link>
+        </div>
 
         {/* Desktop Controls (hidden on mobile, hover-based system exactly like before) */}
         <div className="hidden md:flex items-center gap-6">
+          {/* Persistent Cart Icon */}
+          <Link 
+            href={isLoggedIn ? "/?tab=cart" : "/login"} 
+            prefetch={true}
+            className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] relative py-1 px-2.5 transition-all group font-bold text-xs sm:text-sm hover-underline-center animate-all hover-cart"
+          >
+            <div className="relative">
+              <ShoppingCart className="w-5 h-5 text-slate-700 group-hover:text-[#1d4ed8] transition-transform group-hover:scale-105" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full text-[9px] h-4 w-4 flex items-center justify-center font-bold px-1 border border-white">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+            <span>Cart</span>
+          </Link>
           {/* Authentication Dropdown */}
           {isLoggedIn ? (
             <div className="relative hover-dropdown-group py-2" ref={accountRef}>
               <button 
                 onClick={() => toggleDropdown("account")}
-                className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors"
+                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
               >
-                <User className="w-4 h-4 text-[#F59E0B]" />
+                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1d4ed8]" />
                 <span className="max-w-[120px] truncate">{userName}</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
@@ -172,11 +212,11 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
             <div className="relative hover-dropdown-group py-2" ref={accountRef}>
               <button 
                 onClick={() => toggleDropdown("account")}
-                className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors"
+                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
               >
-                <User className="w-4 h-4 text-[#F59E0B]" />
+                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1d4ed8]" />
                 <span>Account</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
@@ -239,10 +279,10 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
           <div className="relative hover-dropdown-group py-2" ref={moreRef}>
             <button 
               onClick={() => toggleDropdown("more")}
-              className="flex items-center gap-1.5 text-slate-200 hover:text-[#F59E0B] font-bold text-sm focus:outline-none transition-colors"
+              className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
             >
               <span>More</span>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "more" ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "more" ? "rotate-180" : ""}`} />
             </button>
             
             {/* Dropdown Panel */}

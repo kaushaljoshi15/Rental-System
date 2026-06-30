@@ -44,18 +44,18 @@ export async function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-[#0F172A] border-b border-slate-800 shadow-md text-white select-none">
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.05)] text-slate-800 select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4">
           
           {/* Polished Logo (Amazon-style RentKart brand logo) */}
           <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95">
-            <Logo />
+            <Logo textColor="#0f172a" />
           </Link>
 
           {/* Minimalist Search Bar (Linear/Stripe style) */}
           <div className="flex-1 max-w-lg hidden md:block mx-4">
-            <Suspense fallback={<div className="h-10 bg-slate-850/50 border border-slate-800 rounded-xl animate-pulse w-full" />}>
-              <SearchBar isDark={true} placeholder="Search equipment, sound systems, banquet halls..." />
+            <Suspense fallback={<div className="h-10 bg-slate-50 border border-slate-200 rounded-xl animate-pulse w-full" />}>
+              <SearchBar isDark={false} placeholder="Search equipment, sound systems, banquet halls..." />
             </Suspense>
           </div>
 
@@ -68,9 +68,9 @@ export async function Navbar() {
           />
         </div>
         {/* Mobile Search Bar (Only shown on mobile screen sizes, between header row and categories) */}
-        <div className="bg-[#0F172A] px-4 pb-3.5 pt-1 md:hidden border-b border-slate-800/60 text-white">
-          <Suspense fallback={<div className="h-10 bg-slate-850/50 rounded-xl animate-pulse w-full" />}>
-            <SearchBar isDark={true} placeholder="Search equipment or halls to rent..." />
+        <div className="bg-white px-4 pb-3.5 pt-1 md:hidden border-b border-slate-100 text-slate-800">
+          <Suspense fallback={<div className="h-10 bg-slate-50 rounded-xl animate-pulse w-full" />}>
+            <SearchBar isDark={false} placeholder="Search equipment or halls to rent..." />
           </Suspense>
         </div>
         <CategoryBar />
