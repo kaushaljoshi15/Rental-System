@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { 
   Sparkles, 
   Laptop, 
@@ -29,6 +30,10 @@ export function CategoryBar() {
   const [showLeftFade, setShowLeftFade] = useState(false)
   const [showRightFade, setShowRightFade] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const searchParams = useSearchParams()
+  const activeCategory = searchParams ? searchParams.get("category") : null
+  const activeQuery = searchParams ? searchParams.get("query") : null
 
   // Track scroll parameters for horizontal overflow fade overlays
   const handleScrollX = () => {
@@ -85,8 +90,25 @@ export function CategoryBar() {
     { name: "Heavy Tools", slug: "heavy-tools", icon: Wrench }
   ]
 
+  const isActive = (cat: CategoryItem) => {
+    if (cat.slug === null) {
+      const anyOtherActive = categories.some(c => c.slug !== null && (
+        (c.slug && activeCategory === c.slug) || 
+        (c.query && activeQuery === c.query)
+      ))
+      return !anyOtherActive
+    }
+    if (cat.slug && activeCategory === cat.slug) {
+      return true
+    }
+    if (cat.query && activeQuery === cat.query) {
+      return true
+    }
+    return false
+  }
+
   return (
-    <div className="w-full bg-white/95 backdrop-blur-md border-t border-slate-100 relative z-40 shadow-xs">
+    <div className="w-full bg-transparent border-t border-slate-100/50 relative z-40 select-none">
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -96,7 +118,7 @@ export function CategoryBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Horizontal scroll left fade gradient */}
         <div 
-          className={`absolute left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+          className={`absolute left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none transition-opacity duration-350 ${
             showLeftFade ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -105,7 +127,7 @@ export function CategoryBar() {
         {showLeftFade && (
           <button 
             onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" })}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-1.5 border border-slate-200 hover:bg-slate-50 hover:text-[#1d4ed8] shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-2 border border-slate-200/80 hover:bg-slate-50 hover:text-[#F59E0B] shadow-md z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
             aria-label="Scroll Left"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -114,7 +136,7 @@ export function CategoryBar() {
         
         {/* Horizontal scroll right fade gradient */}
         <div 
-          className={`absolute right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none transition-opacity duration-300 ${
+          className={`absolute right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none transition-opacity duration-350 ${
             showRightFade ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -123,7 +145,7 @@ export function CategoryBar() {
         {showRightFade && (
           <button 
             onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" })}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-1.5 border border-slate-200 hover:bg-slate-50 hover:text-[#1d4ed8] shadow-lg z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-2 border border-slate-200/80 hover:bg-slate-50 hover:text-[#F59E0B] shadow-md z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
             aria-label="Scroll Right"
           >
             <ChevronRight className="w-4 h-4" />
@@ -132,8 +154,8 @@ export function CategoryBar() {
 
         <div 
           ref={scrollRef}
-          className={`flex justify-between items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth w-full transition-all duration-300 ${
-            isScrolled ? "py-1.5" : "py-2.5"
+          className={`flex justify-start md:justify-center items-center gap-3 sm:gap-5 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth w-full transition-all duration-350 ${
+            isScrolled ? "py-1.5" : "py-3"
           }`}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
@@ -149,31 +171,55 @@ export function CategoryBar() {
               url = `/?query=${encodeURIComponent(cat.query)}`
             }
             
+            const active = isActive(cat)
+            
             return (
               <Link 
                 href={url} 
                 key={idx}
-                className="flex flex-col items-center group/item cursor-pointer text-center shrink-0 flex-1 min-w-[75px] py-1"
+                className="flex flex-col items-center group/item cursor-pointer text-center shrink-0 min-w-[75px] sm:min-w-[85px] py-1 transition-transform active:scale-95 duration-150 focus:outline-none focus-visible:outline-none"
               >
                 {/* Icon Box - Collapses smoothly when scrolled */}
                 <div 
-                  className={`rounded-lg bg-slate-50 border border-slate-100 group-hover/item:bg-blue-50/50 group-hover/item:border-blue-200/50 transition-all duration-300 ease-in-out ${
+                  className={`rounded-2xl flex items-center justify-center transition-all duration-300 ease-out ${
+                    active
+                      ? "bg-amber-50 border border-amber-200 text-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.08)]"
+                      : "bg-slate-50 border border-slate-100 text-slate-450 group-hover/item:bg-amber-50/50 group-hover/item:border-amber-200/30 group-hover/item:text-[#F59E0B] group-hover/item:shadow-[0_2px_8px_rgba(245,158,11,0.04)] group-hover/item:scale-105"
+                  } ${
                     isScrolled 
-                      ? "max-h-0 opacity-0 overflow-hidden p-0 mb-0 scale-75 select-none pointer-events-none" 
-                      : "p-1.5 opacity-100 max-h-8 mb-1.5"
+                      ? "w-0 h-0 opacity-0 overflow-hidden mb-0 scale-75 select-none pointer-events-none" 
+                      : "w-11 h-11 opacity-100 mb-1"
                   }`}
                 >
-                  <Icon className="w-4 h-4 text-slate-500 group-hover/item:text-[#1d4ed8] group-hover/item:scale-110 transition-all duration-300" />
+                  <Icon 
+                    strokeWidth={1.8}
+                    className={`transition-all duration-300 ${isScrolled ? "w-0 h-0 opacity-0" : "w-[18px] h-[18px] group-hover/item:scale-110 group-hover/item:rotate-[3deg]"}`}
+                    fill={active ? "#F59E0B" : "none"}
+                    stroke="currentColor"
+                  />
                 </div>
                 
                 {/* Category Name Label */}
                 <span 
-                  className={`font-extrabold text-slate-500 group-hover/item:text-[#1d4ed8] uppercase tracking-wider transition-all duration-300 font-sans hover-underline-center ${
-                    isScrolled ? "text-[9px] py-0.5" : "text-[10px]"
+                  className={`font-semibold tracking-wide transition-colors duration-300 font-sans ${
+                    active
+                      ? "text-slate-900 font-extrabold"
+                      : "text-slate-500 group-hover/item:text-slate-900"
+                  } ${
+                    isScrolled ? "text-[9px] py-0.5" : "text-[11px]"
                   }`}
                 >
                   {cat.name}
                 </span>
+
+                {/* Expanding Accent Gradient Line */}
+                <div 
+                  className={`h-[3px] rounded-full bg-gradient-to-r from-amber-500 to-orange-500 mt-1 transition-all duration-300 ease-out ${
+                    active 
+                      ? "w-6 opacity-100 scale-100" 
+                      : "w-0 opacity-0 scale-50 group-hover/item:w-4 group-hover/item:opacity-60 group-hover/item:scale-100"
+                  }`} 
+                />
               </Link>
             )
           })}

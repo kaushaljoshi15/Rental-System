@@ -52,7 +52,15 @@ import {
   Tag,
   Filter,
   ImageOff,
-  Store
+  Store,
+  Shirt,
+  Tent,
+  Laptop,
+  Gamepad,
+  Volume2,
+  Dumbbell,
+  Wrench,
+  Sofa
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { SearchBar } from "@/components/search-bar"
@@ -192,6 +200,22 @@ function getCategoryGroup(slug: string): string {
     return "🔨 Heavy Tools & DIY";
   }
   return "📦 General Equipment";
+}
+
+function getCategoryIcon(slug: string) {
+  const s = slug.toLowerCase()
+  if (s.includes("wedding") || s.includes("fashion")) return Shirt
+  if (s.includes("camera") || s.includes("mirrorless") || s.includes("dslr") || s.includes("lens")) return Camera
+  if (s.includes("infrastructure") || s.includes("building") || s.includes("hall")) return Building
+  if (s.includes("tent") || s.includes("camping") || s.includes("canopy")) return Tent
+  if (s.includes("laptop") || s.includes("computer") || s.includes("pc") || s.includes("tablet") || s.includes("monitor")) return Laptop
+  if (s.includes("gaming") || s.includes("console") || s.includes("playstation")) return Gamepad
+  if (s.includes("speaker") || s.includes("sound") || s.includes("audio") || s.includes("mic") || s.includes("music")) return Volume2
+  if (s.includes("fitness") || s.includes("gym") || s.includes("treadmill") || s.includes("workout")) return Dumbbell
+  if (s.includes("tool") || s.includes("wrench") || s.includes("heavy")) return Wrench
+  if (s.includes("medical") || s.includes("heart") || s.includes("health")) return Heart
+  if (s.includes("chair") || s.includes("desk") || s.includes("table") || s.includes("sofa") || s.includes("furniture")) return Sofa
+  return Sliders
 }
 
 const PREMIUM_BOX_SHADOW = '0 1px 4px rgba(0,0,0,0.07)'
@@ -480,18 +504,21 @@ export default async function HomePage({
           <div className="hidden md:block flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-8">All Rental Categories</h1>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-              {allCategories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/?category=${cat.slug}`}
-                  className="bg-white border border-slate-200/80 rounded-3xl p-6 flex flex-col items-center justify-center text-center hover:shadow-lg transition-all group cursor-pointer"
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-[#F59E0B] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-200">
-                    <Sliders className="w-8 h-8" />
-                  </div>
-                  <span className="font-bold text-slate-800 text-sm">{cat.name}</span>
-                </Link>
-              ))}
+              {allCategories.map((cat) => {
+                const IconComponent = getCategoryIcon(cat.slug)
+                return (
+                  <Link
+                    key={cat.id}
+                    href={`/?category=${cat.slug}`}
+                    className="bg-white border border-slate-100/80 rounded-[28px] p-6 flex flex-col items-center justify-center text-center hover:shadow-[0_12px_32px_rgba(245,158,11,0.05)] hover:border-amber-200/50 hover:-translate-y-1 transition-all duration-300 group cursor-pointer focus:outline-none focus-visible:outline-none"
+                  >
+                    <div className="w-16 h-16 rounded-[22px] bg-slate-50 border border-slate-100/50 text-slate-450 group-hover:bg-amber-50 group-hover:border-amber-100 group-hover:text-[#F59E0B] flex items-center justify-center mb-4 transition-all duration-300 shadow-xs group-hover:shadow-[0_4px_12px_rgba(245,158,11,0.06)]">
+                      <IconComponent className="w-7 h-7 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[3deg] fill-none group-hover:fill-[#F59E0B] stroke-current" strokeWidth={1.8} />
+                    </div>
+                    <span className="font-semibold text-slate-600 text-xs tracking-wide group-hover:text-slate-900 group-hover:font-extrabold transition-all duration-300">{cat.name}</span>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         </>

@@ -44,8 +44,11 @@ export async function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.05)] text-slate-800 select-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4">
+      <header 
+        className="sticky top-0 z-50 border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.04)] text-slate-800 select-none flex flex-col"
+        style={{ background: "radial-gradient(ellipse 70% 70% at 30% 30%, rgba(99, 102, 241, 0.10) 0%, rgba(255, 255, 255, 0) 100%), radial-gradient(ellipse 70% 70% at 70% 40%, rgba(29, 78, 216, 0.12) 0%, rgba(255, 255, 255, 0) 100%), #ffffff" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4 w-full">
           
           {/* Polished Logo (Amazon-style RentKart brand logo) */}
           <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95">
@@ -73,7 +76,9 @@ export async function Navbar() {
             <SearchBar isDark={false} placeholder="Search equipment or halls to rent..." />
           </Suspense>
         </div>
-        <CategoryBar />
+        <Suspense fallback={<div className="w-full h-12 bg-white animate-pulse border-t border-slate-100" />}>
+          <CategoryBar />
+        </Suspense>
       </header>
       <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
     </>
