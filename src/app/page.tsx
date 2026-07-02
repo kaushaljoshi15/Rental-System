@@ -68,6 +68,8 @@ import { Suspense } from "react"
 import { RentButton } from "@/components/rent-button"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { RecentlyViewedSection } from "@/components/recently-viewed-section"
+import { TopSelectionRow } from "@/components/top-selection-row"
+import { SpotlightRow } from "@/components/spotlight-row"
 import { SettingsForm } from "@/components/customer/settings-form"
 import { AVATAR_PRESETS } from "@/lib/avatars"
 import { AddressForm } from "@/components/address-form"
@@ -1781,32 +1783,14 @@ export default async function HomePage({
             {!categorySlug ? (
               <div className="space-y-16">
                 {/* Row 1: Top Selection */}
-                <div className="bg-[#0A5C36] rounded-2xl p-4 md:p-6 shadow-md text-white select-none">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-black uppercase tracking-wide">Top Selection</h3>
-                    <div className="bg-white/10 hover:bg-white/20 p-2 rounded-full cursor-pointer transition-colors">
-                      <ChevronRight className="w-4 h-4 text-white" />
-                    </div>
-                  </div>
-                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 md:grid md:grid-cols-4">
-                    {[
-                      { name: "Canon Pro DSLR", badge: "Most-loved", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400" },
-                      { name: "JBL Concert Sound", badge: "Grab Or Gone", image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80&w=400" },
-                      { name: "Designer Bridal Wear", badge: "Popular", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400" },
-                      { name: "Executive Office Chairs", badge: "Best Picks", image: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=400" },
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-                        <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="pt-2 flex flex-col justify-end flex-grow">
-                          <p className="text-slate-900 text-xs font-black uppercase leading-tight line-clamp-2">{item.name}</p>
-                          <p className="text-emerald-700 text-[10px] font-black uppercase tracking-wider mt-1">{item.badge}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <TopSelectionRow 
+                  items={[
+                    { name: "Canon Pro DSLR", badge: "Most-loved", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400" },
+                    { name: "JBL Concert Sound", badge: "Grab Or Gone", image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80&w=400" },
+                    { name: "Designer Bridal Wear", badge: "Popular", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400" },
+                    { name: "Executive Office Chairs", badge: "Best Picks", image: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=400" },
+                  ]}
+                />
 
                 {/* Row 2: Premium Rent Partners */}
                 <div className="space-y-4">
@@ -1860,33 +1844,14 @@ export default async function HomePage({
                 </div>
 
                 {/* Row 4: Spotlight's On */}
-                <div className="bg-[#FACC15] rounded-2xl p-4 md:p-6 shadow-md text-slate-900 select-none">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-black uppercase tracking-wide">Spotlight's On</h3>
-                    <div className="bg-slate-955/10 hover:bg-slate-955/20 p-2 rounded-full cursor-pointer transition-colors">
-                      <ChevronRight className="w-4 h-4 text-slate-900" />
-                    </div>
-                  </div>
-                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 md:grid md:grid-cols-4">
-                    {[
-                      { name: "Wedding Gowns", badge: "From ₹1,199/day", image: "https://images.unsplash.com/photo-1605001011156-cbf0b0f67a51?auto=format&fit=crop&q=80&w=400", action: "Shop now" },
-                      { name: "Studio Mics", badge: "Under ₹499/day", image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=400", action: "Pro Audio" },
-                      { name: "Camping Tents", badge: "Min. 40% Off", image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=400", action: "Coleman rigs" },
-                      { name: "PlayStation 5", badge: "Min. 50% Off", image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400", action: "Consoles & VR" },
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-                        <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="pt-2 flex flex-col justify-end flex-grow">
-                          <p className="text-slate-900 text-xs font-black uppercase leading-tight line-clamp-1">{item.name}</p>
-                          <p className="text-slate-500 text-[10px] font-bold uppercase mt-0.5">{item.action}</p>
-                          <p className="text-[#0A5C36] text-[10.5px] font-black uppercase tracking-wider mt-1">{item.badge}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <SpotlightRow 
+                  items={[
+                    { name: "Wedding Gowns", badge: "From ₹1,199/day", image: "https://images.unsplash.com/photo-1605001011156-cbf0b0f67a51?auto=format&fit=crop&q=80&w=400", action: "Shop now" },
+                    { name: "Studio Mics", badge: "Under ₹499/day", image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=400", action: "Pro Audio" },
+                    { name: "Camping Tents", badge: "Min. 40% Off", image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=400", action: "Coleman rigs" },
+                    { name: "PlayStation 5", badge: "Min. 50% Off", image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400", action: "Consoles & VR" },
+                  ]}
+                />
 
                 {/* Row 5: Suggested For You */}
                 <div className="space-y-4">
