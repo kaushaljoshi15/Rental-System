@@ -154,7 +154,7 @@ export function CategoryBar() {
 
         <div 
           ref={scrollRef}
-          className={`flex justify-start md:justify-center items-center gap-3 sm:gap-5 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth w-full transition-all duration-350 ${
+          className={`flex justify-start md:justify-between items-center gap-3 sm:gap-5 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth w-full transition-all duration-350 ${
             isScrolled ? "py-1.5" : "py-3"
           }`}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
@@ -184,7 +184,7 @@ export function CategoryBar() {
                   className={`rounded-2xl flex items-center justify-center transition-all duration-300 ease-out ${
                     active
                       ? "bg-amber-50 border border-amber-200 text-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.08)]"
-                      : "bg-slate-50 border border-slate-100 text-slate-450 group-hover/item:bg-amber-50/50 group-hover/item:border-amber-200/30 group-hover/item:text-[#F59E0B] group-hover/item:shadow-[0_2px_8px_rgba(245,158,11,0.04)] group-hover/item:scale-105"
+                      : "bg-slate-50 border border-slate-100 text-slate-450 group-hover/item:bg-amber-50/50 group-hover/item:border-amber-200/40 group-hover/item:text-[#F59E0B] group-hover/item:shadow-[0_2px_8px_rgba(245,158,11,0.04)] group-hover/item:scale-105"
                   } ${
                     isScrolled 
                       ? "w-0 h-0 opacity-0 overflow-hidden mb-0 scale-75 select-none pointer-events-none" 
@@ -193,8 +193,8 @@ export function CategoryBar() {
                 >
                   <Icon 
                     strokeWidth={1.8}
-                    className={`transition-all duration-300 ${isScrolled ? "w-0 h-0 opacity-0" : "w-[18px] h-[18px] group-hover/item:scale-110 group-hover/item:rotate-[3deg]"}`}
-                    fill={active ? "#F59E0B" : "none"}
+                    className={`transition-all duration-300 ${isScrolled ? "w-0 h-0 opacity-0" : "w-[18px] h-[18px] group-hover/item:scale-105"}`}
+                    fill="none"
                     stroke="currentColor"
                   />
                 </div>
@@ -204,7 +204,7 @@ export function CategoryBar() {
                   className={`font-semibold tracking-wide transition-colors duration-300 font-sans ${
                     active
                       ? "text-slate-900 font-extrabold"
-                      : "text-slate-500 group-hover/item:text-slate-900"
+                      : "text-slate-500 group-hover/item:text-[#F59E0B]"
                   } ${
                     isScrolled ? "text-[9px] py-0.5" : "text-[11px]"
                   }`}

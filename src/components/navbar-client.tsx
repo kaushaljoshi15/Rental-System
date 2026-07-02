@@ -107,10 +107,10 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
           <Link 
             href={isLoggedIn ? "/?tab=cart" : "/login"} 
             prefetch={true}
-            className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] relative py-1 px-2.5 transition-all group font-bold text-xs sm:text-sm hover-underline-center animate-all hover-cart"
+            className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] relative py-1 px-2.5 transition-all group font-bold text-xs sm:text-sm hover-underline-center animate-all hover-cart"
           >
             <div className="relative">
-              <ShoppingCart className="w-5 h-5 text-slate-700 group-hover:text-[#1d4ed8] transition-transform group-hover:scale-105" />
+              <ShoppingCart className="w-5 h-5 text-slate-700 group-hover:text-[#1e40af] transition-transform group-hover:scale-105" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full text-[9px] h-4 w-4 flex items-center justify-center font-bold px-1 border border-white">
                   {cartCount}
@@ -124,11 +124,11 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
             <div className="relative hover-dropdown-group py-2" ref={accountRef}>
               <button 
                 onClick={() => toggleDropdown("account")}
-                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
+                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
               >
-                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1d4ed8]" />
+                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1e40af]" />
                 <span className="max-w-[120px] truncate">{userName}</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#1e40af] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
@@ -212,11 +212,11 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
             <div className="relative hover-dropdown-group py-2" ref={accountRef}>
               <button 
                 onClick={() => toggleDropdown("account")}
-                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
+                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
               >
-                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1d4ed8]" />
+                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1e40af]" />
                 <span>Account</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#1e40af] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
@@ -279,10 +279,10 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
           <div className="relative hover-dropdown-group py-2" ref={moreRef}>
             <button 
               onClick={() => toggleDropdown("more")}
-              className="flex items-center gap-1.5 text-slate-700 hover:text-[#1d4ed8] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
+              className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
             >
               <span>More</span>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "more" ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#1e40af] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "more" ? "rotate-180" : ""}`} />
             </button>
             
             {/* Dropdown Panel */}
