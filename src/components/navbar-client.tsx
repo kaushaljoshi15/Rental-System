@@ -157,15 +157,15 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   <div className="p-2.5 divide-y divide-slate-100 text-left">
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">My Workspace</p>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=orders" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <Package className="w-4 h-4 text-slate-400" />
                         <span>Orders & Bookings</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wishlist" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <Heart className="w-4 h-4 text-slate-400" />
                         <span>My Wishlist</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <Bell className="w-4 h-4 text-slate-400" />
                         <span>Notifications</span>
                       </Link>
@@ -173,15 +173,15 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                     
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Settings & Payments</p>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=profile" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <User className="w-4 h-4 text-slate-400" />
                         <span>Personal Details</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <CreditCard className="w-4 h-4 text-slate-400" />
                         <span>Cards & Checkout</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=addresses" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <MapPin className="w-4 h-4 text-slate-400" />
                         <span>Saved Addresses</span>
                       </Link>
@@ -189,11 +189,11 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
 
                     <div className="py-1.5">
                       <p className="px-3 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest">Rewards & Perks</p>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=coupons" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <Ticket className="w-4 h-4 text-slate-400" />
                         <span>Available Coupons</span>
                       </Link>
-                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                      <Link onClick={() => setActiveDropdown(null)} href="/?tab=wallet" className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                         <Gift className="w-4 h-4 text-slate-400" />
                         <span>Claim Gift Cards</span>
                       </Link>
@@ -245,27 +245,27 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
                   
                   {/* Links List */}
                   <div className="space-y-1">
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                       <User className="w-4 h-4 text-slate-400" />
                       <span>My Profile</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                       <Package className="w-4 h-4 text-slate-400" />
                       <span>Orders</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                       <Heart className="w-4 h-4 text-slate-400" />
                       <span>Wishlist</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                    <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                       <Store className="w-4 h-4 text-slate-400" />
                       <span>Become a Seller</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                    <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                       <Headphones className="w-4 h-4 text-slate-400" />
                       <span>24x7 Customer Care</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                       <Calendar className="w-4 h-4 text-slate-400" />
                       <span>Event Planner</span>
                     </Link>
@@ -293,19 +293,19 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
             }`}>
               <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 py-2.5 text-slate-700 text-xs overflow-hidden relative text-left">
                 <div className="py-1">
-                  <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-amber-600 transition-colors font-bold text-slate-655 font-semibold">
+                  <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-amber-600 transition-colors font-semibold text-slate-600">
                     <Store className="w-4 h-4 text-slate-400" />
                     <span>Become a Seller</span>
                   </Link>
-                  <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                  <Link onClick={() => setActiveDropdown(null)} href="/?tab=notifications" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                     <Bell className="w-4 h-4 text-slate-400" />
                     <span>Notification Settings</span>
                   </Link>
-                  <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                  <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                     <Headphones className="w-4 h-4 text-slate-400" />
                     <span>24x7 Customer Care</span>
                   </Link>
-                  <Link onClick={() => setActiveDropdown(null)} href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-bold text-slate-655 font-semibold">
+                  <Link onClick={() => setActiveDropdown(null)} href={isLoggedIn ? "/?tab=event-planner" : "/login"} className="flex items-center gap-3 px-4 py-2.5 hover:bg-amber-55/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
                     <Calendar className="w-4 h-4 text-slate-400" />
                     <span>Event Planner</span>
                   </Link>
