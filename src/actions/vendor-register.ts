@@ -85,16 +85,20 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
       } catch (smtpErr: any) {
         console.error("❌ NODEMAILER SMTP SEND FAILURE:", smtpErr)
         return { 
-          success: false, 
-          error: `Email failed to send. Error: ${smtpErr.message || smtpErr}. (Dev OTP: ${otp})`
+          success: true, 
+          message: "OTP generated in sandbox mode.",
+          otp,
+          gatewayError: `Email failed to send. Error: ${smtpErr.message || smtpErr}`
         }
       }
     } else {
       // Attempt Twilio SMS send
       if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
         return {
-          success: false,
-          error: `SMS gateway configurations are missing (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER). (Dev OTP: ${otp})`
+          success: true,
+          message: "OTP generated in sandbox mode.",
+          otp,
+          gatewayError: "SMS gateway configurations are missing (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER)."
         }
       }
 
@@ -109,8 +113,10 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
       } catch (twilioErr: any) {
         console.error("❌ TWILIO SMS SEND FAILURE:", twilioErr)
         return {
-          success: false,
-          error: `SMS failed to send. Error: ${twilioErr.message || twilioErr}. (Dev OTP: ${otp})`
+          success: true,
+          message: "OTP generated in sandbox mode.",
+          otp,
+          gatewayError: `SMS failed to send. Error: ${twilioErr.message || twilioErr}`
         }
       }
     }

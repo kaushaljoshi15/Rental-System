@@ -102,7 +102,17 @@ export default function VendorRegisterPage() {
     } else {
       setPhoneOtpSent(true)
       setPhoneTimer(60)
-      toast.success("OTP sent to your phone!")
+      if (res.gatewayError) {
+        toast.warning(
+          `Sandbox Mode: Real-time SMS failed. Use Sandbox OTP: ${res.otp}`,
+          {
+            description: res.gatewayError,
+            duration: 12000
+          }
+        )
+      } else {
+        toast.success("OTP sent to your phone!")
+      }
     }
   }
 
@@ -120,7 +130,17 @@ export default function VendorRegisterPage() {
     } else {
       setEmailOtpSent(true)
       setEmailTimer(60)
-      toast.success("OTP sent to your email!")
+      if (res.gatewayError) {
+        toast.warning(
+          `Sandbox Mode: Real-time Email failed. Use Sandbox OTP: ${res.otp}`,
+          {
+            description: res.gatewayError,
+            duration: 12000
+          }
+        )
+      } else {
+        toast.success("OTP sent to your email!")
+      }
     }
   }
 

@@ -133,7 +133,17 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
       const res = await sendOtpAction("PHONE", profile.phoneNumber)
       if (res.success) {
         setPhoneOtpSent(true)
-        toast.success(res.message || "OTP sent successfully to your phone!")
+        if (res.gatewayError) {
+          toast.warning(
+            `Sandbox Mode: Real-time SMS failed. Use Sandbox OTP: ${res.otp}`,
+            {
+              description: res.gatewayError,
+              duration: 12000
+            }
+          )
+        } else {
+          toast.success("OTP sent successfully to your phone!")
+        }
       } else {
         toast.error(res.error || "Failed to send OTP.")
       }
@@ -200,7 +210,17 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
       const res = await sendOtpAction("EMAIL", profile.email)
       if (res.success) {
         setEmailOtpSent(true)
-        toast.success(res.message || "OTP sent successfully to your email!")
+        if (res.gatewayError) {
+          toast.warning(
+            `Sandbox Mode: Real-time Email failed. Use Sandbox OTP: ${res.otp}`,
+            {
+              description: res.gatewayError,
+              duration: 12000
+            }
+          )
+        } else {
+          toast.success("OTP sent successfully to your email!")
+        }
       } else {
         toast.error(res.error || "Failed to send OTP.")
       }
