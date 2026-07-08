@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react"
 import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 interface TopSelectionItem {
   name: string
@@ -47,7 +48,7 @@ export function TopSelectionRow({ items }: TopSelectionRowProps) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {items.map((item, idx) => (
-          <div key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
+          <Link href={`/?query=${encodeURIComponent(item.name)}`} key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
             <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
             </div>
@@ -55,7 +56,7 @@ export function TopSelectionRow({ items }: TopSelectionRowProps) {
               <p className="text-slate-900 text-xs font-black uppercase leading-tight line-clamp-2">{item.name}</p>
               <p className="text-emerald-700 text-[10px] font-black uppercase tracking-wider mt-1">{item.badge}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

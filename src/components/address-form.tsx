@@ -302,13 +302,13 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
 
       {/* Addresses List view */}
       {!showForm && (
-        <Card className="border border-slate-200/60 shadow-xs rounded-2xl">
+        <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white">
           <CardHeader className="flex flex-row items-center justify-between pb-4.5 border-b border-slate-100 flex-wrap gap-4">
             <div>
               <CardTitle className="text-xs font-bold text-slate-800 uppercase flex items-center gap-2 tracking-wide">
                 <MapPin className="w-4 h-4 text-[#F59E0B]" /> Manage Delivery Addresses
               </CardTitle>
-              <CardDescription className="text-xs mt-0.5">
+              <CardDescription className="text-xs mt-0.5 text-slate-500">
                 Add and configure multiple venues or setup addresses for checkout.
               </CardDescription>
             </div>
@@ -325,9 +325,9 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
             </Button>
           </CardHeader>
           
-          <CardContent className="p-0 divide-y divide-slate-100">
+          <CardContent className="p-0 divide-y divide-slate-100 bg-white">
             {addresses.length === 0 ? (
-              <div className="p-10 flex flex-col items-center justify-center text-center space-y-4 max-w-sm mx-auto">
+              <div className="p-10 flex flex-col items-center justify-center text-center space-y-4 max-w-sm mx-auto bg-white">
                 <div className="relative flex items-center justify-center w-16 h-16">
                   <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
                   <div className="h-11 w-11 bg-slate-900 border border-slate-800 text-white rounded-xl flex items-center justify-center shadow-xs">
@@ -343,7 +343,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
               </div>
             ) : (
               addresses.map((addr) => (
-                <div key={addr.id} className="p-5 flex flex-col justify-between gap-3 hover:bg-slate-50/20 transition-colors relative group">
+                <div key={addr.id} className="p-5 flex flex-col justify-between gap-3 hover:bg-slate-50/20 transition-colors relative group bg-white">
                   <div className="space-y-2.5 flex-1 min-w-0">
                     {/* Badge headers */}
                     <div className="flex items-center gap-2 flex-wrap">
@@ -467,7 +467,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Rahul Sharma"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -479,7 +479,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543210"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -494,7 +494,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 110001"
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -506,7 +506,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Near Central Park"
                     value={formData.locality}
                     onChange={(e) => setFormData({ ...formData, locality: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -563,7 +563,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Opposite Public Park"
                     value={formData.landmark}
                     onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -575,7 +575,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543211"
                     value={formData.altPhone}
                     onChange={(e) => setFormData({ ...formData, altPhone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -648,7 +648,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     setShowForm(false)
                     setMsg(null)
                   }}
-                  className="font-extrabold text-xs h-10 px-6 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 dark:text-slate-800 dark:hover:bg-slate-100 transition-colors"
+                  className="font-extrabold text-xs h-10 px-6 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
                 >
                   Cancel
                 </Button>

@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { calculateHallRent } from "@/lib/pricing"
+import crypto from "crypto"
 
 /**
  * Normalizes a date to midnight UTC to prevent time zone discrepancies in availability checks.
@@ -37,7 +38,14 @@ function getDatesInRange(start: Date, end: Date): Date[] {
 export async function confirmBooking(
   orderId: string,
   paymentMethod: string = "CREDIT_CARD",
-  couponCode?: string
+  couponCode?: string,
+  razorpayDetails?: {
+    razorpayOrderId: string
+    razorpayPaymentId: string
+    razorpaySignature: string
+  },
+  deliveryAddress?: string,
+  deliveryCharge: number = 0
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
@@ -69,6 +77,24 @@ export async function confirmBooking(
 
     if (order.status !== "QUOTATION" && order.status !== "PENDING") {
       return { success: false, message: `Booking cannot be checkout. Current status: ${order.status}` }
+    }
+
+    // Secure verification check for Razorpay
+    if (paymentMethod === "RAZORPAY") {
+      if (!razorpayDetails) {
+        return { success: false, message: "Payment details missing for Razorpay authorization." }
+      }
+      
+      const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = razorpayDetails
+      const secret = process.env.RAZORPAY_KEY_SECRET || ""
+      const generatedSignature = crypto
+        .createHmac("sha256", secret)
+        .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+        .digest("hex")
+
+      if (generatedSignature !== razorpaySignature) {
+        return { success: false, message: "Cryptographic signature mismatch. Transaction not authorized." }
+      }
     }
 
     // Calculate dates needed for check
@@ -154,14 +180,35 @@ export async function confirmBooking(
       // Apply Coupon discount
       let discountAmount = 0
       if (couponCode) {
+        const uppercaseCode = couponCode.toUpperCase().trim()
+
+        // 1. One-time usage validation
+        const alreadyUsed = await tx.rentalOrder.findFirst({
+          where: {
+            userId: user.id,
+            couponCode: uppercaseCode,
+            status: { in: ["CONFIRMED", "COMPLETED"] }
+          }
+        })
+        if (alreadyUsed) {
+          throw new Error("You have already used this coupon code on a previous booking.")
+        }
+
         const coupon = await tx.coupon.findUnique({
-          where: { code: couponCode.toUpperCase().trim() }
+          where: { code: uppercaseCode }
         })
         if (!coupon || !coupon.isActive) {
           throw new Error("The coupon is either invalid or inactive.")
         }
         if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date()) {
           throw new Error("The coupon code has expired.")
+        }
+
+        // 2. Profit-oriented minimum subtotal constraint
+        if (uppercaseCode.startsWith("PROFIT-")) {
+          if (dynamicOrderTotal < 3000) {
+            throw new Error("The applied coupon code requires a minimum rental subtotal of ₹3,000.")
+          }
         }
         
         if (coupon.discountType === "PERCENTAGE") {
@@ -175,13 +222,10 @@ export async function confirmBooking(
       const taxAmount = Math.round(discountedRentalSubtotal * 0.18 * 100) / 100
       const finalRentalTotal = Math.round((discountedRentalSubtotal + taxAmount) * 100) / 100
 
-      // Calculate total security deposit
-      let totalSecurityDeposit = 0
-      for (const line of order.lines) {
-        totalSecurityDeposit += (line.product.securityDeposit || 0) * line.quantity
-      }
+      // Calculate total security deposit (10% of base subtotal)
+      const totalSecurityDeposit = Math.round(discountedRentalSubtotal * 0.10)
 
-      const grandTotalAmount = finalRentalTotal + totalSecurityDeposit
+      const grandTotalAmount = finalRentalTotal + totalSecurityDeposit + (deliveryCharge || 0)
 
       // Wallet deduction check (for Customer)
       if (paymentMethod === "WALLET") {
@@ -261,7 +305,9 @@ export async function confirmBooking(
           discountAmount: discountAmount,
           platformFee: platformFeeFinal,
           vendorPayout: vendorPayoutFinal,
-          payoutStatus: "PENDING"
+          payoutStatus: "PENDING",
+          deliveryAddress: deliveryAddress || null,
+          deliveryCharge: deliveryCharge || 0
         }
       })
 
@@ -287,6 +333,21 @@ export async function confirmBooking(
         }
       })
 
+      // Record payment ledger transaction
+      const transactionId = paymentMethod === "RAZORPAY" && razorpayDetails
+        ? razorpayDetails.razorpayPaymentId
+        : `MOCK-${Date.now()}-${Math.random().toString(36).substring(2, 11).toUpperCase()}`
+
+      await tx.payment.create({
+        data: {
+          orderId: order.id,
+          transactionId: transactionId,
+          gateway: paymentMethod === "RAZORPAY" ? "RAZORPAY" : "MOCK",
+          amount: grandTotalAmount,
+          status: "SUCCESS"
+        }
+      })
+
       // Log the transaction in security logs
       await tx.auditLog.create({
         data: {
@@ -301,16 +362,37 @@ export async function confirmBooking(
             couponCode: couponCode || null,
             discountAmount: discountAmount,
             platformFee: platformFeeFinal,
-            vendorPayout: vendorPayoutFinal
+            vendorPayout: vendorPayoutFinal,
+            deliveryAddress: deliveryAddress || null,
+            deliveryCharge: deliveryCharge || 0
           }
         }
       })
 
-      return updatedOrder
+      // 3. Generate a new profitable coupon for the customer's next booking
+      const rewardCouponCode = `PROFIT-${Math.random().toString(36).substring(2, 7).toUpperCase()}`
+      await tx.coupon.create({
+        data: {
+          code: rewardCouponCode,
+          discountType: "PERCENTAGE",
+          discountValue: 10.0, // 10% off
+          isActive: true,
+          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // valid for 30 days
+        }
+      })
+
+      return { order: updatedOrder, unlockedCoupon: rewardCouponCode }
+    }, {
+      timeout: 30000 // 30 seconds timeout to handle Neon DB/serverless cold start latency
     })
 
     revalidatePath("/")
-    return { success: true, message: "Booking confirmed successfully!", order: result }
+    return { 
+      success: true, 
+      message: "Booking confirmed successfully!", 
+      order: result.order, 
+      unlockedCoupon: result.unlockedCoupon 
+    }
 
   } catch (error) {
     console.error("Booking Transaction Failed:", error instanceof Error ? error.message : error)
@@ -444,26 +526,85 @@ export async function cancelBookingAndRefund(orderId: string) {
         }
       })
 
-      // 3. If refund amount is > 0, credit customer's wallet
+      // 3. If refund amount is > 0, issue refund based on original payment gateway
       if (totalRefund > 0) {
-        await tx.user.update({
-          where: { id: order.userId },
-          data: {
-            walletBalance: {
-              increment: totalRefund
-            }
-          }
+        const payment = await tx.payment.findFirst({
+          where: { orderId: order.id, gateway: "RAZORPAY", status: "SUCCESS" }
         })
 
-        // Create transaction history record for customer
-        await tx.walletTransaction.create({
-          data: {
-            userId: order.userId,
-            amount: totalRefund,
-            type: "CREDIT",
-            description: `Refund for cancellation of Order #${order.id.substring(0, 8).toUpperCase()}. ${refundPolicyNotes}`
+        if (payment) {
+          // Trigger real Razorpay API refund
+          try {
+            const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
+            const keySecret = process.env.RAZORPAY_KEY_SECRET
+
+            if (keyId && keySecret) {
+              const Razorpay = require("razorpay")
+              const RazorpayClass = typeof Razorpay === "function" ? Razorpay : Razorpay.default
+              const rzp = new RazorpayClass({
+                key_id: keyId,
+                key_secret: keySecret
+              })
+
+              const rzpRefund = await rzp.payments.refund(payment.transactionId, {
+                amount: Math.round(totalRefund * 100), // paise
+                reverse_all_transfers: 1 // Reverse vendor payouts automatically
+              })
+
+              await tx.payment.update({
+                where: { id: payment.id },
+                data: { status: "REFUNDED" }
+              })
+
+              await tx.refund.create({
+                data: {
+                  paymentId: payment.id,
+                  amount: totalRefund,
+                  reason: `Customer cancellation. Policy: ${refundPolicyNotes}`,
+                  status: "SUCCESS",
+                  gatewayRefundId: rzpRefund.id
+                }
+              })
+            } else {
+              // Fallback to wallet balance if keys aren't configured in development
+              await tx.user.update({
+                where: { id: order.userId },
+                data: { walletBalance: { increment: totalRefund } }
+              })
+              await tx.walletTransaction.create({
+                data: {
+                  userId: order.userId,
+                  amount: totalRefund,
+                  type: "CREDIT",
+                  description: `Refund (Dev Mode Fallback) for Order #${order.id.substring(0, 8).toUpperCase()}. ${refundPolicyNotes}`
+                }
+              })
+            }
+          } catch (refundError) {
+            console.error("Razorpay API refund failure:", refundError)
+            throw new Error("Payment gateway refund failed. Unable to cancel booking.")
           }
-        })
+        } else {
+          // Standard Wallet refund logic
+          await tx.user.update({
+            where: { id: order.userId },
+            data: {
+              walletBalance: {
+                increment: totalRefund
+              }
+            }
+          })
+
+          // Create transaction history record for customer
+          await tx.walletTransaction.create({
+            data: {
+              userId: order.userId,
+              amount: totalRefund,
+              type: "CREDIT",
+              description: `Refund for cancellation of Order #${order.id.substring(0, 8).toUpperCase()}. ${refundPolicyNotes}`
+            }
+          })
+        }
       }
 
       // 4. Debit the refunded earnings share from vendor balances

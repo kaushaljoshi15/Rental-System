@@ -92,7 +92,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
 
   if (addresses.length === 0) {
     return (
-      <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white animate-in fade-in duration-200">
+      <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-slate-200/60 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] animate-in fade-in duration-200">
         <div className="flex items-center gap-4 w-full sm:w-auto text-left">
           <div className="bg-rose-50 p-3 rounded-xl text-rose-600 shrink-0 border border-rose-100/50">
             <MapPin className="w-4 h-4 text-rose-550" />
@@ -191,7 +191,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
   }
 
   return (
-    <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white">
+    <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-slate-200/60 rounded-3xl">
       <div className="flex items-center gap-4 w-full sm:w-auto">
         <div className="bg-slate-50 p-3 rounded-xl text-slate-700 shrink-0 border border-slate-100">
           <MapPin className="w-4 h-4" />
@@ -220,15 +220,14 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
         }}>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
               disabled={isPending}
-              className="border-slate-200 hover:border-slate-350 hover:bg-slate-50 text-slate-700 font-extrabold text-xs h-9 px-4.5 rounded-xl transition-all cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+              className="bg-slate-900 hover:bg-[#F59E0B] text-white hover:text-slate-955 font-extrabold text-xs h-9 px-4.5 rounded-xl transition-all cursor-pointer shadow-sm hover:scale-[1.02] border-0"
             >
               {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
               <span>{defaultAddress ? "Change Address" : "Add Address"}</span>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80 sm:w-[420px] p-5 space-y-4" align="end">
+          <PopoverContent className="w-80 sm:w-[420px] p-5 space-y-4 bg-white border border-slate-200/80 shadow-xl rounded-3xl" align="end">
             {!showAddForm ? (
               <div className="space-y-4">
                 <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
@@ -265,7 +264,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                           </div>
                         </div>
                         <p className="text-[11px] text-slate-550 mt-1.5 leading-relaxed font-semibold">
-                          {addr.areaStreet}, {addr.locality}, {addr.city}, {addr.state} - <span className="font-mono">{addr.pincode}</span>
+                          {addr.areaStreet}, {addr.locality}, {addr.city}, {addr.state} - <span className="font-mono text-slate-700">{addr.pincode}</span>
                         </p>
                       </div>
                     )
@@ -409,7 +408,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                     onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
                     className="h-3.5 w-3.5 accent-slate-900 rounded"
                   />
-                  <Label htmlFor="c-default" className="text-[10px] font-bold text-slate-650 cursor-pointer select-none">
+                  <Label htmlFor="c-default" className="text-[10px] font-bold text-slate-655 cursor-pointer select-none">
                     Set as default delivery address
                   </Label>
                 </div>
@@ -417,7 +416,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-9.5 rounded-xl cursor-pointer"
+                  className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-9.5 rounded-xl cursor-pointer"
                 >
                   {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
                   Confirm & Save Address

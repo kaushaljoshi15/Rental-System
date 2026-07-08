@@ -377,6 +377,15 @@ export default async function HomePage({
   let customerData: any = null;
   let cartCount = 0;
   let coupons: any[] = [];
+  let confirmedOrdersCount = 0;
+  if (user) {
+    confirmedOrdersCount = await prisma.rentalOrder.count({
+      where: {
+        userId: user.id,
+        status: { in: ["CONFIRMED", "COMPLETED"] }
+      }
+    });
+  }
 
   if (user) {
     try {
@@ -441,7 +450,7 @@ export default async function HomePage({
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900 overflow-x-clip">
       {activeTab ? (
-        <div className="hidden md:block">
+        <div className="hidden md:block sticky top-0 z-50">
           <Navbar />
         </div>
       ) : (
@@ -637,6 +646,8 @@ export default async function HomePage({
                           cartTotal={cartTotal}
                           securityDeposit={totalSecurityDeposit}
                           dbDiscountAmount={customerData.cart.discountAmount || 0}
+                          confirmedOrdersCount={confirmedOrdersCount}
+                          userAddressJson={customerData.user.address}
                         />
                       </div>
                     )}
@@ -1801,7 +1812,7 @@ export default async function HomePage({
                       { brand: "Manyavar Groom", offer: "Up to 30% Off", desc: "Luxury wedding fashion", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=400" },
                       { brand: "DJI Enterprise", offer: "Flat 15% Off", desc: "Drones & stabilizers", image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&q=80&w=400" },
                     ].map((partner, idx) => (
-                      <div key={idx} className="flex-shrink-0 w-64 md:w-auto bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-3 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:shadow-md transition-all duration-200">
+                      <Link href={`/?query=${encodeURIComponent(partner.brand)}`} key={idx} className="flex-shrink-0 w-64 md:w-auto bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-3 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:shadow-md transition-all duration-200">
                         <div className="aspect-[16/10] bg-slate-100 rounded-xl overflow-hidden relative shrink-0">
                           <img src={partner.image} alt={partner.brand} className="w-full h-full object-cover" />
                           <span className="absolute top-2.5 right-2.5 bg-slate-900/60 text-white font-extrabold text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full select-none">Partner</span>
@@ -1811,7 +1822,7 @@ export default async function HomePage({
                           <p className="text-slate-900 text-sm font-black uppercase tracking-wide leading-tight">{partner.offer}</p>
                           <p className="text-slate-505 text-xs font-semibold">{partner.desc}</p>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -1827,7 +1838,7 @@ export default async function HomePage({
                       { brand: "Bose Pro", tagline: "Bold sound acoustics", offer: "Min. 30% Off", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400" },
                       { brand: "Apple Workstation", tagline: "MacBook Pro M3", offer: "From ₹1,599/d", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400" }
                     ].map((b, idx) => (
-                      <div key={idx} className="flex-shrink-0 w-64 bg-slate-900/90 rounded-2xl overflow-hidden p-3 relative h-36 flex flex-col justify-between text-white shadow-md hover:scale-[1.02] transition-transform duration-200">
+                      <Link href={`/?query=${encodeURIComponent(b.brand)}`} key={idx} className="flex-shrink-0 w-64 bg-slate-900/90 rounded-2xl overflow-hidden p-3 relative h-36 flex flex-col justify-between text-white shadow-md hover:scale-[1.02] transition-transform duration-200">
                         <div className="absolute inset-0 opacity-40 bg-cover bg-center" style={{ backgroundImage: `url(${b.image})` }} />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-955 via-slate-955/60 to-transparent" />
                         <div className="relative z-10 flex justify-between items-start">
@@ -1838,7 +1849,7 @@ export default async function HomePage({
                           <p className="text-[11px] font-semibold text-slate-300 leading-tight">{b.tagline}</p>
                           <p className="text-xs font-black uppercase text-white tracking-wide">{b.offer}</p>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -1866,7 +1877,7 @@ export default async function HomePage({
                       const { rating } = getSimulatedRating(product.id)
                       const { mrp, discount } = getSimulatedMRP(product.priceDaily)
                       return (
-                        <div key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
+                        <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
                           <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
                             <img src={product.image || ''} alt={product.name} className="w-full h-full object-cover" />
                             <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm" style={{ backgroundColor: '#047857' }}>
@@ -1883,7 +1894,7 @@ export default async function HomePage({
                               <p className="text-[9.5px] font-bold text-amber-600">with Coupon + more</p>
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       )
                     })}
                   </div>
@@ -1901,7 +1912,7 @@ export default async function HomePage({
                       const { mrp } = getSimulatedMRP(product.priceDaily)
                       const bankOfferPrice = Math.round(product.priceDaily * 0.9)
                       return (
-                        <div key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
+                        <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
                           <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
                             <img src={product.image || ''} alt={product.name} className="w-full h-full object-cover" />
                             <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm" style={{ backgroundColor: '#047857' }}>
@@ -1918,7 +1929,7 @@ export default async function HomePage({
                               <p className="text-[9.5px] font-bold text-indigo-650">₹{bankOfferPrice.toLocaleString()} with Bank offer</p>
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       )
                     })}
                   </div>

@@ -37,6 +37,7 @@ model User {
   walletBalance     Float     @default(0.0)
   signature         String?   // Vendor digital authorized signature
   bankDetails       String?   // Vendor bank details for payout settlements
+  razorpayAccountId String?   // Vendor's Razorpay Linked Account ID (acc_xxxx)
   
   // KYC Database Fields
   aadhaarNumber     String?
@@ -173,6 +174,10 @@ model RentalOrder {
   couponCode      String?
   discountAmount  Float       @default(0)
   
+  // DELIVERY DETAILS
+  deliveryAddress String?
+  deliveryCharge  Float       @default(0)
+  
   // SAAS COMMISSION FIELDS
   platformFee     Float       @default(0) // Platform's share
   vendorPayout    Float       @default(0) // Vendor's share
@@ -228,7 +233,7 @@ model BookingAddOn {
 }
 
 // ==========================================
-// 6. PAYMENTS & AUDIT TRAILS (Flipkart/Amazon Level Ledger)
+// 6. PAYMENTS & AUDIT TRAILS 
 // ==========================================
 model Invoice {
   id            String      @id @default(uuid())
@@ -277,7 +282,7 @@ model Refund {
 }
 
 // ==========================================
-// 7. RATINGS & REVIEWS (Amazon/Flipkart Style)
+// 7. RATINGS & REVIEWS 
 // ==========================================
 model Review {
   id          String   @id @default(uuid())

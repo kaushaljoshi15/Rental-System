@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react"
 import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 interface SpotlightItem {
   name: string
@@ -48,7 +49,7 @@ export function SpotlightRow({ items }: SpotlightRowProps) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {items.map((item, idx) => (
-          <div key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
+          <Link href={`/?query=${encodeURIComponent(item.name)}`} key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
             <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
               <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
             </div>
@@ -57,7 +58,7 @@ export function SpotlightRow({ items }: SpotlightRowProps) {
               <p className="text-slate-500 text-[10px] font-bold uppercase mt-0.5">{item.action}</p>
               <p className="text-[#0A5C36] text-[10.5px] font-black uppercase tracking-wider mt-1">{item.badge}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
