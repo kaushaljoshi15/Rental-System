@@ -412,8 +412,8 @@ export default async function HomePage({
       let userWishlistProductIds: string[] = [];
 
       if (activeTab === "wishlist") {
-        wishlistItems = wishlistData;
-        userWishlistProductIds = wishlistItems.map((p: any) => p.id);
+        wishlistItems = wishlistData.map((item: any) => item.product).filter(Boolean);
+        userWishlistProductIds = wishlistData.map((item: any) => item.productId);
       } else {
         userWishlistProductIds = wishlistData.map((r: any) => r.productId);
       }
@@ -568,31 +568,33 @@ export default async function HomePage({
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    {/* Left Column: Cart Items (8 cols) */}
-                    <div className="lg:col-span-8 space-y-6">
-                      {!hasCartItems ? (
-                        <div className="bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-3xl p-12 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-6">
-                          <div className="relative flex items-center justify-center w-20 h-20">
-                            <div className="absolute inset-0 border border-dashed border-slate-200 rounded-full animate-[spin_20s_linear_infinite]" />
-                            <div className="h-14 w-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-md">
-                              <ShoppingBag className="h-5 w-5 text-[#F59E0B]" />
-                            </div>
+                  {!hasCartItems ? (
+                    <div className="py-16 flex items-center justify-center w-full">
+                      <div className="bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-3xl p-12 flex flex-col items-center justify-center text-center max-w-md w-full space-y-6">
+                        <div className="relative flex items-center justify-center w-20 h-20">
+                          <div className="absolute inset-0 border border-dashed border-slate-200 rounded-full animate-[spin_20s_linear_infinite]" />
+                          <div className="h-14 w-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-md">
+                            <ShoppingBag className="h-5 w-5 text-[#F59E0B]" />
                           </div>
-                          <div className="space-y-2">
-                            <span className="text-[10px] bg-slate-100 text-slate-655 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Cart Empty</span>
-                            <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-3">Your Cart is Empty</h3>
-                            <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed font-semibold">
-                              Browse through our collections of high-end equipment, professional gear, and event spaces to start checkout.
-                            </p>
-                          </div>
-                          <Link href="/">
-                            <Button className="bg-primary hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs rounded-xl h-11 px-8 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5">
-                              Browse Catalog
-                            </Button>
-                          </Link>
                         </div>
-                      ) : (
+                        <div className="space-y-2">
+                          <span className="text-[10px] bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-bold uppercase tracking-wider">Cart Empty</span>
+                          <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-3">Your Cart is Empty</h3>
+                          <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed font-semibold">
+                            Browse through our collections of high-end equipment, professional gear, and event spaces to start checkout.
+                          </p>
+                        </div>
+                        <Link href="/">
+                          <Button className="bg-primary hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs rounded-xl h-11 px-8 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5 border-0">
+                            Browse Catalog
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                      {/* Left Column: Cart Items (8 cols) */}
+                      <div className="lg:col-span-8 space-y-6">
                         <div className="bg-white border border-slate-200/60 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden divide-y divide-slate-100">
                           {/* Schedule Summary Banner */}
                           <div className="p-6 bg-slate-50/40 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -631,11 +633,9 @@ export default async function HomePage({
                             ))}
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
 
-                    {/* Right Column: Checkout Details and Selection Panel (4 cols) */}
-                    {hasCartItems && (
+                      {/* Right Column: Checkout Details and Selection Panel (4 cols) */}
                       <div className="lg:col-span-4">
                         <CheckoutPanel
                           orderId={customerData.cart.id}
@@ -650,8 +650,8 @@ export default async function HomePage({
                           userAddressJson={customerData.user.address}
                         />
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               );
             })()}
@@ -1538,7 +1538,7 @@ export default async function HomePage({
                             return (
                               <div
                                 key={product.id}
-                                className="p-5 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 hover:bg-slate-50/20 transition-all group relative"
+                                className="wishlist-card p-5 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 hover:bg-slate-50/20 transition-all group relative"
                               >
                                 <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start flex-grow min-w-0 w-full sm:w-auto">
 
@@ -1607,11 +1607,17 @@ export default async function HomePage({
                                     initialIsWishlisted={true}
                                     variant="trash"
                                   />
-                                  <Link href={`/products/${product.id}`} className="block w-full sm:w-auto">
-                                    <Button size="sm" className="bg-primary hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-9 px-4.5 rounded-xl transition-colors w-full sm:w-auto cursor-pointer shadow-sm">
-                                      Rent Asset
+                                  {isAvailable ? (
+                                    <Link href={`/products/${product.id}`} className="block w-full sm:w-auto">
+                                      <Button size="sm" className="bg-primary hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-9 px-4.5 rounded-xl transition-colors w-full sm:w-auto cursor-pointer shadow-sm">
+                                        Rent Asset
+                                      </Button>
+                                    </Link>
+                                  ) : (
+                                    <Button disabled size="sm" className="bg-slate-100 text-slate-400 border border-slate-200 font-extrabold text-xs h-9 px-4.5 rounded-xl w-full sm:w-auto cursor-not-allowed shadow-none">
+                                      Out of Stock
                                     </Button>
-                                  </Link>
+                                  )}
                                 </div>
 
                               </div>

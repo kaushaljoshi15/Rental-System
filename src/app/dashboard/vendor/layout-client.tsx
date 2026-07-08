@@ -56,6 +56,7 @@ function VendorLayoutContent({ children, user }: VendorLayoutClientProps) {
 
   const [notifOpen, setNotifOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [localSearch, setLocalSearch] = useState('')
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -244,6 +245,7 @@ function VendorLayoutContent({ children, user }: VendorLayoutClientProps) {
                 onClick={() => {
                   setLangOpen(!langOpen)
                   setNotifOpen(false)
+                  setProfileOpen(false)
                 }}
                 className="h-9 w-9 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all"
               >
@@ -290,6 +292,7 @@ function VendorLayoutContent({ children, user }: VendorLayoutClientProps) {
                 onClick={() => {
                   setNotifOpen(!notifOpen)
                   setLangOpen(false)
+                  setProfileOpen(false)
                 }}
                 className="h-9 w-9 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all relative"
               >
@@ -337,9 +340,39 @@ function VendorLayoutContent({ children, user }: VendorLayoutClientProps) {
               )}
             </div>
 
-            {/* Profile Circle Icon (hidden on mobile search bar) */}
-            <div className="h-9 w-9 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center bg-slate-50 dark:bg-slate-900 shadow-sm shrink-0">
-              <User className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            {/* Profile Dropdown */}
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setProfileOpen(!profileOpen)
+                  setLangOpen(false)
+                  setNotifOpen(false)
+                }}
+                className="h-9 w-9 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all shadow-sm shrink-0"
+              >
+                <User className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              </Button>
+
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 select-none">
+                  {/* User info header */}
+                  <div className="px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-900 mb-1">
+                    <p className="text-xs font-black text-slate-850 dark:text-slate-100 uppercase tracking-tight truncate">{user.name}</p>
+                    <p className="text-[10px] text-slate-400 font-bold truncate mt-0.5">{user.email}</p>
+                  </div>
+                  
+                  {/* Logout Button */}
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-655 hover:bg-red-50 dark:hover:bg-red-950/20 dark:text-red-400 rounded-lg transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4 shrink-0" />
+                    <span>{language === 'en' ? 'Logout' : language === 'hi' ? 'लॉगआउट' : 'લોગઆઉટ'}</span>
+                  </button>
+                </div>
+              )}
             </div>
 
           </div>
