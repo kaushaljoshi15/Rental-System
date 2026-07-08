@@ -86,7 +86,7 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
         console.error("❌ NODEMAILER SMTP SEND FAILURE:", smtpErr)
         return { 
           success: false, 
-          error: `Email failed to send. Error: ${smtpErr.message || smtpErr}`
+          error: `Email failed to send. Error: ${smtpErr.message || smtpErr}. (Dev OTP: ${otp})`
         }
       }
     } else {
@@ -94,7 +94,7 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
       if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
         return {
           success: false,
-          error: "SMS gateway configurations are missing (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER)."
+          error: `SMS gateway configurations are missing (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER). (Dev OTP: ${otp})`
         }
       }
 
@@ -110,7 +110,7 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
         console.error("❌ TWILIO SMS SEND FAILURE:", twilioErr)
         return {
           success: false,
-          error: `SMS failed to send. Error: ${twilioErr.message || twilioErr}`
+          error: `SMS failed to send. Error: ${twilioErr.message || twilioErr}. (Dev OTP: ${otp})`
         }
       }
     }
