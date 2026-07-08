@@ -134,7 +134,8 @@ export async function simulateNewOfferNotification() {
         code,
         discountType: type,
         discountValue: val,
-        isActive: true
+        isActive: true,
+        userId: user.id
       }
     })
 

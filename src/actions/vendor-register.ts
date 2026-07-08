@@ -82,38 +82,35 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
             </div>
           `
         })
-      } catch (smtpErr) {
+      } catch (smtpErr: any) {
         console.error("❌ NODEMAILER SMTP SEND FAILURE:", smtpErr)
-        // We still succeed and tell them to check console, to avoid blocking local testing
         return { 
-          success: true, 
-          message: "OTP generated (SMTP failed). Check server terminal logs for OTP.",
-          isLocalDemo: true 
+          success: false, 
+          error: `Email failed to send. Error: ${smtpErr.message || smtpErr}`
         }
       }
     } else {
-      // Print backup to terminal console for local developer access
-      console.log("\n----------------------------------------------------------");
-      console.log(`📱 [SMS SIMULATOR] MOBILE OTP FOR ${formattedValue}: ${otp}`);
-      console.log("----------------------------------------------------------\n");
-
       // Attempt Twilio SMS send
-      if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
-        try {
-          const client = twilio(twilioAccountSid, twilioAuthToken)
-          await client.messages.create({
-            body: `Your RentalKart Seller Hub OTP code is: ${otp}. It is valid for 10 minutes.`,
-            from: twilioPhoneNumber,
-            to: formattedValue
-          })
-          console.log(`✅ [TWILIO] SMS OTP successfully sent to ${formattedValue}`)
-        } catch (twilioErr) {
-          console.error("❌ TWILIO SMS SEND FAILURE:", twilioErr)
-          return {
-            success: true,
-            message: "OTP generated (SMS failed). Check server terminal logs for OTP.",
-            isLocalDemo: true
-          }
+      if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
+        return {
+          success: false,
+          error: "SMS gateway configurations are missing (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER)."
+        }
+      }
+
+      try {
+        const client = twilio(twilioAccountSid, twilioAuthToken)
+        await client.messages.create({
+          body: `Your RentalKart Seller Hub OTP code is: ${otp}. It is valid for 10 minutes.`,
+          from: twilioPhoneNumber,
+          to: formattedValue
+        })
+        console.log(`✅ [TWILIO] SMS OTP successfully sent to ${formattedValue}`)
+      } catch (twilioErr: any) {
+        console.error("❌ TWILIO SMS SEND FAILURE:", twilioErr)
+        return {
+          success: false,
+          error: `SMS failed to send. Error: ${twilioErr.message || twilioErr}`
         }
       }
     }

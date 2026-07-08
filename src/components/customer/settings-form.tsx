@@ -3,6 +3,9 @@
 import { useState } from "react"
 import { updateProfile, addMoneyToWallet, deleteAccount } from "@/actions/profile"
 import { AVATAR_PRESETS } from "@/lib/avatars"
+import { cn } from "@/lib/utils"
+import { toast } from "sonner"
+import { sendOtpAction, verifyOtpAction } from "@/actions/vendor-register"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
@@ -67,10 +70,41 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
 
   const { firstName: initFirst, lastName: initLast } = getFirstAndLastName(initialUser.name)
 
+  // Helper to convert DD/MM/YYYY to YYYY-MM-DD for native HTML5 date input
+  const formatToInputDate = (dateStr: string) => {
+    if (!dateStr) return ""
+    if (dateStr.includes("-")) return dateStr
+    if (dateStr.includes("/")) {
+      const parts = dateStr.split("/")
+      if (parts.length === 3) {
+        const [day, month, year] = parts
+        if (year.length === 4 && month.length <= 2 && day.length <= 2) {
+          return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+        }
+      }
+    }
+    return dateStr
+  }
+
+  // Helper to convert YYYY-MM-DD to DD/MM/YYYY for saving in DB
+  const formatFromInputDate = (dateStr: string) => {
+    if (!dateStr) return ""
+    if (dateStr.includes("/")) return dateStr
+    if (dateStr.includes("-")) {
+      const parts = dateStr.split("-")
+      if (parts.length === 3) {
+        const [year, month, day] = parts
+        return `${day}/${month}/${year}`
+      }
+    }
+    return dateStr
+  }
+
   // Profile State
   const [profile, setProfile] = useState({
     firstName: initFirst,
     lastName: initLast,
+    email: initialUser.email || "",
     phoneNumber: initialUser.phoneNumber || "",
     address: initialUser.address || "",
     image: initialUser.image || AVATAR_PRESETS[0].url,
@@ -81,6 +115,141 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileMsg, setProfileMsg] = useState<{ success: boolean; text: string } | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+
+  // Phone/OTP verification states
+  const [isEditingPhone, setIsEditingPhone] = useState(false)
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false)
+  const [phoneOtp, setPhoneOtp] = useState("")
+  const [otpLoading, setOtpLoading] = useState(false)
+
+  const handleSendOTP = async () => {
+    if (!profile.phoneNumber || !/^\+?[0-9\s-]{10,15}$/.test(profile.phoneNumber.trim())) {
+      toast.error("Please enter a valid phone number (10-15 digits).")
+      return
+    }
+
+    setOtpLoading(true)
+    try {
+      const res = await sendOtpAction("PHONE", profile.phoneNumber)
+      if (res.success) {
+        setPhoneOtpSent(true)
+        toast.success(res.message || "OTP sent successfully to your phone!")
+      } else {
+        toast.error(res.error || "Failed to send OTP.")
+      }
+    } catch {
+      toast.error("Failed to send OTP.")
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  const handleVerifyOTP = async () => {
+    if (!phoneOtp || phoneOtp.length < 6) {
+      toast.error("Please enter the 6-digit OTP code.")
+      return
+    }
+
+    setOtpLoading(true)
+    try {
+      const res = await verifyOtpAction("PHONE", profile.phoneNumber, phoneOtp)
+      if (res.success) {
+        // Immediately save to profile database
+        const saveRes = await updateProfile({
+          phoneNumber: profile.phoneNumber
+        })
+        
+        if (saveRes.success) {
+          setIsEditingPhone(false)
+          setPhoneOtpSent(false)
+          setPhoneOtp("")
+          toast.success("Phone number verified and updated successfully!")
+        } else {
+          toast.error("Verified, but failed to save profile to database.")
+        }
+      } else {
+        toast.error(res.error || "Incorrect OTP code. Please try again.")
+      }
+    } catch {
+      toast.error("Verification failed.")
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  const handleCancelPhoneEdit = () => {
+    setProfile({ ...profile, phoneNumber: initialUser.phoneNumber || "" })
+    setIsEditingPhone(false)
+    setPhoneOtpSent(false)
+    setPhoneOtp("")
+  }
+
+  // Email/OTP verification states
+  const [isEditingEmail, setIsEditingEmail] = useState(false)
+  const [emailOtpSent, setEmailOtpSent] = useState(false)
+  const [emailOtp, setEmailOtp] = useState("")
+
+  const handleSendEmailOTP = async () => {
+    if (!profile.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim())) {
+      toast.error("Please enter a valid email address.")
+      return
+    }
+
+    setOtpLoading(true)
+    try {
+      const res = await sendOtpAction("EMAIL", profile.email)
+      if (res.success) {
+        setEmailOtpSent(true)
+        toast.success(res.message || "OTP sent successfully to your email!")
+      } else {
+        toast.error(res.error || "Failed to send OTP.")
+      }
+    } catch {
+      toast.error("Failed to send OTP.")
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  const handleVerifyEmailOTP = async () => {
+    if (!emailOtp || emailOtp.length < 6) {
+      toast.error("Please enter the 6-digit OTP code.")
+      return
+    }
+
+    setOtpLoading(true)
+    try {
+      const res = await verifyOtpAction("EMAIL", profile.email, emailOtp)
+      if (res.success) {
+        // Immediately save to profile database
+        const saveRes = await updateProfile({
+          email: profile.email
+        })
+        
+        if (saveRes.success) {
+          setIsEditingEmail(false)
+          setEmailOtpSent(false)
+          setEmailOtp("")
+          toast.success("Email address verified and updated successfully!")
+        } else {
+          toast.error("Verified, but failed to save profile to database.")
+        }
+      } else {
+        toast.error(res.error || "Incorrect OTP code. Please try again.")
+      }
+    } catch {
+      toast.error("Verification failed.")
+    } finally {
+      setOtpLoading(false)
+    }
+  }
+
+  const handleCancelEmailEdit = () => {
+    setProfile({ ...profile, email: initialUser.email || "" })
+    setIsEditingEmail(false)
+    setEmailOtpSent(false)
+    setEmailOtp("")
+  }
 
   const handleDeleteAccount = async () => {
     const isConfirmed = window.confirm(
@@ -355,14 +524,13 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
 
                       {/* Birthday */}
                       <div className="space-y-1.5">
-                        <Label htmlFor="birthday" className="text-xs font-bold text-slate-700">Birthday (dd/mm/yyyy)</Label>
+                        <Label htmlFor="birthday" className="text-xs font-bold text-slate-700">Birthday</Label>
                         <Input
                           id="birthday"
-                          type="text"
-                          placeholder="e.g. 15/08/1995"
-                          value={profile.birthday}
-                          onChange={(e) => setProfile({ ...profile, birthday: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                          type="date"
+                          value={formatToInputDate(profile.birthday)}
+                          onChange={(e) => setProfile({ ...profile, birthday: formatFromInputDate(e.target.value) })}
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white cursor-pointer"
                         />
                       </div>
                     </div>
@@ -372,43 +540,214 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   <div className="space-y-3 pt-4 border-t border-slate-100">
                     <div className="flex justify-between items-center">
                       <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Email Address</h4>
-                      <span className="text-[9px] text-[#F59E0B] font-bold bg-amber-500/10 border border-amber-500/15 px-2 py-0.5 rounded">Primary Email</span>
+                      {!isEditingEmail ? (
+                        <span className="text-[9px] text-[#F59E0B] font-bold bg-amber-500/10 border border-amber-500/15 px-2 py-0.5 rounded select-none">
+                          Primary Email
+                        </span>
+                      ) : (
+                        <span className="text-[9px] text-amber-600 font-bold bg-amber-50 border border-amber-150 px-2 py-0.5 rounded flex items-center gap-1 select-none animate-pulse">
+                          Editing Mode
+                        </span>
+                      )}
                     </div>
                     <div className="flex gap-3">
                       <Input
                         id="email"
                         type="email"
-                        disabled
-                        value={initialUser.email}
-                        className="text-xs rounded-xl h-10 bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed flex-1"
+                        placeholder="e.g. user@example.com"
+                        disabled={!isEditingEmail || emailOtpSent}
+                        value={profile.email}
+                        onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                        className={cn(
+                          "text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 transition-all placeholder:text-slate-400",
+                          (!isEditingEmail || emailOtpSent) ? "bg-slate-100/80 text-slate-500 cursor-not-allowed select-none" : "bg-white"
+                        )}
                       />
-                      <Button type="button" disabled variant="outline" className="h-10 text-xs font-bold border-slate-200 text-slate-400 shrink-0 rounded-xl">
-                        Verify OTP
-                      </Button>
+                      {!isEditingEmail ? (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setIsEditingEmail(true)}
+                          className="h-10 text-xs font-bold border-slate-250 hover:bg-slate-50 text-slate-700 shrink-0 rounded-xl transition-colors cursor-pointer"
+                        >
+                          Change
+                        </Button>
+                      ) : !emailOtpSent ? (
+                        <div className="flex gap-2">
+                          <Button 
+                            type="button" 
+                            disabled={otpLoading}
+                            onClick={handleSendEmailOTP}
+                            className="h-10 text-xs font-bold bg-slate-900 text-white hover:bg-[#F59E0B] hover:text-slate-955 rounded-xl transition-colors cursor-pointer shadow-sm"
+                          >
+                            {otpLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
+                            Send OTP
+                          </Button>
+                          <Button 
+                            type="button" 
+                            variant="ghost"
+                            onClick={handleCancelEmailEdit}
+                            className="h-10 text-xs font-semibold hover:bg-slate-100 text-slate-500 rounded-xl transition-colors cursor-pointer"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          type="button" 
+                          variant="ghost"
+                          onClick={handleCancelEmailEdit}
+                          className="h-10 text-xs font-semibold hover:bg-slate-100 text-slate-500 rounded-xl transition-colors cursor-pointer"
+                        >
+                          Reset
+                        </Button>
+                      )}
                     </div>
+
+                    {/* OTP input field block */}
+                    {isEditingEmail && emailOtpSent && (
+                      <div className="flex flex-col gap-2 pt-2 bg-slate-50/50 p-4 border border-slate-150 rounded-2xl animate-in fade-in slide-in-from-top-1.5 duration-200">
+                        <Label htmlFor="emailOtp" className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Enter 6-Digit OTP Code</Label>
+                        <div className="flex gap-3">
+                          <Input
+                            id="emailOtp"
+                            type="text"
+                            maxLength={6}
+                            placeholder="••••••"
+                            value={emailOtp}
+                            onChange={(e) => setEmailOtp(e.target.value.replace(/[^0-9]/g, ""))}
+                            className="text-xs text-center tracking-[4px] font-black rounded-xl h-10 border-slate-200 w-32 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400 font-mono"
+                          />
+                          <Button 
+                            type="button" 
+                            disabled={otpLoading}
+                            onClick={handleVerifyEmailOTP}
+                            className="h-10 text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-600 rounded-xl transition-all cursor-pointer shadow-sm shrink-0 px-5"
+                          >
+                            {otpLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
+                            Verify OTP
+                          </Button>
+                          <Button 
+                            type="button" 
+                            variant="outline"
+                            onClick={handleSendEmailOTP}
+                            className="h-10 text-xs font-bold border-slate-200 text-slate-600 rounded-xl transition-colors cursor-pointer"
+                          >
+                            Resend
+                          </Button>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-semibold">
+                          A 6-digit verification code has been sent to your email address.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Section: Mobile Number */}
                   <div className="space-y-3 pt-4 border-t border-slate-100">
                     <div className="flex justify-between items-center">
                       <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Mobile Number</h4>
-                      <span className="text-[9px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded flex items-center gap-1">
-                        <Check className="w-2.5 h-2.5" /> Active Number
-                      </span>
+                      {!isEditingPhone ? (
+                        <span className="text-[9px] text-emerald-600 font-bold bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded flex items-center gap-1 select-none">
+                          <Check className="w-2.5 h-2.5" /> Active Number
+                        </span>
+                      ) : (
+                        <span className="text-[9px] text-amber-600 font-bold bg-amber-50 border border-amber-150 px-2 py-0.5 rounded flex items-center gap-1 select-none animate-pulse">
+                          Editing Mode
+                        </span>
+                      )}
                     </div>
                     <div className="flex gap-3">
                       <Input
                         id="phone"
                         type="text"
                         placeholder="e.g. +91 98765 43210"
+                        disabled={!isEditingPhone || phoneOtpSent}
                         value={profile.phoneNumber}
                         onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
-                        className="text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                        className={cn(
+                          "text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 transition-all placeholder:text-slate-400",
+                          (!isEditingPhone || phoneOtpSent) ? "bg-slate-100/80 text-slate-500 cursor-not-allowed select-none" : "bg-white"
+                        )}
                       />
-                      <Button type="button" variant="outline" className="h-10 text-xs font-bold border-slate-250 hover:bg-slate-50 text-slate-700 shrink-0 rounded-xl transition-colors">
-                        Change
-                      </Button>
+                      {!isEditingPhone ? (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setIsEditingPhone(true)}
+                          className="h-10 text-xs font-bold border-slate-250 hover:bg-slate-50 text-slate-700 shrink-0 rounded-xl transition-colors cursor-pointer"
+                        >
+                          Change
+                        </Button>
+                      ) : !phoneOtpSent ? (
+                        <div className="flex gap-2">
+                          <Button 
+                            type="button" 
+                            disabled={otpLoading}
+                            onClick={handleSendOTP}
+                            className="h-10 text-xs font-bold bg-slate-900 text-white hover:bg-[#F59E0B] hover:text-slate-955 rounded-xl transition-colors cursor-pointer shadow-sm"
+                          >
+                            {otpLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
+                            Send OTP
+                          </Button>
+                          <Button 
+                            type="button" 
+                            variant="ghost"
+                            onClick={handleCancelPhoneEdit}
+                            className="h-10 text-xs font-semibold hover:bg-slate-100 text-slate-500 rounded-xl transition-colors cursor-pointer"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          type="button" 
+                          variant="ghost"
+                          onClick={handleCancelPhoneEdit}
+                          className="h-10 text-xs font-semibold hover:bg-slate-100 text-slate-500 rounded-xl transition-colors cursor-pointer"
+                        >
+                          Reset
+                        </Button>
+                      )}
                     </div>
+
+                    {/* OTP input field block */}
+                    {isEditingPhone && phoneOtpSent && (
+                      <div className="flex flex-col gap-2 pt-2 bg-slate-50/50 p-4 border border-slate-150 rounded-2xl animate-in fade-in slide-in-from-top-1.5 duration-200">
+                        <Label htmlFor="phoneOtp" className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Enter 6-Digit OTP Code</Label>
+                        <div className="flex gap-3">
+                          <Input
+                            id="phoneOtp"
+                            type="text"
+                            maxLength={6}
+                            placeholder="••••••"
+                            value={phoneOtp}
+                            onChange={(e) => setPhoneOtp(e.target.value.replace(/[^0-9]/g, ""))}
+                            className="text-xs text-center tracking-[4px] font-black rounded-xl h-10 border-slate-200 w-32 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400 font-mono"
+                          />
+                          <Button 
+                            type="button" 
+                            disabled={otpLoading}
+                            onClick={handleVerifyOTP}
+                            className="h-10 text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-600 rounded-xl transition-all cursor-pointer shadow-sm shrink-0 px-5"
+                          >
+                            {otpLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
+                            Verify OTP
+                          </Button>
+                          <Button 
+                            type="button" 
+                            variant="outline"
+                            onClick={handleSendOTP}
+                            className="h-10 text-xs font-bold border-slate-200 text-slate-600 rounded-xl transition-colors cursor-pointer"
+                          >
+                            Resend
+                          </Button>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-semibold">
+                          A 6-digit verification code has been sent to your mobile number.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Section: Alternate Mobile Details */}

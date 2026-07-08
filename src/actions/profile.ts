@@ -13,6 +13,7 @@ export async function updateProfile(data: {
   gender?: string
   birthday?: string
   alternatePhone?: string
+  email?: string
 }) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
@@ -29,7 +30,8 @@ export async function updateProfile(data: {
         image: data.image,
         gender: data.gender,
         birthday: data.birthday,
-        alternatePhone: data.alternatePhone
+        alternatePhone: data.alternatePhone,
+        email: data.email
       } as any
     })
 
@@ -41,7 +43,8 @@ export async function updateProfile(data: {
       image: updatedUser.image,
       gender: (updatedUser as any).gender,
       birthday: (updatedUser as any).birthday,
-      alternatePhone: (updatedUser as any).alternatePhone
+      alternatePhone: (updatedUser as any).alternatePhone,
+      email: updatedUser.email
     } }
   } catch (error) {
     console.error("Profile update error:", error)

@@ -338,7 +338,13 @@ export default async function HomePage({
     user ? Promise.all([
       // Fetch Coupons
       activeTab === "coupons" ? prisma.coupon.findMany({
-        where: { isActive: true },
+        where: { 
+          isActive: true,
+          OR: [
+            { userId: null },
+            { userId: user.id }
+          ]
+        },
         orderBy: { createdAt: 'desc' }
       }) : Promise.resolve([]),
 

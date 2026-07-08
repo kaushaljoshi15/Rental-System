@@ -377,7 +377,8 @@ export async function confirmBooking(
           discountType: "PERCENTAGE",
           discountValue: 10.0, // 10% off
           isActive: true,
-          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // valid for 30 days
+          expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // valid for 30 days
+          userId: user.id
         }
       })
 

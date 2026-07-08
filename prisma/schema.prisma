@@ -62,6 +62,7 @@ model User {
   walletTransactions WalletTransaction[]
   wishlist          WishlistItem[]
   notifications     Notification[]
+  coupons           Coupon[]
 }
 
 // ==========================================
@@ -331,6 +332,10 @@ model Coupon {
   isActive      Boolean  @default(true)
   expiryDate    DateTime?
   createdAt     DateTime @default(now())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ==========================================
