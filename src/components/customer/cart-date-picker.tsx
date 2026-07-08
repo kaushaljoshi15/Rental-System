@@ -48,19 +48,18 @@ export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePick
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button 
-          variant="outline" 
           disabled={isPending}
-          className="border-slate-200 hover:border-slate-350 hover:bg-slate-50 text-slate-700 font-extrabold text-xs h-9 px-4.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+          className="bg-slate-900 hover:bg-[#F59E0B] text-white hover:text-slate-955 font-extrabold text-xs h-9 px-4.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-[1.02] border-0"
         >
           {isPending ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : (
-            <CalendarIcon className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <CalendarIcon className="w-3.5 h-3.5 text-white shrink-0" />
           )}
           <span>Modify Dates</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-4 space-y-3" align="end">
+      <PopoverContent className="w-auto p-4 space-y-3 bg-white border border-slate-200/80 shadow-xl rounded-3xl" align="end">
         <div className="space-y-1">
           <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Adjust Rental Window</h4>
           <p className="text-[10px] text-slate-400 font-semibold">Select inclusive start and end dates below.</p>
@@ -74,12 +73,21 @@ export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePick
           onSelect={setDate}
           numberOfMonths={1}
           disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+          className="bg-white text-slate-800 border border-slate-100/60 rounded-2xl p-3"
+          classNames={{
+            month_caption: "flex items-center justify-center h-8 w-full px-8 text-slate-900 font-bold text-sm",
+            weekday: "text-slate-400 rounded-md flex-1 font-semibold text-[0.8rem] select-none",
+            day: "relative w-full h-full p-0 text-center text-slate-700 font-semibold text-xs select-none",
+            today: "bg-slate-100 text-slate-900 rounded-md",
+            outside: "text-slate-350 aria-selected:text-slate-350",
+            disabled: "text-slate-200 opacity-50 cursor-not-allowed",
+          }}
         />
         
         <Button
           onClick={handleUpdate}
           disabled={isPending || !date?.from || !date?.to}
-          className="w-full bg-slate-900 hover:bg-amber-500 text-white hover:text-slate-950 font-extrabold text-xs h-9.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+          className="w-full bg-slate-900 hover:bg-[#F59E0B] text-white hover:text-slate-955 font-extrabold text-xs h-9.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
         >
           {isPending ? (
             <>
