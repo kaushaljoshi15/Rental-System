@@ -68,7 +68,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
     return { firstName, lastName }
   }
 
-  const { firstName: initFirst, lastName: initLast } = getFirstAndLastName(initialUser.name)
+  const { firstName: initFirst, lastName: initLast } = getFirstAndLastName(initialUser.name || "")
 
   // Helper to convert DD/MM/YYYY to YYYY-MM-DD for native HTML5 date input
   const formatToInputDate = (dateStr: string) => {
