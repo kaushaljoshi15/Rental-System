@@ -54,7 +54,7 @@ export function InvoicePrintButton({
     // Get vendor details from the first line's product
     const vendor = order.lines[0]?.product?.vendor
     const vendorProfile = {
-      companyName: vendor?.companyName || "RENTALKART PARTNER",
+      companyName: vendor?.companyName || "RENTKART PARTNER",
       gstin: vendor?.gstin || "N/A",
       address: vendor?.address || "N/A",
       signature: vendor?.signature || "Authorized Signatory"

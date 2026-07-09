@@ -106,7 +106,7 @@ function VendorLoginForm() {
         </div>
 
         <div className="text-[10px] text-slate-500 font-extrabold uppercase tracking-widest">
-          © {new Date().getFullYear()} RentalKart. Secure SaaS Infrastructure.
+          © {new Date().getFullYear()} RentKart. Secure SaaS Infrastructure.
         </div>
       </div>
 

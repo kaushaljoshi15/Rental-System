@@ -227,7 +227,7 @@ export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarC
               }`}>
                 <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 text-slate-700 text-xs overflow-hidden p-4 relative text-left">
                   <div className="mb-4">
-                    <p className="text-xs font-extrabold text-slate-900 leading-none">Welcome to RentalKart</p>
+                    <p className="text-xs font-extrabold text-slate-900 leading-none">Welcome to RentKart</p>
                     <p className="text-[10px] text-slate-400 mt-1">Rent premium equipment and wedding venues.</p>
                   </div>
                   

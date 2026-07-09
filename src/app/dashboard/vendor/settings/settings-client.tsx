@@ -110,7 +110,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
       {
         id: 's2',
         name: 'Rahul Sharma',
-        email: 'rahul.sharma@rentalkart.com',
+        email: 'rahul.sharma@rentkart.shop',
         role: 'Warehouse Manager',
         status: 'Active',
         permissions: ['Process Orders', 'Manage Calendar Blocks', 'Stock Ingestion', 'Update Product details']
@@ -118,7 +118,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
       {
         id: 's3',
         name: 'Sneha Patel',
-        email: 'sneha.patel@rentalkart.com',
+        email: 'sneha.patel@rentkart.shop',
         role: 'Customer Support',
         status: 'Active',
         permissions: ['In-app Chat Messages', 'Reviews Replies']
@@ -756,7 +756,7 @@ export function SettingsClient({ user }: SettingsClientProps) {
                         type="email"
                         value={newStaffEmail}
                         onChange={(e) => setNewStaffEmail(e.target.value)}
-                        placeholder="e.g. amit@rentalkart.com"
+                        placeholder="e.g. amit@rentkart.shop"
                         className="bg-slate-50 dark:bg-slate-900 border-none rounded-xl text-xs font-semibold focus-visible:ring-amber-500/50"
                       />
                     </div>

@@ -244,7 +244,7 @@ export default function VendorRegisterPage() {
     if (res.error) {
       toast.error(res.error)
     } else {
-      toast.success("Seller onboarding complete! Welcome to RentalKart Seller Hub.")
+      toast.success("Seller onboarding complete! Welcome to RentKart Seller Hub.")
       router.push("/login/vendor") // Send to vendor login page to start session
     }
   }
@@ -295,7 +295,7 @@ export default function VendorRegisterPage() {
         </div>
 
         <div className="text-[10px] text-slate-500 font-extrabold uppercase tracking-widest">
-          © {new Date().getFullYear()} RentalKart. Secure SaaS Infrastructure.
+          © {new Date().getFullYear()} RentKart. Secure SaaS Infrastructure.
         </div>
       </div>
 
@@ -343,7 +343,7 @@ export default function VendorRegisterPage() {
                 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">Seller Registration</h3>
-                  <p className="text-xs text-slate-500 font-semibold">Verify your credentials to open your RentalKart seller account</p>
+                  <p className="text-xs text-slate-500 font-semibold">Verify your credentials to open your RentKart seller account</p>
                 </div>
 
                 <form onSubmit={handleStep1Submit} className="space-y-5">
@@ -614,7 +614,7 @@ export default function VendorRegisterPage() {
                         {gstinVerified ? "Verified ✓" : "Verify GSTIN"}
                       </Button>
                     </div>
-                    <p className="text-[9px] text-slate-400 font-bold mt-1">GSTIN registration is mandatory for business transactions on RentalKart.</p>
+                    <p className="text-[9px] text-slate-400 font-bold mt-1">GSTIN registration is mandatory for business transactions on RentKart.</p>
                   </div>
 
                   {/* Company / Store Name */}

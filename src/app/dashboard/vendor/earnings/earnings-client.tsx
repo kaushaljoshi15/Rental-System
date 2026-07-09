@@ -108,7 +108,7 @@ export function EarningsClient({ stats, transactions, bankDetails }: EarningsCli
         </head>
         <body>
           <div class="header">
-            <h2>RENTALKART VENDOR GST STATEMENT</h2>
+            <h2>RENTKART VENDOR GST STATEMENT</h2>
             <p>Quarter: Q2 (April - June 2026)</p>
           </div>
           <table>

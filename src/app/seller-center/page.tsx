@@ -107,7 +107,7 @@ export default function SellerCenterPage() {
 
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
-        <p>© {new Date().getFullYear()} RentalKart. All rights reserved. Seller Operations Console.</p>
+        <p>© {new Date().getFullYear()} RentKart. All rights reserved. Seller Operations Console.</p>
       </footer>
 
     </div>

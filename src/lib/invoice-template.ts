@@ -60,7 +60,7 @@ export function generateInvoiceHTML({
   });
   const totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
 
-  const companyName = vendorProfile.companyName || "RENTALKART PARTNER";
+  const companyName = vendorProfile.companyName || "RENTKART PARTNER";
   const gstin = vendorProfile.gstin || "N/A";
   const address = vendorProfile.address || "N/A";
   const signature = vendorProfile.signature || "Authorized Signatory";

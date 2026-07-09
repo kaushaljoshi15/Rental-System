@@ -175,7 +175,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
           setPhoneOtp("")
           toast.success("Phone number verified and updated successfully!")
         } else {
-          toast.error("Verified, but failed to save profile to database.")
+          toast.error(saveRes.message || "Verified, but failed to save profile to database.")
         }
       } else {
         toast.error(res.error || "Incorrect OTP code. Please try again.")
@@ -250,9 +250,14 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
           setIsEditingEmail(false)
           setEmailOtpSent(false)
           setEmailOtp("")
-          toast.success("Email address verified and updated successfully!")
+          toast.success("Email address verified and updated successfully! Please log in again with your new email address.", {
+            duration: 5000
+          })
+          setTimeout(() => {
+            signOut({ callbackUrl: "/login" })
+          }, 2500)
         } else {
-          toast.error("Verified, but failed to save profile to database.")
+          toast.error(saveRes.message || "Verified, but failed to save profile to database.")
         }
       } else {
         toast.error(res.error || "Incorrect OTP code. Please try again.")
@@ -273,7 +278,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
 
   const handleDeleteAccount = async () => {
     const isConfirmed = window.confirm(
-      "Are you absolutely sure you want to permanently delete your RentalKart account? This will erase all your personal details, order records, coupons, and wallet balance. This action CANNOT be undone."
+      "Are you absolutely sure you want to permanently delete your RentKart account? This will erase all your personal details, order records, coupons, and wallet balance. This action CANNOT be undone."
     )
     if (!isConfirmed) return
 
@@ -842,18 +847,18 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                 </div>
                 
                 <div className="pb-4 border-b border-slate-100 space-y-1.5">
-                  <h5 className="font-bold text-slate-900">When will my RentalKart account be updated with the new email address?</h5>
+                  <h5 className="font-bold text-slate-900">When will my RentKart account be updated with the new email address?</h5>
                   <p className="text-slate-500 font-medium leading-relaxed">It happens as soon as you confirm the verification code sent to your email (or mobile) and save the changes.</p>
                 </div>
                 
                 <div className="pb-4 border-b border-slate-100 space-y-1.5">
-                  <h5 className="font-bold text-slate-900">What happens to my existing RentalKart orders when I update details?</h5>
+                  <h5 className="font-bold text-slate-900">What happens to my existing RentKart orders when I update details?</h5>
                   <p className="text-slate-500 font-medium leading-relaxed">Updating your details does not affect your active orders. Your history remains fully intact and available inside your order dashboard.</p>
                 </div>
 
                 <div className="space-y-1.5">
                   <h5 className="font-bold text-slate-900">Does my Seller/Vendor account get affected when I update my email?</h5>
-                  <p className="text-slate-500 font-medium leading-relaxed">RentalKart has a &apos;single sign-on&apos; policy. Any changes will reflect in your Seller/Vendor account also.</p>
+                  <p className="text-slate-500 font-medium leading-relaxed">RentKart has a &apos;single sign-on&apos; policy. Any changes will reflect in your Seller/Vendor account also.</p>
                 </div>
               </div>
             </Card>
@@ -874,7 +879,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
               
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-1">
-                  <p className="text-[9px] text-[#F59E0B] font-bold uppercase tracking-widest font-mono">RentalKart Pay</p>
+                  <p className="text-[9px] text-[#F59E0B] font-bold uppercase tracking-widest font-mono">RentKart Pay</p>
                   <div className="w-10 h-7 bg-gradient-to-br from-amber-300 via-amber-400 to-amber-200 rounded-md border border-amber-300/40 relative overflow-hidden shrink-0 shadow-inner opacity-90 mt-2">
                     <div className="absolute top-0 bottom-0 left-[30%] w-[1px] bg-amber-600/30" />
                     <div className="absolute top-0 bottom-0 left-[60%] w-[1px] bg-amber-600/30" />

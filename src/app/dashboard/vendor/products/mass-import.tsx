@@ -165,7 +165,7 @@ export function MassImport({ categories, onClose, onImportSuccess }: MassImportP
     
     const link = document.createElement("a")
     link.setAttribute("href", csvContent)
-    link.setAttribute("download", "rentalkart_bulk_products_template.csv")
+    link.setAttribute("download", "rentkart_bulk_products_template.csv")
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

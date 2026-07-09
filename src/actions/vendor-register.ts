@@ -63,17 +63,17 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
       // Attempt SMTP send
       try {
         await transporter.sendMail({
-          from: `"RentalKart Seller Hub" <${smtpUser}>`,
+          from: `"RentKart Seller Hub" <${smtpUser}>`,
           to: formattedValue,
           subject: "Verify Your Seller Account OTP",
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
               <div style="background-color: #0f172a; padding: 24px; text-align: center;">
-                <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800; tracking-wide: uppercase;">RentalKart Seller Hub</h1>
+                <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800; tracking-wide: uppercase;">RentKart Seller Hub</h1>
               </div>
               <div style="padding: 24px; background-color: #ffffff; color: #1e293b;">
                 <h2 style="font-size: 16px; font-weight: 700; margin-top: 0;">Account Verification</h2>
-                <p style="font-size: 14px; line-height: 1.6; color: #475569;">You are registering a vendor store account on RentalKart. Please use the following 6-digit verification code to verify your email address:</p>
+                <p style="font-size: 14px; line-height: 1.6; color: #475569;">You are registering a vendor store account on RentKart. Please use the following 6-digit verification code to verify your email address:</p>
                 <div style="text-align: center; margin: 30px 0;">
                   <span style="font-size: 28px; font-weight: 900; letter-spacing: 6px; color: #f59e0b; background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 10px 24px; border-radius: 8px; display: inline-block;">${otp}</span>
                 </div>
@@ -105,7 +105,7 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
       try {
         const client = twilio(twilioAccountSid, twilioAuthToken)
         await client.messages.create({
-          body: `Your RentalKart Seller Hub OTP code is: ${otp}. It is valid for 10 minutes.`,
+          body: `Your RentKart Seller Hub OTP code is: ${otp}. It is valid for 10 minutes.`,
           from: twilioPhoneNumber,
           to: formattedValue
         })
@@ -136,25 +136,40 @@ export async function verifyOtpAction(type: 'EMAIL' | 'PHONE', value: string, ot
   if (!value || !otp) return { error: "Missing value or OTP." }
 
   const formattedValue = value.trim().toLowerCase()
+  const cleanOtp = otp.trim()
+
+  console.log(`\n🔍 [OTP VERIFICATION START] Type: ${type}, Value: ${formattedValue}, Received OTP: "${cleanOtp}"`);
 
   try {
+    const activeRecords = await prisma.otpVerification.findMany({
+      where: { type, value: formattedValue },
+      orderBy: { createdAt: 'desc' }
+    })
+    console.log(`ℹ️ [OTP VERIFICATION] Found ${activeRecords.length} database records for ${formattedValue}`);
+    activeRecords.forEach((rec, idx) => {
+      console.log(`  [Record ${idx + 1}] Code: "${rec.otp}", Expires: ${rec.expiresAt.toISOString()}, Created: ${rec.createdAt.toISOString()}`);
+    });
+
     const record = await prisma.otpVerification.findFirst({
       where: {
         type,
         value: formattedValue,
-        otp: otp.trim()
+        otp: cleanOtp
       },
       orderBy: { createdAt: 'desc' }
     })
 
     if (!record) {
+      console.log(`❌ [OTP VERIFICATION FAILED] No matching OTP "${cleanOtp}" record found in DB for ${formattedValue}`);
       return { success: false, error: "Incorrect OTP code." }
     }
 
     if (new Date() > record.expiresAt) {
+      console.log(`❌ [OTP VERIFICATION FAILED] OTP record matches, but it has expired (Expired at: ${record.expiresAt.toISOString()})`);
       return { success: false, error: "OTP code has expired." }
     }
 
+    console.log(`✅ [OTP VERIFICATION SUCCESS] OTP verified successfully for ${formattedValue}`);
     return { success: true }
   } catch (err) {
     console.error("❌ VERIFY OTP ERROR:", err)
