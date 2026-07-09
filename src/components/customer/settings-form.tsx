@@ -5,7 +5,7 @@ import { updateProfile, addMoneyToWallet, deleteAccount } from "@/actions/profil
 import { AVATAR_PRESETS } from "@/lib/avatars"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { sendOtpAction, verifyOtpAction } from "@/actions/vendor-register"
+import { sendOtpAction, verifyOtpAction, validatePhoneNumberAction } from "@/actions/vendor-register"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
@@ -122,66 +122,34 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
   const [phoneOtp, setPhoneOtp] = useState("")
   const [otpLoading, setOtpLoading] = useState(false)
 
-  const handleSendOTP = async () => {
-    if (!profile.phoneNumber || !/^\+?[0-9\s-]{10,15}$/.test(profile.phoneNumber.trim())) {
-      toast.error("Please enter a valid phone number (10-15 digits).")
+  const handleSavePhone = async () => {
+    if (!profile.phoneNumber) {
+      toast.error("Phone number is required.")
       return
     }
 
     setOtpLoading(true)
     try {
-      const res = await sendOtpAction("PHONE", profile.phoneNumber)
-      if (res.success) {
-        setPhoneOtpSent(true)
-        if (res.gatewayError) {
-          toast.warning(
-            `Sandbox Mode: Real-time SMS failed. Use Sandbox OTP: ${res.otp}`,
-            {
-              description: res.gatewayError,
-              duration: 12000
-            }
-          )
-        } else {
-          toast.success("OTP sent successfully to your phone!")
-        }
+      const checkRes = await validatePhoneNumberAction(profile.phoneNumber)
+      if (checkRes.error) {
+        toast.error(checkRes.error)
+        return
+      }
+
+      const saveRes = await updateProfile({
+        phoneNumber: profile.phoneNumber
+      })
+      
+      if (saveRes.success) {
+        setIsEditingPhone(false)
+        setPhoneOtpSent(false)
+        setPhoneOtp("")
+        toast.success("Phone number updated successfully!")
       } else {
-        toast.error(res.error || "Failed to send OTP.")
+        toast.error(saveRes.message || "Failed to save profile to database.")
       }
     } catch {
-      toast.error("Failed to send OTP.")
-    } finally {
-      setOtpLoading(false)
-    }
-  }
-
-  const handleVerifyOTP = async () => {
-    if (!phoneOtp || phoneOtp.length < 6) {
-      toast.error("Please enter the 6-digit OTP code.")
-      return
-    }
-
-    setOtpLoading(true)
-    try {
-      const res = await verifyOtpAction("PHONE", profile.phoneNumber, phoneOtp)
-      if (res.success) {
-        // Immediately save to profile database
-        const saveRes = await updateProfile({
-          phoneNumber: profile.phoneNumber
-        })
-        
-        if (saveRes.success) {
-          setIsEditingPhone(false)
-          setPhoneOtpSent(false)
-          setPhoneOtp("")
-          toast.success("Phone number verified and updated successfully!")
-        } else {
-          toast.error(saveRes.message || "Verified, but failed to save profile to database.")
-        }
-      } else {
-        toast.error(res.error || "Incorrect OTP code. Please try again.")
-      }
-    } catch {
-      toast.error("Verification failed.")
+      toast.error("Failed to update phone number.")
     } finally {
       setOtpLoading(false)
     }
@@ -704,16 +672,16 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         >
                           Change
                         </Button>
-                      ) : !phoneOtpSent ? (
+                      ) : (
                         <div className="flex gap-2">
                           <Button 
                             type="button" 
                             disabled={otpLoading}
-                            onClick={handleSendOTP}
+                            onClick={handleSavePhone}
                             className="h-10 text-xs font-bold bg-slate-900 text-white hover:bg-[#F59E0B] hover:text-slate-955 rounded-xl transition-colors cursor-pointer shadow-sm"
                           >
                             {otpLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
-                            Send OTP
+                            Save
                           </Button>
                           <Button 
                             type="button" 
@@ -724,55 +692,8 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                             Cancel
                           </Button>
                         </div>
-                      ) : (
-                        <Button 
-                          type="button" 
-                          variant="ghost"
-                          onClick={handleCancelPhoneEdit}
-                          className="h-10 text-xs font-semibold hover:bg-slate-100 text-slate-500 rounded-xl transition-colors cursor-pointer"
-                        >
-                          Reset
-                        </Button>
                       )}
                     </div>
-
-                    {/* OTP input field block */}
-                    {isEditingPhone && phoneOtpSent && (
-                      <div className="flex flex-col gap-2 pt-2 bg-slate-50/50 p-4 border border-slate-150 rounded-2xl animate-in fade-in slide-in-from-top-1.5 duration-200">
-                        <Label htmlFor="phoneOtp" className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Enter 6-Digit OTP Code</Label>
-                        <div className="flex gap-3">
-                          <Input
-                            id="phoneOtp"
-                            type="text"
-                            maxLength={6}
-                            placeholder="••••••"
-                            value={phoneOtp}
-                            onChange={(e) => setPhoneOtp(e.target.value.replace(/[^0-9]/g, ""))}
-                            className="text-xs text-center tracking-[4px] font-black rounded-xl h-10 border-slate-200 w-32 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400 font-mono"
-                          />
-                          <Button 
-                            type="button" 
-                            disabled={otpLoading}
-                            onClick={handleVerifyOTP}
-                            className="h-10 text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-600 rounded-xl transition-all cursor-pointer shadow-sm shrink-0 px-5"
-                          >
-                            {otpLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
-                            Verify OTP
-                          </Button>
-                          <Button 
-                            type="button" 
-                            variant="outline"
-                            onClick={handleSendOTP}
-                            className="h-10 text-xs font-bold border-slate-200 text-slate-600 rounded-xl transition-colors cursor-pointer"
-                          >
-                            Resend
-                          </Button>
-                        </div>
-                        <p className="text-[10px] text-slate-400 font-semibold">
-                          A 6-digit verification code has been sent to your mobile number.
-                        </p>
-                      </div>
-                    )}
                   </div>
 
                   {/* Section: Alternate Mobile Details */}

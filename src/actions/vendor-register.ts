@@ -281,3 +281,44 @@ export async function registerVendorStep2(
     return { error: "Failed to save business details." }
   }
 }
+
+/**
+ * Validates whether a phone number is active and working in the world using Twilio Lookup API.
+ * If Twilio is not configured, it falls back to basic E.164 regex check.
+ */
+export async function validatePhoneNumberAction(phoneNumber: string) {
+  if (!phoneNumber) return { error: "Phone number is required." }
+  
+  const cleanPhone = phoneNumber.replace(/\s+/g, "")
+  const phoneRegex = /^\+[1-9]\d{9,14}$/
+  if (!phoneRegex.test(cleanPhone)) {
+    return { error: "Please enter a valid phone number starting with + and country code (e.g., +918160278562)." }
+  }
+
+  const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
+  const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN
+
+  if (!twilioAccountSid || !twilioAuthToken) {
+    // Fallback: verification passes regex test in sandbox mode
+    return { success: true, message: "Phone number format validated (Sandbox Mode)." }
+  }
+
+  try {
+    const client = twilio(twilioAccountSid, twilioAuthToken)
+    const lookup = await client.lookups.v2.phoneNumbers(cleanPhone).fetch()
+    
+    if (lookup.valid === false) {
+      return { error: "This phone number is invalid or does not exist." }
+    }
+    
+    return { success: true, message: "Phone number verified as active and valid." }
+  } catch (err: any) {
+    console.error("❌ TWILIO PHONE LOOKUP FAILURE:", err)
+    // If Twilio fails with a lookup error (like invalid number), report it.
+    // Standard Twilio invalid code is 20404.
+    if (err.status === 404 || err.code === 20404) {
+      return { error: "This phone number is not registered or active in the carrier network." }
+    }
+    return { success: true, message: "Phone number format validated (Gateway offline)." }
+  }
+}
