@@ -46,6 +46,10 @@ export default function VendorRegisterPage() {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
+  useEffect(() => {
+    document.cookie = "next-auth.target-role=VENDOR; path=/; max-age=60; SameSite=Lax";
+  }, [])
+
   const handleGoogleSignIn = () => {
     document.cookie = "next-auth.target-role=VENDOR; path=/; max-age=60; SameSite=Lax";
     signIn("google", { callbackUrl: "/dashboard/vendor" });

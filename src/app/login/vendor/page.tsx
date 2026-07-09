@@ -31,6 +31,7 @@ function VendorLoginForm() {
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
+    document.cookie = "next-auth.target-role=VENDOR; path=/; max-age=60; SameSite=Lax";
     if (searchParams.get('verified') === 'true') {
       toast.success("Seller account verified! Please log in.")
     }

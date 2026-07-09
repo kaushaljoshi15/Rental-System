@@ -44,6 +44,19 @@ export const authOptions: NextAuthOptions = {
           // Get role from user (role is stored as string in schema)
           const roleName = user.role || "CUSTOMER";
 
+          // Read target role from cookie to isolate Customer and Seller portals
+          const cookieStore = await cookies();
+          const targetRole = cookieStore.get("next-auth.target-role")?.value || "CUSTOMER";
+
+          if (roleName !== "ADMIN") {
+            if (targetRole === "CUSTOMER" && roleName === "VENDOR") {
+              throw new Error("This account is registered as a Seller. Please use the Seller Hub to log in.");
+            }
+            if (targetRole === "VENDOR" && roleName === "CUSTOMER") {
+              throw new Error("This account is registered as a Customer. Please use the main customer portal to log in.");
+            }
+          }
+
           return {
             id: user.id,
             name: user.name,

@@ -1,7 +1,7 @@
 // src/app/register/page.tsx
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { signIn } from "next-auth/react"
@@ -29,6 +29,10 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [role, setRole] = useState("CUSTOMER") 
   const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    document.cookie = "next-auth.target-role=CUSTOMER; path=/; max-age=60; SameSite=Lax";
+  }, [])
 
   const handleGoogleSignIn = () => {
     document.cookie = "next-auth.target-role=CUSTOMER; path=/; max-age=60; SameSite=Lax";

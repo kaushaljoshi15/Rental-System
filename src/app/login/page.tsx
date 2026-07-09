@@ -31,6 +31,7 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
+    document.cookie = "next-auth.target-role=CUSTOMER; path=/; max-age=60; SameSite=Lax";
     if (searchParams.get('verified') === 'true') {
       toast.success("Email verified! Please log in.")
     }
