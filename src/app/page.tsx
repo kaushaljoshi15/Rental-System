@@ -95,6 +95,8 @@ import { GiftCardsManager, SavedCardsManager, SavedUpiManager } from "@/componen
 import { RentalSimulator } from "@/components/rental-simulator"
 import { MobileCategories } from "@/components/mobile-categories"
 import { BottomNav } from "@/components/bottom-nav"
+import { CatalogGridClient } from "@/components/catalog-grid-client"
+
 
 // Cache helper for category lists
 const getCachedCategories = unstable_cache(
@@ -1798,13 +1800,17 @@ export default async function HomePage({
         )) : (
         <>
           {/* --- TOP SLIDER CAROUSEL (MYNTRA/FLIPKART INTERFACE) --- */}
-          <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6 min-w-0">
-            <HeroCarousel categorySlug={categorySlug} />
-            <RecentlyViewedSection allProducts={allProductsForSearch} userName={userName} />
-          </section>
+          {!searchQuery && (
+            <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6 min-w-0">
+              <HeroCarousel categorySlug={categorySlug} />
+              <RecentlyViewedSection allProducts={allProductsForSearch} userName={userName} />
+            </section>
+          )}
           <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16 min-w-0">
             {!categorySlug ? (
               <div className="space-y-16">
+                {!searchQuery && (
+                  <>
                 {/* Row 1: Top Selection */}
                 <TopSelectionRow 
                   items={[
@@ -1946,109 +1952,23 @@ export default async function HomePage({
                     })}
                   </div>
                 </div>
+                </>)}
 
                 {/* Explore All Rentals Header */}
                 <div className="pt-8 border-t border-slate-200">
-                  <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">Explore All Rentals</h2>
-                  <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">Filter, sort, and rent premium gear & spaces directly</p>
+                  <h2 className="text-lg font-black text-[#0F172A] uppercase tracking-tight">
+                    {searchQuery ? `Search Results for "${searchQuery}"` : "Explore All Rentals"}
+                  </h2>
+                  <p className="text-slate-500 text-[10px] font-extrabold uppercase mt-0.5">
+                    {searchQuery ? `Showing ${catalogProducts.length} items matching your query` : "Filter, sort, and rent premium gear & spaces directly"}
+                  </p>
                 </div>
 
                 {/* Normal Grid */}
-                <div className="w-full space-y-4">
-                  {catalogProducts.length === 0 ? (
-                    <div className="text-center py-24 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm">
-                      <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Tag className="h-8 w-8 text-slate-300" />
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 font-sans">No rentable assets found</h3>
-                      <p className="text-slate-500 mt-1 mb-6 max-w-sm mx-auto text-xs font-semibold leading-relaxed">
-                        We couldn't find any listings matching your active filters. Try resetting the filters or modifying your search query.
-                      </p>
-                      <Link href="/">
-                        <Button variant="outline" className="border-slate-300 font-bold text-xs uppercase tracking-wide px-6 py-2.5">Clear All Filters</Button>
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 w-full">
-                      {catalogProducts.map((product) => {
-                        if (!product) return null
-                        const { rating, count } = getSimulatedRating(product.id)
-                        const { mrp, discount } = getSimulatedMRP(product.priceDaily)
-                        const isWishlisted = userWishlistProductIds.includes(product.id)
-
-                        return (
-                          <Card
-                            key={product.id}
-                            className="group border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-amber-500/50 transition-all duration-200 rounded-xl relative p-0 gap-0"
-                            style={{ boxShadow: PREMIUM_BOX_SHADOW }}
-                          >
-                            {/* Header Image */}
-                            <div className="w-full aspect-square sm:aspect-[4/3] relative bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
-                              {product.image && product.image.startsWith("http") ? (
-                                <img
-                                  src={product.image}
-                                  alt={product.name}
-                                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                              ) : (
-                                <Building className="w-10 h-10 text-slate-300 animate-pulse" />
-                              )}
-
-                              <WishlistButton
-                                productId={product.id}
-                                initialIsWishlisted={isWishlisted}
-                                variant="floating"
-                              />
-
-                              <Badge className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 bg-white/95 text-slate-800 uppercase font-black text-[8px] sm:text-[9px] border border-slate-200 select-none shadow-sm hover:bg-white pointer-events-none">
-                                {product.category?.name || "General"}
-                              </Badge>
-                            </div>
-
-                            {/* Content Body */}
-                            <CardHeader className="p-2 sm:p-4 pb-1 sm:pb-2 space-y-1 sm:space-y-1.5 flex-1">
-                              <Link href={`/products/${product.id}`} className="block">
-                                <h4 className="text-[10px] sm:text-xs font-black text-[#0F172A] hover:text-[#F59E0B] line-clamp-2 tracking-wide leading-tight min-h-[28px] sm:min-h-[32px]">
-                                  {product.name}
-                                </h4>
-                              </Link>
-
-                              <div className="flex items-center gap-1 select-none">
-                                <div className="flex items-center text-amber-500 bg-amber-50 px-1 py-0.5 rounded text-[8px] sm:text-[10px] font-extrabold border border-amber-200/40">
-                                  <Star className="w-2.5 h-2.5 fill-current mr-0.5 shrink-0" />
-                                  {rating}
-                                </div>
-                                <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold">({count} ratings)</span>
-                              </div>
-
-                              <p className="hidden sm:block text-[11px] text-slate-505 leading-relaxed line-clamp-2">
-                                {product.description || "Premium equipment listed under platform safety guidelines."}
-                              </p>
-                            </CardHeader>
-
-                            {/* Price and rent triggers */}
-                            <div className="p-2 sm:p-4 pt-1 sm:pt-2 mt-auto border-t border-slate-100/60 bg-slate-50/20 space-y-1.5 sm:space-y-4">
-                              <div className="flex items-baseline gap-1 sm:gap-1.5 flex-wrap select-text font-mono">
-                                <span className="text-sm sm:text-base font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
-                                <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold">/day</span>
-                                <span className="text-[9px] sm:text-[10px] text-slate-400 line-through">₹{mrp}</span>
-                                <span className="text-[9px] sm:text-[10px] font-black text-emerald-600">({discount}% Off)</span>
-                              </div>
-
-                              <div className="select-none">
-                                <RentButton
-                                  productId={product.id}
-                                  price={product.priceDaily}
-                                  stock={product.totalStock}
-                                />
-                              </div>
-                            </div>
-                          </Card>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
+                <CatalogGridClient
+                  initialProducts={catalogProducts}
+                  userWishlistProductIds={userWishlistProductIds}
+                />
               </div>
             ) : (
               <div className="w-full space-y-12">

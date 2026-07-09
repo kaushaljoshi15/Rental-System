@@ -11,6 +11,7 @@ export default async function VendorDashboardPage() {
     redirect("/login")
   }
 
+  // Fetch user first because its ID is needed for the rest of the queries
   const user = await prisma.user.findUnique({
     where: { email: session.user.email }
   })
@@ -19,44 +20,192 @@ export default async function VendorDashboardPage() {
     redirect("/login")
   }
 
-  // 1. Calculate stats and revenue trend from db with dynamic payout logic
-  const vendorOrders = await prisma.rentalOrder.findMany({
-    where: {
-      lines: {
-        some: {
-          product: {
-            vendorId: user.id
+  const now = new Date()
+  const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+  // Fetch all dashboard data in parallel to achieve maximum page render speed!
+  const [
+    vendorOrders,
+    activeRentals,
+    pendingOrders,
+    totalProducts,
+    reviews,
+    recentOrders,
+    lowStockItems,
+    upcomingReturns
+  ] = await Promise.all([
+    // 1. Calculate stats and revenue trend from db with dynamic payout logic
+    prisma.rentalOrder.findMany({
+      where: {
+        lines: {
+          some: {
+            product: {
+              vendorId: user.id
+            }
           }
-        }
+        },
+        status: { notIn: ["QUOTATION", "CANCELLED"] }
       },
-      status: { notIn: ["QUOTATION", "CANCELLED"] }
-    },
-    select: {
-      createdAt: true,
-      startDate: true,
-      endDate: true,
-      discountAmount: true,
-      lines: {
-        select: {
-          price: true,
-          quantity: true,
-          product: {
-            select: {
-              vendorId: true,
-              vendor: {
-                select: {
-                  commissionRate: true
+      select: {
+        createdAt: true,
+        startDate: true,
+        endDate: true,
+        discountAmount: true,
+        lines: {
+          select: {
+            price: true,
+            quantity: true,
+            product: {
+              select: {
+                vendorId: true,
+                vendor: {
+                  select: {
+                    commissionRate: true
+                  }
                 }
               }
             }
           }
         }
+      },
+      orderBy: {
+        createdAt: 'asc'
       }
-    },
-    orderBy: {
-      createdAt: 'asc'
-    }
-  })
+    }),
+    
+    // 2. Active rentals count
+    prisma.rentalOrder.count({
+      where: {
+        lines: {
+          some: {
+            product: {
+              vendorId: user.id
+            }
+          }
+        },
+        status: { in: ["CONFIRMED", "PICKED_UP"] }
+      }
+    }),
+
+    // 3. Pending orders count
+    prisma.rentalOrder.count({
+      where: {
+        lines: {
+          some: {
+            product: {
+              vendorId: user.id
+            }
+          }
+        },
+        status: "PENDING"
+      }
+    }),
+
+    // 4. Total products count
+    prisma.product.count({
+      where: {
+        vendorId: user.id
+      }
+    }),
+
+    // 5. Reviews metrics
+    prisma.review.findMany({
+      where: {
+        product: {
+          vendorId: user.id
+        }
+      },
+      select: {
+        rating: true
+      }
+    }),
+
+    // 6. Recent orders feed
+    prisma.rentalOrder.findMany({
+      where: {
+        lines: {
+          some: {
+            product: {
+              vendorId: user.id
+            }
+          }
+        },
+        status: { not: "QUOTATION" }
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
+        },
+        lines: {
+          include: {
+            product: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    }),
+
+    // 7. Low stock alerts
+    prisma.product.findMany({
+      where: {
+        vendorId: user.id,
+        totalStock: { lte: 2 }
+      },
+      select: {
+        id: true,
+        name: true,
+        totalStock: true,
+        priceDaily: true,
+        image: true
+      },
+      take: 5
+    }),
+
+    // 8. Upcoming return alerts
+    prisma.rentalOrder.findMany({
+      where: {
+        lines: {
+          some: {
+            product: {
+              vendorId: user.id
+            }
+          }
+        },
+        status: { in: ["CONFIRMED", "PICKED_UP"] },
+        endDate: {
+          gte: now,
+          lte: sevenDaysLater
+        }
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true
+          }
+        },
+        lines: {
+          include: {
+            product: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: { endDate: 'asc' },
+      take: 5
+    })
+  ])
 
   // Calculate dynamic payouts for each order
   const calculatedOrders = vendorOrders.map(order => {
@@ -68,38 +217,6 @@ export default async function VendorDashboardPage() {
   })
 
   const totalRevenue = calculatedOrders.reduce((sum, order) => sum + order.vendorPayout, 0)
-
-  const activeRentals = await prisma.rentalOrder.count({
-    where: {
-      lines: {
-        some: {
-          product: {
-            vendorId: user.id
-          }
-        }
-      },
-      status: { in: ["CONFIRMED", "PICKED_UP"] }
-    }
-  })
-
-  const pendingOrders = await prisma.rentalOrder.count({
-    where: {
-      lines: {
-        some: {
-          product: {
-            vendorId: user.id
-          }
-        }
-      },
-      status: "PENDING"
-    }
-  })
-
-  const totalProducts = await prisma.product.count({
-    where: {
-      vendorId: user.id
-    }
-  })
 
   // Dynamic Daily Data (last 30 days)
   const dailyData: Array<{ name: string; revenue: number }> = []
@@ -182,18 +299,6 @@ export default async function VendorDashboardPage() {
     monthly: cumulativeMonthlyData
   }
 
-  // 2. Reviews metrics
-  const reviews = await prisma.review.findMany({
-    where: {
-      product: {
-        vendorId: user.id
-      }
-    },
-    select: {
-      rating: true
-    }
-  })
-  
   const avgRating = reviews.length > 0 
     ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1))
     : 0.0
@@ -206,94 +311,6 @@ export default async function VendorDashboardPage() {
     totalProducts
   }
 
-  // 3. Load recent orders feed
-  const recentOrders = await prisma.rentalOrder.findMany({
-    where: {
-      lines: {
-        some: {
-          product: {
-            vendorId: user.id
-          }
-        }
-      },
-      status: { not: "QUOTATION" }
-    },
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true
-        }
-      },
-      lines: {
-        include: {
-          product: {
-            select: {
-              name: true
-            }
-          }
-        }
-      }
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 5
-  })
-
-  // 4. Load low stock alerts
-  const lowStockItems = await prisma.product.findMany({
-    where: {
-      vendorId: user.id,
-      totalStock: { lte: 2 }
-    },
-    select: {
-      id: true,
-      name: true,
-      totalStock: true,
-      priceDaily: true,
-      image: true
-    },
-    take: 5
-  })
-
-  const now = new Date()
-  const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-  // 5. Load upcoming return alerts
-  const upcomingReturns = await prisma.rentalOrder.findMany({
-    where: {
-      lines: {
-        some: {
-          product: {
-            vendorId: user.id
-          }
-        }
-      },
-      status: { in: ["CONFIRMED", "PICKED_UP"] },
-      endDate: {
-        gte: now,
-        lte: sevenDaysLater
-      }
-    },
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true
-        }
-      },
-      lines: {
-        include: {
-          product: {
-            select: {
-              name: true
-            }
-          }
-        }
-      }
-    },
-    orderBy: { endDate: 'asc' },
-    take: 5
-  })
 
   return (
     <VendorDashboardClient 
