@@ -11,6 +11,7 @@ const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com'
 const smtpPort = parseInt(process.env.SMTP_PORT || '587')
 const smtpUser = process.env.SMTP_USER || 'rental.system.otp@gmail.com'
 const smtpPass = process.env.SMTP_PASS || 'dummypassword'
+const smtpFrom = process.env.SMTP_FROM || smtpUser
 
 const transporter = nodemailer.createTransport({
   host: smtpHost,
@@ -63,7 +64,7 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
       // Attempt SMTP send
       try {
         await transporter.sendMail({
-          from: `"RentKart Seller Hub" <${smtpUser}>`,
+          from: `"RentKart Seller Hub" <${smtpFrom}>`,
           to: formattedValue,
           subject: "Verify Your Seller Account OTP",
           html: `
