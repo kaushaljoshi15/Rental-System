@@ -31,7 +31,11 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 /**
  * Generates and sends a 6-digit OTP to either Email or Phone.
  */
-export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
+export async function sendOtpAction(
+  type: 'EMAIL' | 'PHONE',
+  value: string,
+  context: 'VENDOR_REGISTER' | 'PROFILE_UPDATE' = 'VENDOR_REGISTER'
+) {
   if (!value) return { error: "Value is required." }
 
   const formattedValue = value.trim().toLowerCase()
@@ -58,23 +62,32 @@ export async function sendOtpAction(type: 'EMAIL' | 'PHONE', value: string) {
     if (type === 'EMAIL') {
       // Print backup to terminal console for local developer access
       console.log("\n----------------------------------------------------------");
-      console.log(`✉️  [NODEMAILER] EMAIL OTP FOR ${formattedValue}: ${otp}`);
+      console.log(`✉️  [NODEMAILER] EMAIL OTP FOR ${formattedValue}: ${otp} (Context: ${context})`);
       console.log("----------------------------------------------------------\n");
+
+      // Custom templates based on context
+      const isProfileUpdate = context === 'PROFILE_UPDATE'
+      const fromName = isProfileUpdate ? "RentKart Accounts" : "RentKart Seller Hub"
+      const mailSubject = isProfileUpdate ? "Verify Your Email Address Update - RentKart" : "Verify Your Seller Account OTP"
+      const headerTitle = isProfileUpdate ? "RentKart Profile Update" : "RentKart Seller Hub"
+      const bodyText = isProfileUpdate 
+        ? "You are updating the primary email address of your RentKart user account. Please use the following 6-digit verification code to complete your verification:"
+        : "You are registering a vendor store account on RentKart. Please use the following 6-digit verification code to verify your email address:"
 
       // Attempt SMTP send
       try {
         await transporter.sendMail({
-          from: `"RentKart Seller Hub" <${smtpFrom}>`,
+          from: `"${fromName}" <${smtpFrom}>`,
           to: formattedValue,
-          subject: "Verify Your Seller Account OTP",
+          subject: mailSubject,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
               <div style="background-color: #0f172a; padding: 24px; text-align: center;">
-                <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800; tracking-wide: uppercase;">RentKart Seller Hub</h1>
+                <h1 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 800; tracking-wide: uppercase;">${headerTitle}</h1>
               </div>
               <div style="padding: 24px; background-color: #ffffff; color: #1e293b;">
                 <h2 style="font-size: 16px; font-weight: 700; margin-top: 0;">Account Verification</h2>
-                <p style="font-size: 14px; line-height: 1.6; color: #475569;">You are registering a vendor store account on RentKart. Please use the following 6-digit verification code to verify your email address:</p>
+                <p style="font-size: 14px; line-height: 1.6; color: #475569;">${bodyText}</p>
                 <div style="text-align: center; margin: 30px 0;">
                   <span style="font-size: 28px; font-weight: 900; letter-spacing: 6px; color: #f59e0b; background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 10px 24px; border-radius: 8px; display: inline-block;">${otp}</span>
                 </div>
@@ -139,18 +152,7 @@ export async function verifyOtpAction(type: 'EMAIL' | 'PHONE', value: string, ot
   const formattedValue = value.trim().toLowerCase()
   const cleanOtp = otp.trim()
 
-  console.log(`\n🔍 [OTP VERIFICATION START] Type: ${type}, Value: ${formattedValue}, Received OTP: "${cleanOtp}"`);
-
   try {
-    const activeRecords = await prisma.otpVerification.findMany({
-      where: { type, value: formattedValue },
-      orderBy: { createdAt: 'desc' }
-    })
-    console.log(`ℹ️ [OTP VERIFICATION] Found ${activeRecords.length} database records for ${formattedValue}`);
-    activeRecords.forEach((rec, idx) => {
-      console.log(`  [Record ${idx + 1}] Code: "${rec.otp}", Expires: ${rec.expiresAt.toISOString()}, Created: ${rec.createdAt.toISOString()}`);
-    });
-
     const record = await prisma.otpVerification.findFirst({
       where: {
         type,
