@@ -13,96 +13,71 @@ export default function Icon() {
     (
       <div
         style={{
-          background: "linear-gradient(135deg, #0F172A 0%, #020617 100%)",
+          background: "linear-gradient(135deg, #1E293B 0%, #0B0F19 100%)",
           width: "100%",
           height: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: "10px",
-          padding: "6px",
+          borderRadius: "12px",
+          border: "2px solid rgba(245, 158, 11, 0.4)", // Brand Amber glow outline
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.4)",
         }}
       >
         <svg
-          width="32"
-          height="32"
+          width="36"
+          height="36"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <defs>
-            <linearGradient id="beast-icon-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#EA580C" />
-              <stop offset="50%" stopColor="#D97706" />
-              <stop offset="100%" stopColor="#9A3412" />
-            </linearGradient>
-          </defs>
+          {/* Creative 'Rolling Kart' R Design: combines letter R with a shopping cart */}
+          
+          {/* Cart Handle (top left) - White for high contrast */}
+          <rect
+            x="12"
+            y="20"
+            width="12"
+            height="6"
+            rx="3"
+            fill="#FFFFFF"
+          />
 
-          {/* Bottom shadow base */}
-          <ellipse cx="50" cy="92" rx="25" ry="2.5" fill="url(#beast-icon-grad)" opacity="0.75" />
+          {/* Vertical Stem (back of cart) - Brand Amber */}
+          <rect
+            x="20"
+            y="20"
+            width="12"
+            height="52"
+            rx="6"
+            fill="#F59E0B"
+          />
 
-          {/* Main R Swooshes */}
-          <g>
-            {/* Location pin vibe center dot */}
-            <circle cx="45" cy="37" r="4.5" fill="url(#beast-icon-grad)" />
+          {/* Upper Loop (basket) - Brand Amber */}
+          <path
+            d="M 38 26 H 54 C 66 26, 72 32, 72 40 C 72 48, 66 54, 54 54 H 38"
+            stroke="#F59E0B"
+            strokeWidth="12"
+            strokeLinecap="round"
+            fill="none"
+          />
 
-            {/* Left vertical crescent/leaf */}
-            <path
-              d="
-                M 42 12
-                C 28 14, 26 48, 38 78
-                C 41 83, 37 84, 32 82
-                C 20 76, 18 52, 28 24
-                C 31 16, 36 11, 42 12 Z"
-              fill="url(#beast-icon-grad)"
-            />
+          {/* Diagonal Leg (front support) - Brand Amber */}
+          <path
+            d="M 50 52 L 70 70"
+            stroke="#F59E0B"
+            strokeWidth="12"
+            strokeLinecap="round"
+            fill="none"
+          />
 
-            {/* Top flame tip accent */}
-            <path
-              d="
-                M 42 12
-                C 35 10, 26 12, 26 12
-                C 36 7, 50 9, 56 13
-                C 48 13, 43 12, 42 12 Z"
-              fill="url(#beast-icon-grad)"
-            />
+          {/* Rear Wheel (bottom of stem) - White rim, dark midnight center */}
+          <circle cx="26" cy="76" r="8" fill="#FFFFFF" />
+          <circle cx="26" cy="76" r="3.5" fill="#0F172A" />
 
-            {/* Top loop swoosh */}
-            <path
-              d="
-                M 39 21
-                C 52 15, 76 19, 78 33
-                C 80 47, 68 53, 52 47
-                C 48 45, 46 41, 46 41
-                C 56 45, 68 39, 68 31
-                C 68 23, 50 21, 39 21 Z"
-              fill="url(#beast-icon-grad)"
-            />
-
-            {/* Middle leg/loop transition swoosh */}
-            <path
-              d="
-                M 39 34
-                C 52 32, 68 40, 66 52
-                C 64 64, 50 74, 42 82
-                C 40 84, 42 84, 44 82
-                C 54 74, 70 64, 72 50
-                C 74 36, 54 30, 39 34 Z"
-              fill="url(#beast-icon-grad)"
-            />
-
-            {/* Bottom leg tail swoosh */}
-            <path
-              d="
-                M 40 50
-                C 47 52, 56 61, 52 74
-                C 50 80, 53 82, 58 82
-                C 73 82, 85 76, 85 76
-                C 77 78, 65 78, 57 72
-                C 53 66, 48 56, 40 50 Z"
-              fill="url(#beast-icon-grad)"
-            />
-          </g>
+          {/* Front Wheel (bottom of leg) - White rim, dark midnight center */}
+          <circle cx="70" cy="74" r="8" fill="#FFFFFF" />
+          <circle cx="70" cy="74" r="3.5" fill="#0F172A" />
         </svg>
       </div>
     ),
