@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rentkart.shop/sitemap.xml
+Sitemap: https://www.rentkart.shop/sitemap.xml

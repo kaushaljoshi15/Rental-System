@@ -4,7 +4,7 @@ import { prisma, prismaRetry } from "@/lib/prisma"
 export const revalidate = 3600 // Revalidate sitemap at most every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://rentkart.shop"
+  const baseUrl = "https://www.rentkart.shop"
 
   // Fetch only approved and rentable products from database to index them dynamically
   let products: any[] = []
