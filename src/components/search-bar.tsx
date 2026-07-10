@@ -219,6 +219,8 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
     const params = new URLSearchParams(searchParams.toString())
     if (searchTerm.trim() !== "") {
       params.set("query", searchTerm.trim())
+      // Reset category selection on active search to ensure global search results
+      params.delete("category")
     } else {
       params.delete("query")
     }
