@@ -51,48 +51,82 @@ interface CatalogGridClientProps {
 }
 
 export function CatalogGridClient({ initialProducts, userWishlistProductIds, allCategories = [] }: CatalogGridClientProps) {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   const searchQuery = searchParams.get("query") || ""
-  const activeCategorySlug = searchParams.get("category") || ""
-  const activeSort = searchParams.get("sort") || ""
-  const activeMinPrice = searchParams.get("minPrice") || ""
-  const activeMaxPrice = searchParams.get("maxPrice") || ""
-  const activeRating = searchParams.get("rating") || ""
+  
+  // Local state for active parameters to update UI in microseconds without server roundtrips
+  const [activeCategorySlug, setActiveCategorySlug] = useState(searchParams.get("category") || "")
+  const [activeSort, setActiveSort] = useState(searchParams.get("sort") || "")
+  const [activeMinPrice, setActiveMinPrice] = useState(searchParams.get("minPrice") || "")
+  const [activeMaxPrice, setActiveMaxPrice] = useState(searchParams.get("maxPrice") || "")
+  const [activeRating, setActiveRating] = useState(searchParams.get("rating") || "")
 
   // Local state for price filter inputs
   const [minInput, setMinInput] = useState(activeMinPrice)
   const [maxInput, setMaxInput] = useState(activeMaxPrice)
 
-  // Sync inputs with URL parameter updates
+  // Sync inputs with URL parameter updates (if user reloads or navigates)
   useEffect(() => {
-    setMinInput(activeMinPrice)
-    setMaxInput(activeMaxPrice)
-  }, [activeMinPrice, activeMaxPrice])
+    setActiveCategorySlug(searchParams.get("category") || "")
+    setActiveSort(searchParams.get("sort") || "")
+    setActiveMinPrice(searchParams.get("minPrice") || "")
+    setActiveMaxPrice(searchParams.get("maxPrice") || "")
+    setActiveRating(searchParams.get("rating") || "")
+    
+    setMinInput(searchParams.get("minPrice") || "")
+    setMaxInput(searchParams.get("maxPrice") || "")
+  }, [searchParams])
 
   // Mobile drawers toggle state
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [showMobileSort, setShowMobileSort] = useState(false)
 
-  // Navigation update helper
+  // Navigation update helper: updates React state instantly and synchronizes URL in address bar silently
   const updateParams = (updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString())
+    // 1. Update local states instantly
     Object.entries(updates).forEach(([key, val]) => {
-      if (val === null || val === "") {
-        params.delete(key)
-      } else {
-        params.set(key, val)
+      const normalizedVal = val === null ? "" : val
+      if (key === "category") setActiveCategorySlug(normalizedVal)
+      if (key === "sort") setActiveSort(normalizedVal)
+      if (key === "minPrice") {
+        setActiveMinPrice(normalizedVal)
+        setMinInput(normalizedVal)
       }
+      if (key === "maxPrice") {
+        setActiveMaxPrice(normalizedVal)
+        setMaxInput(normalizedVal)
+      }
+      if (key === "rating") setActiveRating(normalizedVal)
     })
-    router.push(`/?${params.toString()}`, { scroll: false })
+
+    // 2. Sync URL address bar without server re-render
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      Object.entries(updates).forEach(([key, val]) => {
+        if (val === null || val === "") {
+          params.delete(key)
+        } else {
+          params.set(key, val)
+        }
+      })
+      const newUrl = params.toString() ? `/?${params.toString()}` : "/"
+      window.history.replaceState(null, "", newUrl)
+    }
   }
 
-  // Clear all filters completely
+  // Clear all filters completely in microseconds
   const clearAllFilters = () => {
-    router.push("/", { scroll: false })
+    setActiveCategorySlug("")
+    setActiveSort("")
+    setActiveMinPrice("")
+    setActiveMaxPrice("")
+    setActiveRating("")
     setMinInput("")
     setMaxInput("")
+    if (typeof window !== "undefined") {
+      window.history.replaceState(null, "", "/")
+    }
   }
 
   // Handle price custom submit
@@ -105,12 +139,25 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
     setShowMobileFilters(false)
   }
 
-  // Preset price filters helper
+  // Preset price filters helper with toggle-off support
   const selectPresetPrice = (min: string | null, max: string | null) => {
-    updateParams({
-      minPrice: min,
-      maxPrice: max
-    })
+    const isCurrent = 
+      (min === null ? activeMinPrice === "" : activeMinPrice === min) &&
+      (max === null ? activeMaxPrice === "" : activeMaxPrice === max)
+
+    if (isCurrent) {
+      // Toggle off: clear filters
+      updateParams({
+        minPrice: null,
+        maxPrice: null
+      })
+    } else {
+      // Toggle on: apply filters
+      updateParams({
+        minPrice: min,
+        maxPrice: max
+      })
+    }
     setShowMobileFilters(false)
   }
 
@@ -120,7 +167,49 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
     return allCategories.find(c => c.slug === activeCategorySlug)?.name || ""
   }, [activeCategorySlug, allCategories])
 
-  const displayedProducts = initialProducts;
+  // Process sorting, price ranges, ratings, and categories client-side
+  const displayedProducts = useMemo(() => {
+    let result = [...initialProducts]
+
+    // 1. Category Filter
+    if (activeCategorySlug) {
+      result = result.filter(p => p.category?.slug === activeCategorySlug)
+    }
+
+    // 2. Price Filter (daily rate)
+    const minVal = parseFloat(activeMinPrice)
+    const maxVal = parseFloat(activeMaxPrice)
+    if (!isNaN(minVal)) {
+      result = result.filter(p => p.priceDaily >= minVal)
+    }
+    if (!isNaN(maxVal)) {
+      result = result.filter(p => p.priceDaily <= maxVal)
+    }
+
+    // 3. Customer Rating Filter (using the exact simulated rating value)
+    const ratingVal = parseFloat(activeRating)
+    if (!isNaN(ratingVal) && ratingVal > 0) {
+      result = result.filter(p => {
+        const { rating } = getSimulatedRating(p.id)
+        return parseFloat(rating) >= ratingVal
+      })
+    }
+
+    // 4. Sorting logic
+    if (activeSort === "price_asc") {
+      result.sort((a, b) => a.priceDaily - b.priceDaily)
+    } else if (activeSort === "price_desc") {
+      result.sort((a, b) => b.priceDaily - a.priceDaily)
+    } else if (activeSort === "rating_desc") {
+      result.sort((a, b) => {
+        const ratingA = parseFloat(getSimulatedRating(a.id).rating)
+        const ratingB = parseFloat(getSimulatedRating(b.id).rating)
+        return ratingB - ratingA
+      })
+    }
+
+    return result
+  }, [initialProducts, activeCategorySlug, activeMinPrice, activeMaxPrice, activeRating, activeSort]);
 
   // Render Category sidebar items
   const renderCategoriesList = () => (
@@ -213,7 +302,13 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
             type="number"
             placeholder="Min ₹"
             value={minInput}
-            onChange={(e) => setMinInput(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === "" || parseFloat(val) >= 0) {
+                setMinInput(val);
+              }
+            }}
+            min="0"
             className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#F59E0B]"
             suppressHydrationWarning
           />
@@ -224,7 +319,13 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
             type="number"
             placeholder="Max ₹"
             value={maxInput}
-            onChange={(e) => setMaxInput(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === "" || parseFloat(val) >= 0) {
+                setMaxInput(val);
+              }
+            }}
+            min="0"
             className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#F59E0B]"
             suppressHydrationWarning
           />
