@@ -2,8 +2,14 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  // Force Next.js dev server restart to reload generated Prisma Client
+  async rewrites() {
+    return [
+      {
+        source: '/favicon.ico',
+        destination: '/icon',
+      },
+    ];
+  },
 };
 
 const config = process.env.ANALYZE === "true"

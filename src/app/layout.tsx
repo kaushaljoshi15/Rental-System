@@ -64,6 +64,15 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "YOUR_GOOGLE_VERIFICATION_TOKEN",
   },
+  icons: {
+    icon: [
+      { url: "/icon", sizes: "48x48", type: "image/png" },
+      { url: "/icon", sizes: "96x96", type: "image/png" },
+      { url: "/icon", sizes: "144x144", type: "image/png" }
+    ],
+    shortcut: "/icon",
+    apple: "/icon",
+  },
 };
 
 export default function RootLayout({
