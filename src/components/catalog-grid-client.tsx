@@ -215,6 +215,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#F59E0B]"
+            suppressHydrationWarning
           />
         </div>
         <span className="text-[10px] text-slate-400 font-bold">to</span>
@@ -225,6 +226,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#F59E0B]"
+            suppressHydrationWarning
           />
         </div>
         <button type="submit" className="bg-[#F59E0B] hover:bg-[#D97706] text-white font-extrabold text-[10px] uppercase tracking-wide px-3 py-1 rounded transition-colors">

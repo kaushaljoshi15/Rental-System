@@ -343,6 +343,7 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
             }}
             placeholder={placeholder}
             className={`w-full border text-sm rounded-xl pl-10 pr-24 py-2.5 focus:outline-none focus:border-[#F59E0B] focus:ring-4 focus:ring-amber-500/20 transition-all font-semibold ${inputBg}`}
+            suppressHydrationWarning
           />
 
           {/* Action buttons panel */}
@@ -391,6 +392,7 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
         accept="image/*"
         capture="environment"
         className="hidden"
+        suppressHydrationWarning
       />
 
       {/* Premium AI Image Scanner Simulator Overlay Modal */}
