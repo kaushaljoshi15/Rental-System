@@ -2217,9 +2217,9 @@ export default async function HomePage({
 
       {/* --- PREMIUM FOOTER --- */}
       <footer className={`bg-slate-900 text-slate-400 text-sm mt-auto border-t border-slate-800 ${activeTab ? "hidden md:block" : ""}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8 select-text">
-          <div className="space-y-4 select-none">
-            <Logo className="h-6" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-2 md:grid-cols-5 gap-8 select-text">
+          <div className="col-span-2 md:col-span-1 space-y-4 select-none">
+            <Logo className="h-6" isDark />
             <p className="text-xs text-slate-550 leading-relaxed font-semibold">
               India&apos;s premier equipment & wedding venues renting marketplace. Grand banquet halls, AV sets, and concert rigs.
             </p>
@@ -2248,7 +2248,15 @@ export default async function HomePage({
               <li><Link href="/seller-center" className="hover:text-amber-500 font-extrabold text-[#F59E0B] uppercase tracking-wider">Sell on RentKart</Link></li>
               <li><Link href="#" className="hover:text-white font-semibold">Vendor Code of Conduct</Link></li>
               <li><Link href="#" className="hover:text-white font-semibold">Insurance Policy</Link></li>
-              <li><Link href="#support" className="hover:text-white font-semibold">Support Center</Link></li>
+              <li><Link href="/contact" className="hover:text-white font-semibold">Support Center</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold text-white mb-3 select-none">Trust & Safety</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link href="/privacy-policy" className="hover:text-white font-semibold">Privacy Policy</Link></li>
+              <li><Link href="/terms-of-service" className="hover:text-white font-semibold">Terms of Service</Link></li>
+              <li><Link href="/contact" className="hover:text-white font-semibold">Contact Us</Link></li>
             </ul>
           </div>
         </div>

@@ -71,7 +71,8 @@ export function CheckoutPanel({
   userAddressJson = null
 }: CheckoutPanelProps) {
   const router = useRouter()
-  
+
+
   // Coupon state
   const [couponCode, setCouponCode] = useState("")
   const [appliedCoupon, setAppliedCoupon] = useState<{
@@ -136,6 +137,8 @@ export function CheckoutPanel({
 
   const addresses = parseAddresses(userAddressJson)
   const defaultAddress = addresses.find(a => a.isDefault) || addresses[0]
+  const prefillName = defaultAddress?.name || "Customer"
+  const prefillPhone = defaultAddress?.phone || ""
 
   const getDeliveryDetails = () => {
     if (!defaultAddress) {
@@ -369,8 +372,8 @@ export function CheckoutPanel({
         }
       },
       prefill: {
-        name: "Kaushal Joshi",
-        email: "kaushal@example.com",
+        name: prefillName,
+        contact: prefillPhone,
       },
       theme: {
         color: "#1e3a8a",

@@ -4,12 +4,15 @@ interface LogoProps {
   className?: string
   accentColor?: string
   textColor?: string
+  isDark?: boolean
 }
 
-export function Logo({ className = "" }: LogoProps) {
+export function Logo({ className = "", textColor, isDark = false }: LogoProps) {
+  const useWhite = isDark || textColor === "white" || textColor === "#fff" || textColor === "#ffffff"
+
   return (
     <img
-      src="/logo.svg"
+      src={useWhite ? "/logo-white.svg" : "/logo.svg"}
       alt="RentKart"
       className={`h-9 w-auto select-none ${className}`}
       draggable={false}
