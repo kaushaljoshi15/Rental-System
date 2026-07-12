@@ -41,7 +41,7 @@ function ResetPasswordForm() {
       
       {/* Brand Header */}
       <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95 mb-8">
-        <Logo textColor="#0f172a" />
+        <Logo />
       </Link>
 
       <Card className="w-full max-w-md shadow-xl border-slate-200 bg-white rounded-2xl overflow-hidden">

@@ -262,7 +262,7 @@ export default function VendorRegisterPage() {
         
         {/* Brand */}
         <Link href="/" className="flex items-center gap-1.5 shrink-0 group transition-transform active:scale-95">
-          <Logo />
+          <Logo isDark />
           <span className="text-xs text-slate-400 font-normal uppercase tracking-wider ml-1">Seller Hub</span>
         </Link>
 

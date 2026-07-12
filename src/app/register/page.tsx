@@ -87,7 +87,7 @@ export default function RegisterPage() {
         
         {/* Brand */}
         <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95">
-          <Logo />
+          <Logo isDark />
         </Link>
 
         {/* Info */}
