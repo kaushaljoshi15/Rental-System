@@ -94,7 +94,7 @@ import { CartAddressSelector } from "@/components/customer/cart-address-selector
 import { GiftCardsManager, SavedCardsManager, SavedUpiManager } from "@/components/customer/payment-managers"
 import { RentalSimulator } from "@/components/rental-simulator"
 import { MobileCategories } from "@/components/mobile-categories"
-import { BottomNav } from "@/components/bottom-nav"
+import { OrdersListClient } from "@/components/customer/orders-list-client"
 import { CatalogGridClient } from "@/components/catalog-grid-client"
 
 
@@ -456,7 +456,7 @@ export default async function HomePage({
 
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans select-none text-slate-900 overflow-x-clip">
+    <div className="min-h-screen bg-white flex flex-col font-sans select-none text-slate-900 overflow-x-clip">
       {activeTab ? (
         <div className="hidden md:block sticky top-0 z-50">
           <Navbar />
@@ -467,7 +467,7 @@ export default async function HomePage({
 
       {/* Reusable Mobile Header with Return/Back Option */}
       {activeTab && activeTab !== "categories" && (
-        <div className="md:hidden bg-white border-b border-slate-100 h-14 flex items-center px-4 sticky top-0 z-40 select-none shadow-[0_2px_15px_rgba(0,0,0,0.04)]">
+        <div className="md:hidden bg-white/95 backdrop-blur-md border-b border-slate-100 h-14 flex items-center px-4 sticky top-0 z-40 select-none shadow-[0_2px_15px_rgba(0,0,0,0.02)]">
           <Link
             href={
               ["account", "cart"].includes(activeTab)
@@ -543,7 +543,7 @@ export default async function HomePage({
         </>
       ) : isLoggedIn && activeTab && customerData?.user ? (
         activeTab === "cart" ? (
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-28 md:pb-8 flex-1 w-full">
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 md:pt-10 pb-18 md:pb-8 flex-1 w-full">
             {(() => {
               const hasCartItems = customerData?.cart && customerData.cart.lines.length > 0;
               const cartStartDate = customerData?.cart?.startDate ? new Date(customerData.cart.startDate) : new Date();
@@ -665,7 +665,7 @@ export default async function HomePage({
             })()}
           </main>
         ) : (
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-28 md:pb-8 flex-1 w-full">
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 md:pt-10 pb-18 md:pb-8 flex-1 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left Sidebar Navigation Card */}
               <aside className="hidden lg:block lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md">
@@ -860,7 +860,7 @@ export default async function HomePage({
                 </nav>
               </aside>
 
-              <div className="lg:col-span-9 space-y-6 pt-2.5">
+              <div className="lg:col-span-9 space-y-6 pt-0 lg:pt-2.5">
 
 
 
@@ -1300,202 +1300,13 @@ export default async function HomePage({
                   // Render normal list
                   return (
                     <div className="space-y-6">
-                      <div>
-                        <h1 className="text-xl font-bold text-slate-900 tracking-tight uppercase">Order Central</h1>
-                        <p className="text-slate-500 text-xs mt-0.5">Track your rental lifecycle: Quotations &rarr; Active Rentals &rarr; Returns.</p>
-                      </div>
-
-                      {/* Stats Overview */}
-                      <div className="grid grid-cols-3 gap-3 md:gap-4.5">
-                        {/* Card 1: Pending Approval */}
-                        <div className="bg-gradient-to-b from-[#0F172A]/5 to-transparent border border-slate-200/60 rounded-2xl p-3 md:p-5 flex flex-col justify-between shadow-xs hover:border-[#F59E0B]/30 hover:shadow-sm transition-all duration-300 relative overflow-hidden group select-none">
-                          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1.5">
-                            <span className="text-[8px] md:text-[10px] font-black text-slate-450 uppercase tracking-wider font-sans leading-none">
-                              Pending
-                            </span>
-                            <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-slate-50 border border-slate-200/60 text-slate-500 flex items-center justify-center shadow-inner shrink-0">
-                              <FileText className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-550" />
-                            </div>
-                          </div>
-                          <div className="mt-2 md:mt-3">
-                            <h3 className="text-xl md:text-3xl font-extrabold text-slate-900 font-mono tracking-tight leading-none">
-                              {customerData.user.orders.filter((o: any) => o.status === "PENDING").length}
-                            </h3>
-                            <p className="hidden md:block text-[10px] text-slate-450 font-bold uppercase mt-1">Awaiting partner check</p>
-                          </div>
-                        </div>
-
-                        {/* Card 2: Active Rentals */}
-                        <div className="bg-gradient-to-b from-[#0F172A]/5 to-transparent border border-slate-200/60 rounded-2xl p-3 md:p-5 flex flex-col justify-between shadow-xs hover:border-[#F59E0B]/30 hover:shadow-sm transition-all duration-300 relative overflow-hidden group select-none">
-                          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1.5">
-                            <span className="text-[8px] md:text-[10px] font-black text-slate-450 uppercase tracking-wider font-sans leading-none">
-                              Active
-                            </span>
-                            <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-slate-50 border border-slate-200/60 text-slate-500 flex items-center justify-center shadow-inner shrink-0">
-                              <Package className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-550" />
-                            </div>
-                          </div>
-                          <div className="mt-2 md:mt-3">
-                            <h3 className="text-xl md:text-3xl font-extrabold text-slate-900 font-mono tracking-tight leading-none">
-                              {customerData.user.orders.filter((o: any) => o.status === "CONFIRMED" || o.status === "PICKED_UP").length}
-                            </h3>
-                            <p className="hidden md:block text-[10px] text-slate-450 font-bold uppercase mt-1">Live bookings active</p>
-                          </div>
-                        </div>
-
-                        {/* Card 3: Total Completed */}
-                        <div className="bg-gradient-to-b from-emerald-500/5 to-transparent border border-slate-200/60 rounded-2xl p-3 md:p-5 flex flex-col justify-between shadow-xs hover:border-emerald-500/30 hover:shadow-sm transition-all duration-300 relative overflow-hidden group select-none">
-                          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1.5">
-                            <span className="text-[8px] md:text-[10px] font-black text-emerald-650 uppercase tracking-wider font-sans leading-none">
-                              Completed
-                            </span>
-                            <div className="h-6 w-6 md:h-8 md:w-8 rounded-lg bg-emerald-50/50 border border-emerald-100/60 text-emerald-600 flex items-center justify-center shadow-inner shrink-0">
-                              <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-emerald-650" />
-                            </div>
-                          </div>
-                          <div className="mt-2 md:mt-3">
-                            <h3 className="text-xl md:text-3xl font-extrabold text-slate-900 font-mono tracking-tight leading-none">
-                              {customerData.user.orders.filter((o: any) => o.status === "RETURNED").length}
-                            </h3>
-                            <p className="hidden md:block text-[10px] text-emerald-650 font-bold uppercase mt-1">Returned & audited</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Orders List */}
-                      <div className="space-y-4">
-                        {customerData.user.orders.length === 0 ? (
-                          <div className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-sm rounded-3xl p-10 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
-                            <div className="relative flex items-center justify-center w-20 h-20">
-                              <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
-                              <div className="h-14 w-14 bg-slate-900 border border-slate-800 text-white rounded-2xl flex items-center justify-center shadow-md">
-                                <Package className="h-6 w-6 text-[#F59E0B]" />
-                              </div>
-                            </div>
-                            <div className="space-y-1.5">
-                              <span className="text-[9px] bg-amber-500/10 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Orders Clean</span>
-                              <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-2">No Active Bookings</h3>
-                              <p className="text-xs text-slate-505 max-w-xs mx-auto leading-relaxed font-semibold">
-                                You haven't placed any rental orders yet. Head to the homepage to select products or schedule your next event dates.
-                              </p>
-                            </div>
-                            <Link href="/">
-                              <Button className="bg-primary hover:bg-[#F59E0B] hover:text-[#0F172A] text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200">
-                                Explore Catalog
-                              </Button>
-                            </Link>
-                          </div>
-                        ) : (
-                          customerData.user.orders.map((order: any) => {
-                            const statusLabels: Record<string, string> = {
-                              PENDING: "Awaiting Approval",
-                              CONFIRMED: "Booking Confirmed",
-                              PICKED_UP: "Rental Live",
-                              RETURNED: "Returned & Closed",
-                              CANCELLED: "Cancelled",
-                            };
-
-                            const start = new Date(order.startDate);
-                            const end = new Date(order.endDate);
-                            const duration = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-
-                            const dotColors: Record<string, string> = {
-                              PENDING: "bg-amber-500",
-                              CONFIRMED: "bg-blue-500",
-                              PICKED_UP: "bg-purple-500",
-                              RETURNED: "bg-emerald-500",
-                              CANCELLED: "bg-rose-500",
-                            };
-
-                            return (
-                              <Card key={order.id} className="border border-slate-200/55 shadow-xs hover:shadow-sm transition-all rounded-2xl bg-white p-5 space-y-4">
-                                {/* Header Row */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-b border-slate-100 pb-4">
-                                  <div className="flex items-center gap-2.5">
-                                    <div className="h-8 w-8 rounded-lg bg-slate-50 border border-slate-200/60 flex items-center justify-center text-slate-550 shrink-0 shadow-xs">
-                                      <Clock className="w-4 h-4 text-slate-400" />
-                                    </div>
-                                    <div>
-                                      <p className="text-[9px] text-slate-450 font-bold uppercase tracking-wider leading-none mb-0.5 select-none">Rental Period</p>
-                                      <p className="font-semibold text-slate-800 font-mono text-[11px] sm:text-xs">
-                                        {start.toLocaleDateString()} — {end.toLocaleDateString()}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2 sm:self-start select-none">
-                                    <span className="bg-amber-500/10 text-[#F59E0B] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                      {duration} {duration === 1 ? "day" : "days"}
-                                    </span>
-                                    <span className="bg-slate-100 text-slate-500 font-mono text-[10px] font-bold px-2 py-0.5 rounded-md tracking-wider">
-                                      Ref: #{order.id.slice(-8).toUpperCase()}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                {/* Rented Assets list */}
-                                <div className="space-y-3">
-                                  {order.lines.map((line: any) => (
-                                    <div key={line.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40 p-3 rounded-xl border border-slate-100 transition-colors">
-                                      <div className="flex gap-3 items-center min-w-0">
-                                        <div className="w-14 h-14 bg-white border border-slate-200/60 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-xs">
-                                          {line.product.image ? (
-                                            <img src={line.product.image} alt={line.product.name} className="w-full h-full object-cover" />
-                                          ) : (
-                                            <Building className="w-5 h-5 text-slate-350" />
-                                          )}
-                                        </div>
-                                        <div className="min-w-0">
-                                          <h4 className="text-xs font-bold text-slate-900 truncate uppercase tracking-wide">
-                                            {line.product.name}
-                                          </h4>
-                                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-500">
-                                            <span className="font-semibold text-slate-700 font-mono">₹{line.price.toLocaleString()} / day</span>
-                                            <span className="text-slate-300">•</span>
-                                            <span className="font-medium">{line.quantity} Qty</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="flex sm:flex-col justify-between items-center sm:items-end border-t border-slate-100/60 sm:border-t-0 pt-2 sm:pt-0 shrink-0 text-xs">
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
-                                        <span className="text-xs text-slate-700 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-
-                                {/* Footer Details */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-slate-100">
-                                  <div className="flex items-center justify-between sm:justify-start gap-4 w-full sm:w-auto text-xs">
-                                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-150 px-2.5 py-1 rounded-full select-none">
-                                      <span className={`h-2 w-2 rounded-full ${dotColors[order.status] || "bg-slate-400"} ring-2 ring-offset-1 ring-offset-white ${order.status === "PENDING" ? "ring-amber-200 animate-pulse" : order.status === "CONFIRMED" ? "ring-blue-200" : order.status === "PICKED_UP" ? "ring-purple-200" : order.status === "RETURNED" ? "ring-emerald-200" : "ring-rose-200"}`} />
-                                      <span className="font-extrabold text-slate-800 uppercase tracking-wider text-[9px] leading-none">
-                                        {statusLabels[order.status] || order.status}
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                      <span className="text-slate-500 font-bold uppercase tracking-wider text-[10px] select-none">Total Paid:</span>
-                                      <span className="text-slate-900 font-mono font-black text-sm">₹{order.totalAmount.toLocaleString()}</span>
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
-                                    <Link href={`/?tab=orders&orderId=${order.id}`} className="flex-1 sm:flex-initial">
-                                      <Button variant="outline" size="sm" className="w-full text-xs font-black uppercase tracking-wider h-9 px-4 rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 transition-all shadow-xs cursor-pointer">
-                                        View Details
-                                      </Button>
-                                    </Link>
-                                    {["PENDING", "CONFIRMED"].includes(order.status) && (
-                                      <div className="flex-1 sm:flex-initial">
-                                        <CancelButton orderId={order.id} />
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </Card>
-                            );
-                          })
-                        )}
-                      </div>
+                      <OrdersListClient
+                        orders={customerData.user.orders}
+                        userName={userName}
+                        userEmail={customerData.user.email}
+                        userPhone={customerData.user.phoneNumber}
+                        userAddress={customerData.user.address}
+                      />
                     </div>
                   );
                 })()}
@@ -2264,7 +2075,6 @@ export default async function HomePage({
           © {new Date().getFullYear()} RentKart. All rights reserved.
         </div>
       </footer>
-      <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
     </div>
   )
 }

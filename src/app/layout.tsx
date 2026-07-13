@@ -4,7 +4,12 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SupportBot } from "@/components/support-bot";
 import { TopLoader } from "@/components/top-loader";
+import { PageTransition } from "@/components/page-transition";
 import { Suspense } from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { BottomNav } from "@/components/bottom-nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,11 +78,41 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions)
+  const isLoggedIn = !!session?.user
+
+  // Fetch active cart count server-side directly for dynamic badge count
+  let cartCount = 0
+  if (session?.user?.email) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        select: {
+          id: true,
+          orders: {
+            where: { status: "QUOTATION" },
+            select: {
+              lines: {
+                select: {
+                  quantity: true
+                }
+              }
+            }
+          }
+        }
+      })
+      if (user?.orders?.[0]?.lines) {
+        cartCount = user.orders[0].lines.reduce((acc: number, line: { quantity: number }) => acc + line.quantity, 0)
+      }
+    } catch (error) {
+      console.error("Error fetching cart count in root layout:", error)
+    }
+  }
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -129,11 +164,14 @@ export default function RootLayout({
             <TopLoader />
           </Suspense>
           <div className="pb-24 md:pb-0 min-h-screen flex flex-col">
-            {children}
+            <PageTransition>
+              {children}
+            </PageTransition>
           </div>
           <Suspense fallback={null}>
             <SupportBot />
           </Suspense>
+          <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
         </Providers>
       </body>
     </html>

@@ -25,6 +25,12 @@ interface ProductSummary {
 
 export function BookingWidget({ product }: { product: ProductSummary }) {
   const router = useRouter()
+  
+  // Warm up redirects to Cart and Login pages
+  React.useEffect(() => {
+    router.prefetch("/?tab=cart")
+    router.prefetch("/login")
+  }, [router])
   // 1. State for the selected date range
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),

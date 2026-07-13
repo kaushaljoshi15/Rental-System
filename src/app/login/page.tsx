@@ -140,6 +140,7 @@ function LoginForm() {
                     className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
+                    onFocus={() => router.prefetch("/dashboard")}
                     required
                   />
                 </div>
@@ -160,6 +161,7 @@ function LoginForm() {
                     className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
+                    onFocus={() => router.prefetch("/dashboard")}
                     required
                   />
                   <button

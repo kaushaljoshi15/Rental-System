@@ -334,11 +334,18 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
           <input
             type="text"
             value={query}
+            onFocus={() => {
+              // Prefetch catalog root to warm up search redirections
+              router.prefetch("/")
+            }}
             onChange={(e) => {
               const val = e.target.value
               setQuery(val)
               if (val.trim() === "") {
                 submitSearch("")
+              } else {
+                // Prefetch search query URL to cache results in background
+                router.prefetch(`/?query=${encodeURIComponent(val.trim())}`)
               }
             }}
             placeholder={placeholder}

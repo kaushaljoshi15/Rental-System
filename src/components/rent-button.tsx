@@ -28,6 +28,12 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
   const [date, setDate] = React.useState<DateRange | undefined>(undefined)
   const router = useRouter()
 
+  // Warm up redirects to Cart and Login pages
+  React.useEffect(() => {
+    router.prefetch("/?tab=cart")
+    router.prefetch("/login")
+  }, [router])
+
   const days = date?.from && date?.to 
     ? Math.max(1, differenceInDays(date.to, date.from) + 1)
     : 0

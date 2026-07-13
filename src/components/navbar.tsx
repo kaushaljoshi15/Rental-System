@@ -6,7 +6,6 @@ import { Suspense } from "react"
 import { SearchBar } from "@/components/search-bar"
 import { CategoryBar } from "@/components/category-bar"
 import { NavbarClient } from "@/components/navbar-client"
-import { BottomNav } from "@/components/bottom-nav"
 import { Logo } from "@/components/logo"
 
 export async function Navbar() {
@@ -71,8 +70,8 @@ export async function Navbar() {
           />
         </div>
         {/* Mobile Search Bar (Only shown on mobile screen sizes, between header row and categories) */}
-        <div className="bg-white px-4 pb-3.5 pt-1 md:hidden border-b border-slate-100 text-slate-800">
-          <Suspense fallback={<div className="h-10 bg-slate-50 rounded-xl animate-pulse w-full" />}>
+        <div className="bg-transparent px-4 pb-3.5 pt-1 md:hidden border-b border-slate-100 text-slate-800">
+          <Suspense fallback={<div className="h-10 bg-slate-50/50 rounded-xl animate-pulse w-full" />}>
             <SearchBar isDark={false} placeholder="Search equipment or halls to rent..." />
           </Suspense>
         </div>
@@ -80,7 +79,6 @@ export async function Navbar() {
           <CategoryBar />
         </Suspense>
       </header>
-      <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
     </>
   )
 }

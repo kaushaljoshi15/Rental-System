@@ -135,6 +135,7 @@ function VendorLoginForm() {
                     className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
+                    onFocus={() => router.prefetch("/dashboard/vendor")}
                     required
                   />
                 </div>
@@ -155,6 +156,7 @@ function VendorLoginForm() {
                     className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
+                    onFocus={() => router.prefetch("/dashboard/vendor")}
                     required
                   />
                   <button

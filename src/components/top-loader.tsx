@@ -1,13 +1,14 @@
 "use client"
 
 import { useEffect, useState, startTransition } from "react"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams, useRouter } from "next/navigation"
 
 export function TopLoader() {
   const [progress, setProgress] = useState(0)
   const [visible, setVisible] = useState(false)
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   // Hide progress bar when pathname or searchParams change (navigation complete)
   useEffect(() => {
@@ -18,6 +19,39 @@ export function TopLoader() {
     }, 180)
     return () => clearTimeout(timer)
   }, [pathname, searchParams])
+
+  // Prefetch internal links globally on hover/touch to make redirects instant
+  useEffect(() => {
+    const handleAnchorHover = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement
+      const anchor = target.closest("a")
+
+      if (anchor) {
+        const href = anchor.getAttribute("href")
+        const targetAttr = anchor.getAttribute("target")
+
+        if (
+          href &&
+          href.startsWith("/") &&
+          !href.startsWith("//") &&
+          !href.startsWith("#") &&
+          !href.startsWith("mailto:") &&
+          !href.startsWith("tel:") &&
+          targetAttr !== "_blank"
+        ) {
+          router.prefetch(href)
+        }
+      }
+    }
+
+    document.addEventListener("mouseover", handleAnchorHover, { passive: true })
+    document.addEventListener("touchstart", handleAnchorHover, { passive: true })
+
+    return () => {
+      document.removeEventListener("mouseover", handleAnchorHover)
+      document.removeEventListener("touchstart", handleAnchorHover)
+    }
+  }, [router])
 
   useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {

@@ -16,6 +16,11 @@ export function BottomNav({ isLoggedIn, cartCount }: BottomNavProps) {
 
   const currentTab = searchParams.get("tab")
 
+  // Hide on dashboard and admin portals to avoid layout overlapping
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin-portal")) {
+    return null
+  }
+
   const isHomeActive = pathname === "/" && !currentTab
   const isCategoriesActive = currentTab === "categories"
   const isCartActive = currentTab === "cart"

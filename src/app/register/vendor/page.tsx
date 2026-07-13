@@ -363,6 +363,7 @@ export default function VendorRegisterPage() {
                         placeholder="John Doe" 
                         required 
                         disabled={loading}
+                        onFocus={() => router.prefetch("/login/vendor")}
                         className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
                       />
                     </div>
@@ -381,6 +382,7 @@ export default function VendorRegisterPage() {
                           placeholder="9876543210" 
                           required 
                           disabled={phoneVerified || loading}
+                          onFocus={() => router.prefetch("/login/vendor")}
                           className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
                         />
                       </div>
@@ -439,6 +441,7 @@ export default function VendorRegisterPage() {
                           placeholder="email@example.com" 
                           required 
                           disabled={emailVerified || loading}
+                          onFocus={() => router.prefetch("/login/vendor")}
                           className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
                         />
                       </div>
@@ -497,6 +500,7 @@ export default function VendorRegisterPage() {
                           placeholder="••••••••" 
                           required 
                           disabled={loading}
+                          onFocus={() => router.prefetch("/login/vendor")}
                           className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
                         />
                       </div>
@@ -512,6 +516,7 @@ export default function VendorRegisterPage() {
                           placeholder="••••••••" 
                           required 
                           disabled={loading}
+                          onFocus={() => router.prefetch("/login/vendor")}
                           className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] transition-all rounded-lg text-xs font-bold"
                         />
                       </div>

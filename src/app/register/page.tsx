@@ -146,6 +146,7 @@ export default function RegisterPage() {
                     name="name" 
                     placeholder="John Doe" 
                     required 
+                    onFocus={() => router.prefetch("/login")}
                     className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
                   />
                 </div>
@@ -160,6 +161,7 @@ export default function RegisterPage() {
                     type="email" 
                     placeholder="name@example.com" 
                     required 
+                    onFocus={() => router.prefetch("/login")}
                     className="pl-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
                   />
                 </div>
@@ -174,6 +176,7 @@ export default function RegisterPage() {
                     type={showPassword ? "text" : "password"} 
                     placeholder="••••••••" 
                     required 
+                    onFocus={() => router.prefetch("/login")}
                     className="pl-10 pr-10 h-11 bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all rounded-lg"
                   />
                   <button

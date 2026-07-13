@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -71,6 +71,11 @@ export function CheckoutPanel({
   userAddressJson = null
 }: CheckoutPanelProps) {
   const router = useRouter()
+
+  // Warm up redirected target page
+  useEffect(() => {
+    router.prefetch("/?tab=orders")
+  }, [router])
 
 
   // Coupon state
