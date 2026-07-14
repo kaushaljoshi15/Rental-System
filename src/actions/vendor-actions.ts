@@ -1,6 +1,6 @@
 'use server'
 
-import { prisma } from "@/lib/prisma"
+import { prisma, prismaRetry } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
@@ -99,7 +99,7 @@ export async function requestWithdrawal(amount: number) {
     }
 
     // Update wallet balance and log transaction in one transaction
-    await prisma.$transaction([
+    await prismaRetry(() => prisma.$transaction([
       prisma.user.update({
         where: { id: user.id },
         data: { walletBalance: { decrement: amount } }
@@ -112,7 +112,7 @@ export async function requestWithdrawal(amount: number) {
           description: "Withdrawal request to bank account"
         }
       })
-    ])
+    ]))
 
     revalidatePath("/dashboard/vendor/earnings")
     revalidatePath("/dashboard/vendor")

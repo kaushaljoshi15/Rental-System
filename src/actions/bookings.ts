@@ -1,6 +1,6 @@
 'use server'
 
-import { prisma } from "@/lib/prisma"
+import { prisma, prismaRetry } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
@@ -104,7 +104,7 @@ export async function confirmBooking(
     }
 
     // Run the checkout inside an atomic database transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prismaRetry(() => prisma.$transaction(async (tx) => {
       // For each item (hall) in the order
       for (const line of order.lines) {
         const productId = line.productId
@@ -385,7 +385,7 @@ export async function confirmBooking(
       return { order: updatedOrder, unlockedCoupon: rewardCouponCode }
     }, {
       timeout: 30000 // 30 seconds timeout to handle Neon DB/serverless cold start latency
-    })
+    }))
 
     revalidatePath("/")
     return { 
@@ -501,7 +501,7 @@ export async function cancelBookingAndRefund(orderId: string) {
       }
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prismaRetry(() => prisma.$transaction(async (tx) => {
       // 1. Release availability slots
       await tx.hallAvailability.deleteMany({
         where: { bookingId: order.id }
@@ -663,7 +663,7 @@ export async function cancelBookingAndRefund(orderId: string) {
       })
 
       return { updatedOrder, totalRefund, refundPolicyNotes }
-    })
+    }))
 
     revalidatePath("/")
     revalidatePath("/dashboard/vendor/orders")

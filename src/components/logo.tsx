@@ -16,7 +16,7 @@ export function Logo({ className = "", textColor, isDark = false }: LogoProps) {
       alt="RentKart"
       width={128}
       height={36}
-      className={`h-9 w-auto select-none ${className}`}
+      className={`h-9 w-32 select-none ${className}`}
       draggable={false}
     />
   )

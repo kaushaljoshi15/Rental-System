@@ -13,11 +13,13 @@ import { BottomNav } from "@/components/bottom-nav";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -85,33 +87,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions)
   const isLoggedIn = !!session?.user
 
-  // Fetch active cart count server-side directly for dynamic badge count
-  let cartCount = 0
-  if (session?.user?.email) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-        select: {
-          id: true,
-          orders: {
-            where: { status: "QUOTATION" },
-            select: {
-              lines: {
-                select: {
-                  quantity: true
-                }
-              }
-            }
-          }
-        }
-      })
-      if (user?.orders?.[0]?.lines) {
-        cartCount = user.orders[0].lines.reduce((acc: number, line: { quantity: number }) => acc + line.quantity, 0)
-      }
-    } catch (error) {
-      console.error("Error fetching cart count in root layout:", error)
-    }
-  }
+  // Cart count is fetched client-side via CustomerContext to minimize server response latency (TTFB)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -129,6 +105,12 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link 
+          rel="preload" 
+          as="image" 
+          href="/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1516035069371-29a1b244cc32%3Fauto%3Dformat%26fit%3Dcrop%26q%3D80%26w%3D400&w=640&q=75"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -170,7 +152,7 @@ export default async function RootLayout({
           <Suspense fallback={null}>
             <SupportBot />
           </Suspense>
-          <BottomNav cartCount={cartCount} isLoggedIn={isLoggedIn} />
+          <BottomNav isLoggedIn={isLoggedIn} />
         </Providers>
       </body>
     </html>

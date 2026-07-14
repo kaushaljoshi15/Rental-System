@@ -338,7 +338,7 @@ export function HeroCarousel({ categorySlug }: HeroCarouselProps) {
                 }
               }}
               aria-label={`Go to slide ${index + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
+              className={`h-1.5 rounded-full transition-all duration-300 relative after:content-[''] after:absolute after:inset-[-12px] ${
                 index === activeIndex 
                   ? "bg-slate-700 w-4 shadow-sm" 
                   : "bg-slate-300 w-1.5 hover:bg-slate-400"

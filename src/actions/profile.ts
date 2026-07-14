@@ -1,9 +1,10 @@
 'use server'
 
-import { prisma } from "@/lib/prisma"
+import { prisma, prismaRetry } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
+import { seedDefaultNotificationsIfEmpty } from "./notifications"
 
 export async function updateProfile(data: {
   name?: string
@@ -72,7 +73,7 @@ export async function addMoneyToWallet(amount: number, paymentMethod: string) {
       return { success: false, message: "User not found." }
     }
 
-    const updatedUser = await prisma.$transaction(async (tx) => {
+    const updatedUser = await prismaRetry(() => prisma.$transaction(async (tx) => {
       const u = await tx.user.update({
         where: { id: user.id },
         data: {
@@ -102,7 +103,7 @@ export async function addMoneyToWallet(amount: number, paymentMethod: string) {
       })
 
       return u
-    })
+    }))
 
     revalidatePath("/")
     return { success: true, message: `Successfully added ₹${amount} to wallet.`, balance: updatedUser.walletBalance }
@@ -127,7 +128,7 @@ export async function deleteAccount() {
       return { success: false, message: "User not found." }
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prismaRetry(() => prisma.$transaction(async (tx) => {
       // 1. Delete notifications
       await tx.notification.deleteMany({
         where: { userId: user.id }
@@ -162,7 +163,7 @@ export async function deleteAccount() {
       await tx.user.delete({
         where: { id: user.id }
       })
-    })
+    }))
 
     return { success: true, message: "Account deleted successfully." }
   } catch (error) {
@@ -170,3 +171,110 @@ export async function deleteAccount() {
     return { success: false, message: "Failed to delete account. Please try again." }
   }
 }
+
+export async function getCustomerDashboardData() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized." }
+  }
+
+  try {
+    const email = session.user.email
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        orders: {
+          where: { status: { not: "QUOTATION" } },
+          include: { lines: { include: { product: { include: { vendor: true } } } }, invoice: true },
+          orderBy: { createdAt: 'desc' }
+        },
+        walletTransactions: {
+          orderBy: { createdAt: 'desc' }
+        },
+        wishlist: true,
+        notifications: {
+          orderBy: { createdAt: 'desc' }
+        }
+      }
+    })
+
+    if (!user) {
+      return { success: false, message: "User not found." }
+    }
+
+    // Seed default notifications dynamically if database is empty
+    let userNotifs = user.notifications || [];
+    if (userNotifs.length === 0) {
+      await seedDefaultNotificationsIfEmpty(user.id);
+      userNotifs = await prisma.notification.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" }
+      });
+    }
+
+    // Fetch Coupons
+    const coupons = await prisma.coupon.findMany({
+      where: { 
+        isActive: true,
+        OR: [
+          { userId: null },
+          { userId: user.id }
+        ]
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // Fetch Cart
+    const cart = await prisma.rentalOrder.findFirst({
+      where: {
+        userId: user.id,
+        status: "QUOTATION"
+      },
+      include: {
+        lines: {
+          include: { product: true },
+          orderBy: { id: 'asc' }
+        }
+      }
+    });
+
+    // Fetch Wishlist Items
+    const wishlistData = await prisma.wishlistItem.findMany({
+      where: { userId: user.id },
+      include: {
+        product: {
+          include: { category: true, vendor: true }
+        }
+      },
+      orderBy: { createdAt: "desc" }
+    });
+
+    const confirmedOrdersCount = await prisma.rentalOrder.count({
+      where: {
+        userId: user.id,
+        status: { in: ["CONFIRMED", "COMPLETED"] }
+      }
+    });
+
+    const cartCount = cart ? cart.lines.reduce((acc: number, line: any) => acc + line.quantity, 0) : 0;
+    const wishlistItems = wishlistData.map((item: any) => item.product).filter(Boolean);
+    const userWishlistProductIds = wishlistData.map((item: any) => item.productId);
+
+    return {
+      success: true,
+      data: {
+        user: { ...user, notifications: userNotifs },
+        cart,
+        wishlistItems,
+        wishlistProductIds: userWishlistProductIds,
+        cartCount,
+        coupons,
+        confirmedOrdersCount
+      }
+    }
+  } catch (error) {
+    console.error("Error getting customer dashboard data:", error)
+    return { success: false, message: "Failed to load dashboard data." }
+  }
+}
+

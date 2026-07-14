@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import { useCustomer } from "@/context/customer-context"
 import {
   Sparkles,
   Shirt,
@@ -63,7 +64,6 @@ interface Product {
 interface MobileCategoriesProps {
   categories: Category[]
   products: Product[]
-  cartCount: number
   isLoggedIn: boolean
 }
 
@@ -233,7 +233,8 @@ function SubcategoryCard({ subcat, onClick }: { subcat: Category; onClick?: () =
   )
 }
 
-export function MobileCategories({ categories, products, cartCount, isLoggedIn }: MobileCategoriesProps) {
+export function MobileCategories({ categories, products, isLoggedIn }: MobileCategoriesProps) {
+  const { cartCount } = useCustomer()
   const [activeParentTab, setActiveParentTab] = useState("for-you")
 
   const sidebarRef = React.useRef<HTMLDivElement>(null)

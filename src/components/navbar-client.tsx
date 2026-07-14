@@ -23,14 +23,16 @@ import {
   X
 } from "lucide-react"
 
+import { useCustomer } from "@/context/customer-context"
+
 interface NavbarClientProps {
   isLoggedIn: boolean
   userName: string
   email?: string | null
-  cartCount: number
 }
 
-export function NavbarClient({ isLoggedIn, userName, email, cartCount }: NavbarClientProps) {
+export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps) {
+  const { cartCount } = useCustomer()
   const [activeDropdown, setActiveDropdown] = useState<"account" | "more" | null>(null)
   const accountRef = useRef<HTMLDivElement>(null)
   const moreRef = useRef<HTMLDivElement>(null)

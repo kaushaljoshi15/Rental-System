@@ -65,7 +65,10 @@ export function PageSpeedOptimizer() {
 
   // Setup global event listeners and monkey-patch fetch
   useEffect(() => {
-    // 1. Prefetch internal links on hover or touch
+    // 1. Speculatively pre-render the homepage on mount
+    injectSpeculationRule("/")
+
+    // 2. Prefetch and pre-render internal links on hover or touch
     const handlePrefetch = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement
       const anchor = target.closest("a")
@@ -84,6 +87,7 @@ export function PageSpeedOptimizer() {
       ) {
         prefetchedLinks.current.add(href)
         router.prefetch(href)
+        injectSpeculationRule(href)
       }
     }
 
@@ -248,4 +252,35 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   )
+}
+
+// Injects a speculation rule script tag to instruct Chromium browsers to pre-render the page in the background
+function injectSpeculationRule(url: string) {
+  if (typeof window === "undefined" || !("HTMLScriptElement" in window) || !(HTMLScriptElement as any).supports?.("speculationrules")) {
+    return
+  }
+
+  try {
+    const absoluteUrl = new URL(url, window.location.href).href
+    const cleanUrl = absoluteUrl.split("#")[0] // Strip hashes for correct matches
+    const base64Url = btoa(cleanUrl).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_")
+    const existingId = `speculation-${base64Url}`
+
+    if (document.getElementById(existingId)) return
+
+    const script = document.createElement("script")
+    script.type = "speculationrules"
+    script.id = existingId
+    script.textContent = JSON.stringify({
+      prerender: [
+        {
+          source: "list",
+          urls: [cleanUrl]
+        }
+      ]
+    })
+    document.head.appendChild(script)
+  } catch (_) {
+    // fail-silent
+  }
 }

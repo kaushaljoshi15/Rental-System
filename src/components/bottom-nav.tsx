@@ -5,12 +5,14 @@ import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import { Home, LayoutGrid, User, ShoppingCart } from "lucide-react"
 
+import { useCustomer } from "@/context/customer-context"
+
 interface BottomNavProps {
   isLoggedIn: boolean
-  cartCount: number
 }
 
-export function BottomNav({ isLoggedIn, cartCount }: BottomNavProps) {
+export function BottomNav({ isLoggedIn }: BottomNavProps) {
+  const { cartCount } = useCustomer()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 

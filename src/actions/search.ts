@@ -2,6 +2,35 @@
 
 import { prisma, prismaRetry } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
+import { unstable_cache } from "next/cache"
+
+const fetchProductsCached = unstable_cache(
+  async (whereStr: string, orderStr: string) => {
+    const where = JSON.parse(whereStr)
+    const orderBy = JSON.parse(orderStr)
+    return await prismaRetry(() => prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+        vendor: {
+          select: {
+            id: true,
+            name: true,
+            companyName: true
+          }
+        },
+        reviews: {
+          select: {
+            rating: true
+          }
+        }
+      },
+      orderBy
+    }))
+  },
+  ["products-list-cache"],
+  { revalidate: 15, tags: ["products"] }
+)
 
 interface SearchFilters {
   query?: string
@@ -252,25 +281,10 @@ export async function searchHalls(filters: SearchFilters) {
     }
 
     // 4. Execute query with relations
-    const halls = await prismaRetry(() => prisma.product.findMany({
-      where: whereConditions,
-      include: {
-        category: true,
-        vendor: {
-          select: {
-            id: true,
-            name: true,
-            companyName: true
-          }
-        },
-        reviews: {
-          select: {
-            rating: true
-          }
-        }
-      },
-      orderBy: orderByCondition
-    }))
+    const halls = await fetchProductsCached(
+      JSON.stringify(whereConditions),
+      JSON.stringify(orderByCondition)
+    )
 
     // 5. Map average rating fields
     let mappedHalls = halls.map(hall => {

@@ -1,6 +1,5 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Suspense } from "react"
 import { SearchBar } from "@/components/search-bar"
@@ -13,34 +12,6 @@ export async function Navbar() {
   const isLoggedIn = !!session?.user
   const userName = session?.user?.name || "Guest"
 
-  // Fetch active cart count server-side directly for dynamic badge count
-  let cartCount = 0
-  if (session?.user?.email) {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-        select: {
-          id: true,
-          orders: {
-            where: { status: "QUOTATION" },
-            select: {
-              lines: {
-                select: {
-                  quantity: true
-                }
-              }
-            }
-          }
-        }
-      })
-      if (user?.orders?.[0]?.lines) {
-        cartCount = user.orders[0].lines.reduce((acc: number, line: { quantity: number }) => acc + line.quantity, 0)
-      }
-    } catch (error) {
-      console.error("Error fetching cart count for navbar:", error)
-    }
-  }
-
   return (
     <>
       <header 
@@ -50,7 +21,7 @@ export async function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center gap-4 w-full">
           
           {/* Polished Logo (Amazon-style RentKart brand logo) */}
-          <Link href="/" className="flex items-center shrink-0 transition-transform active:scale-95">
+          <Link href="/" prefetch={true} className="flex items-center shrink-0 transition-transform active:scale-95">
             <Logo textColor="#0f172a" />
           </Link>
 
@@ -66,7 +37,6 @@ export async function Navbar() {
             isLoggedIn={isLoggedIn} 
             userName={userName} 
             email={session?.user?.email} 
-            cartCount={cartCount} 
           />
         </div>
         {/* Mobile Search Bar (Only shown on mobile screen sizes, between header row and categories) */}
