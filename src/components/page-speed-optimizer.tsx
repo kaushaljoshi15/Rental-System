@@ -121,15 +121,26 @@ export function PageSpeedOptimizer() {
   if (!visible) return null
 
   return (
-    <div 
-      className="fixed top-0 left-0 right-0 h-[3.5px] z-[99999] pointer-events-none transition-all duration-200"
-      style={{ 
-        width: `${progress}%`,
-        background: "linear-gradient(90deg, #F59E0B 0%, #fbbf24 50%, #1e40af 100%)",
-        boxShadow: "0 1px 12px rgba(245, 158, 11, 0.4)",
-        opacity: progress === 100 ? 0 : 1
-      }}
-    />
+    <>
+      {/* Laptop & Desktop View: Top progress loader bar */}
+      <div 
+        className="hidden md:block fixed top-0 left-0 right-0 h-[3.5px] z-[99999] pointer-events-none transition-all duration-200"
+        style={{ 
+          width: `${progress}%`,
+          background: "linear-gradient(90deg, #F59E0B 0%, #fbbf24 50%, #1e40af 100%)",
+          boxShadow: "0 1px 12px rgba(245, 158, 11, 0.4)",
+          opacity: progress === 100 ? 0 : 1
+        }}
+      />
+
+      {/* Mobile View: Premium Center Viewport Loading Spinner */}
+      <div className="md:hidden fixed inset-0 bg-slate-950/15 backdrop-blur-[1px] z-[99999] flex items-center justify-center pointer-events-none">
+        <div className="bg-white/95 border border-slate-200/60 p-4 rounded-2xl shadow-xl flex flex-col items-center gap-2.5 max-w-[140px] w-full text-center">
+          <div className="w-8 h-8 rounded-full border-[3px] border-slate-100 border-t-[#F59E0B] animate-spin" />
+          <span className="text-[8px] font-black uppercase tracking-wider text-slate-500">Loading Page...</span>
+        </div>
+      </div>
+    </>
   )
 }
 
