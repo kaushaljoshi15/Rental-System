@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface Slide {
@@ -226,12 +227,14 @@ export function HeroCarousel({ categorySlug }: HeroCarouselProps) {
         <>
           <button 
             onClick={() => scroll('left')}
+            aria-label="Previous Slide"
             className="absolute left-[-16px] top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 flex items-center justify-center transition-all shadow-md hover:scale-105 active:scale-95 z-30 opacity-0 group-hover/carousel:opacity-100 duration-200"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button 
             onClick={() => scroll('right')}
+            aria-label="Next Slide"
             className="absolute right-[-16px] top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 flex items-center justify-center transition-all shadow-md hover:scale-105 active:scale-95 z-30 opacity-0 group-hover/carousel:opacity-100 duration-200"
           >
             <ChevronRight className="w-5 h-5" />
@@ -291,10 +294,13 @@ export function HeroCarousel({ categorySlug }: HeroCarouselProps) {
 
                 {/* Right Side Visual Image (AD styled) */}
                 <div className="absolute right-0 top-0 bottom-0 w-[34%] sm:w-[38%] h-full pointer-events-none overflow-hidden">
-                  <img 
+                  <Image 
                     src={slide.imageUrl} 
                     alt={slide.title} 
-                    className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-500" 
+                    fill
+                    sizes="(max-width: 768px) 35vw, 25vw"
+                    className="object-cover object-center transform group-hover:scale-105 transition-transform duration-500" 
+                    priority={index === 0}
                   />
                   {/* Gradient mask on left of the image */}
                   <div className={`absolute inset-y-0 left-0 w-12 bg-gradient-to-r ${slide.maskGradient} to-transparent`} />
@@ -331,6 +337,7 @@ export function HeroCarousel({ categorySlug }: HeroCarouselProps) {
                   })
                 }
               }}
+              aria-label={`Go to slide ${index + 1}`}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 index === activeIndex 
                   ? "bg-slate-700 w-4 shadow-sm" 

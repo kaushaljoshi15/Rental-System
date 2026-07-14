@@ -3,6 +3,7 @@
 import React, { useMemo, useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Star, Building, SlidersHorizontal, Check, X, ChevronRight, AlertCircle } from "lucide-react"
 import { Card, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -65,6 +66,12 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
   // Local state for price filter inputs
   const [minInput, setMinInput] = useState(activeMinPrice)
   const [maxInput, setMaxInput] = useState(activeMaxPrice)
+  const [visibleCount, setVisibleCount] = useState(24)
+
+  // Reset visible products count when filters or search queries change
+  useEffect(() => {
+    setVisibleCount(24)
+  }, [activeCategorySlug, activeMinPrice, activeMaxPrice, activeRating, activeSort, searchQuery])
 
   // Sync inputs with URL parameter updates (if user reloads or navigates)
   useEffect(() => {
@@ -515,7 +522,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
-            {displayedProducts.map((product) => {
+            {displayedProducts.slice(0, visibleCount).map((product, index) => {
               if (!product) return null
               const { rating, count } = getSimulatedRating(product.id)
               const { mrp, discount } = getSimulatedMRP(product.priceDaily)
@@ -530,10 +537,14 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                   {/* Header Image Area */}
                   <div className="w-full aspect-square relative bg-slate-50 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
                     {product.image && product.image.startsWith("http") ? (
-                      <img
+                      <Image
                         src={product.image}
                         alt={product.name}
-                        className="h-full w-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                        priority={index < 4}
+                        loading={index < 4 ? "eager" : "lazy"}
                       />
                     ) : (
                       <Building className="w-9 h-9 text-slate-300 animate-pulse" />
@@ -603,6 +614,16 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                 </Card>
               )
             })}
+            {displayedProducts.length > visibleCount && (
+              <div className="col-span-full flex justify-center py-6 select-none">
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 24)}
+                  className="bg-[#F59E0B] hover:bg-[#D97706] text-white text-xs font-black uppercase tracking-wider px-8 py-3 rounded-lg shadow hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer border-0"
+                >
+                  Load More Products ({displayedProducts.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

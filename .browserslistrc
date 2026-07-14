@@ -1,0 +1,12 @@
+# Browserslist configuration for modern builds
+# Tells Next.js compiler to output modern code, saving bundle payload size.
+
+defaults
+not IE 11
+not IE_Mob 11
+maintained node versions
+chrome >= 90
+edge >= 90
+firefox >= 90
+safari >= 15
+ios_saf >= 15

@@ -14,6 +14,8 @@ export function Logo({ className = "", textColor, isDark = false }: LogoProps) {
     <img
       src={useWhite ? "/logo-white.svg" : "/logo.svg"}
       alt="RentKart"
+      width={128}
+      height={36}
       className={`h-9 w-auto select-none ${className}`}
       draggable={false}
     />

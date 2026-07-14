@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma, prismaRetry } from "@/lib/prisma"
 import Link from "next/link"
+import Image from "next/image"
 import { Logo } from "@/components/logo"
 import { LogoutLink } from "@/components/logout-button"
 import { Button } from "@/components/ui/button"
@@ -1643,11 +1644,17 @@ export default async function HomePage({
                     ].map((partner, idx) => (
                       <Link href={`/?query=${encodeURIComponent(partner.brand)}`} key={idx} className="flex-shrink-0 w-64 md:w-auto bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-3 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:shadow-md transition-all duration-200">
                         <div className="aspect-[16/10] bg-slate-100 rounded-xl overflow-hidden relative shrink-0">
-                          <img src={partner.image} alt={partner.brand} className="w-full h-full object-cover" />
+                          <Image
+                            src={partner.image}
+                            alt={partner.brand}
+                            fill
+                            sizes="(max-width: 768px) 50vw, 33vw"
+                            className="object-cover"
+                          />
                           <span className="absolute top-2.5 right-2.5 bg-slate-900/60 text-white font-extrabold text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full select-none">Partner</span>
                         </div>
                         <div className="pt-3.5 space-y-1">
-                          <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">{partner.brand}</h4>
+                          <h4 className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">{partner.brand}</h4>
                           <p className="text-slate-900 text-sm font-black uppercase tracking-wide leading-tight">{partner.offer}</p>
                           <p className="text-slate-505 text-xs font-semibold">{partner.desc}</p>
                         </div>
@@ -1708,8 +1715,14 @@ export default async function HomePage({
                       return (
                         <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
                           <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
-                            <img src={product.image || ''} alt={product.name} className="w-full h-full object-cover" />
-                            <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm" style={{ backgroundColor: '#047857' }}>
+                            <Image 
+                              src={product.image || ''} 
+                              alt={product.name} 
+                              fill
+                              sizes="(max-width: 768px) 30vw, 20vw"
+                              className="object-cover" 
+                            />
+                            <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm z-10" style={{ backgroundColor: '#047857' }}>
                               {rating} <Star className="w-2.5 h-2.5 fill-current" />
                             </span>
                           </div>
@@ -1720,7 +1733,7 @@ export default async function HomePage({
                                 <span className="text-xs text-slate-450 line-through">₹{mrp}</span>
                                 <span className="text-sm font-black text-slate-955">₹{product.priceDaily.toLocaleString()}</span>
                               </div>
-                              <p className="text-[9.5px] font-bold text-amber-600">with Coupon + more</p>
+                              <p className="text-[9.5px] font-bold text-amber-800">with Coupon + more</p>
                             </div>
                           </div>
                         </Link>
@@ -1743,8 +1756,14 @@ export default async function HomePage({
                       return (
                         <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
                           <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
-                            <img src={product.image || ''} alt={product.name} className="w-full h-full object-cover" />
-                            <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm" style={{ backgroundColor: '#047857' }}>
+                            <Image 
+                              src={product.image || ''} 
+                              alt={product.name} 
+                              fill
+                              sizes="(max-width: 768px) 30vw, 20vw"
+                              className="object-cover" 
+                            />
+                            <span className="absolute bottom-2 left-2 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none shadow-sm z-10" style={{ backgroundColor: '#047857' }}>
                               {rating} <Star className="w-2.5 h-2.5 fill-current" />
                             </span>
                           </div>

@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SupportBot } from "@/components/support-bot";
-import { TopLoader } from "@/components/top-loader";
-import { PageTransition } from "@/components/page-transition";
+import { PageSpeedOptimizer, PageTransition } from "@/components/page-speed-optimizer";
 import { Suspense } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -161,7 +160,7 @@ export default async function RootLayout({
       >
         <Providers>
           <Suspense fallback={null}>
-            <TopLoader />
+            <PageSpeedOptimizer />
           </Suspense>
           <div className="pb-24 md:pb-0 min-h-screen flex flex-col">
             <PageTransition>
