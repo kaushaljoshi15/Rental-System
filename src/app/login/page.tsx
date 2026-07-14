@@ -83,7 +83,7 @@ function LoginForm() {
               Scale Your Rental Business Effortlessly.
             </h2>
             <p className="text-slate-400 text-sm leading-relaxed">
-              Log in to list premium gear as a vendor or request active equipment rentals. Experience the combined marketplace trust of Amazon, Flipkart, and Meesho.
+              Log in to list premium gear as a vendor or request active equipment rentals. Experience the trusted, secure rental marketplace of Rentkart.
             </p>
           </div>
 

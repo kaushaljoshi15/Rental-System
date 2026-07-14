@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
+            where: { email: credentials.email.toLowerCase() },
           });
 
           if (!user) throw new Error("User not found");
@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
           return {
             id: user.id,
             name: user.name,
-            email: user.email,
+            email: user.email.toLowerCase(),
             role: roleName,
           };
         } catch (error) {
@@ -75,16 +75,17 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google") {
         if (!user.email) return false;
 
+        const emailLower = user.email.toLowerCase();
         try {
           // Read target role from cookie (next-auth.target-role)
           const cookieStore = await cookies();
           const targetRole = cookieStore.get("next-auth.target-role")?.value || "CUSTOMER";
 
           const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
-          const isMasterAdminEmail = user.email.toLowerCase() === RESERVED_ADMIN_EMAIL.toLowerCase();
+          const isMasterAdminEmail = emailLower === RESERVED_ADMIN_EMAIL.toLowerCase();
 
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email },
+            where: { email: emailLower },
           });
 
           if (!existingUser) {
@@ -95,8 +96,8 @@ export const authOptions: NextAuthOptions = {
 
             await prisma.user.create({
               data: {
-                email: user.email,
-                name: user.name || user.email.split("@")[0],
+                email: emailLower,
+                name: user.name || emailLower.split("@")[0],
                 password: hashedPassword,
                 role: isMasterAdminEmail ? "ADMIN" : targetRole,
                 emailVerified: new Date(),
@@ -107,13 +108,13 @@ export const authOptions: NextAuthOptions = {
             // Upgrade to ADMIN if the master admin logs in but is currently not set as ADMIN in DB
             if (isMasterAdminEmail && existingUser.role !== "ADMIN") {
               await prisma.user.update({
-                where: { email: user.email },
+                where: { email: emailLower },
                 data: { role: "ADMIN" },
               });
             } else if (targetRole === "VENDOR" && existingUser.role === "CUSTOMER") {
               // Upgrade existing CUSTOMER to VENDOR if they sign in from vendor portal
               await prisma.user.update({
-                where: { email: user.email },
+                where: { email: emailLower },
                 data: { role: "VENDOR" },
               });
             }
@@ -129,6 +130,9 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as { role?: string; id?: string }).role = token.role as string;
         (session.user as { role?: string; id?: string }).id = token.id as string;
+        if (token.email) {
+          session.user.email = token.email.toLowerCase();
+        }
       }
       return session;
     },
@@ -136,10 +140,24 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as { role?: string }).role;
         token.id = user.id;
+        if (user.email) {
+          token.email = user.email.toLowerCase();
+        }
+        // Force database lookup on initial login if role is missing (Google OAuth)
+        if (!token.role && token.email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email },
+            select: { id: true, role: true },
+          });
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.id = dbUser.id;
+          }
+        }
       } else if (token.email) {
         // Resolve latest role and ID from database to prevent stale session data
         const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
+          where: { email: token.email.toLowerCase() },
           select: { id: true, role: true },
         });
         if (dbUser) {

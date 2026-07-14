@@ -5,31 +5,65 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation"
 
 // PageSpeedOptimizer manages:
 // 1. Aggressive prefetching of internal routes on hover (mouseover) and mobile touch (touchstart).
-// 2. Directing a single, high-performance top progress bar.
+// 2. Directing a single, high-performance top progress bar and mobile spinner.
+// 3. Intercepting programmatic, link, and form redirections.
 export function PageSpeedOptimizer() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [progress, setProgress] = useState(0)
   const [visible, setVisible] = useState(false)
   const isNavigatingRef = useRef(false)
   const prefetchedLinks = useRef(new Set<string>())
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const navStartTimeRef = useRef<number>(0)
+
+  // Start the loading progress bar
+  const startLoading = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    navStartTimeRef.current = Date.now()
+    
+    startTransition(() => {
+      isNavigatingRef.current = true
+      setVisible(true)
+    })
+  }
+
+  // Complete loading and hide the progress bar
+  const stopLoading = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    
+    if (isNavigatingRef.current) {
+      const elapsed = Date.now() - navStartTimeRef.current
+      const minDisplay = 450 // 450ms minimum display duration to prevent flickering
+      const delay = Math.max(0, minDisplay - elapsed)
+
+      setTimeout(() => {
+        isNavigatingRef.current = false
+        setVisible(false)
+      }, delay)
+    }
+  }
 
   // Complete and hide progress bar when pathname or search parameters change
   useEffect(() => {
-    if (isNavigatingRef.current) {
-      isNavigatingRef.current = false
-      setProgress(100)
-      const timer = setTimeout(() => {
-        setVisible(false)
-        setProgress(0)
-      }, 200)
-      return () => clearTimeout(timer)
-    }
+    stopLoading()
   }, [pathname, searchParams])
 
-  // Setup global event listeners
+  // Timeout safeguard: automatically hide loader if navigation takes longer than 10 seconds
+  useEffect(() => {
+    if (visible) {
+      const timer = setTimeout(() => {
+        stopLoading()
+      }, 10000)
+      return () => clearTimeout(timer)
+    }
+  }, [visible])
+
+  // Setup global event listeners and monkey-patch fetch
   useEffect(() => {
     // 1. Prefetch internal links on hover or touch
     const handlePrefetch = (e: MouseEvent | TouchEvent) => {
@@ -84,63 +118,107 @@ export function PageSpeedOptimizer() {
           // ignore parsing error, proceed
         }
 
-        startTransition(() => {
-          isNavigatingRef.current = true
-          setVisible(true)
-          setProgress(15)
+        startLoading()
+      }
+    }
 
-          // Gradually increment progress towards 95%
-          let currentProgress = 15
-          const interval = setInterval(() => {
-            if (!isNavigatingRef.current) {
-              clearInterval(interval)
-              return
-            }
-            currentProgress += (95 - currentProgress) * 0.15
-            setProgress(currentProgress)
-          }, 80)
+    // 3. Show loader on form submission (processing action)
+    const handleFormSubmit = () => {
+      startLoading()
+    }
 
-          anchor.addEventListener("click", () => {
-            clearInterval(interval)
-          }, { once: true })
-        })
+    // 4. Intercept programmatic Next.js RSC fetches (client-side page redirects / navigations)
+    const originalFetch = window.fetch
+    window.fetch = async function (input, init) {
+      let isRscNav = false
+
+      try {
+        const urlStr = typeof input === "string"
+          ? input
+          : input instanceof URL
+            ? input.toString()
+            : input instanceof Request
+              ? input.url
+              : ""
+
+        // Check RSC headers
+        let hasRscHeader = false
+        if (init?.headers) {
+          if (init.headers instanceof Headers) {
+            hasRscHeader = init.headers.has("RSC") || init.headers.has("rsc")
+          } else if (Array.isArray(init.headers)) {
+            hasRscHeader = init.headers.some(([key]) => key.toLowerCase() === "rsc")
+          } else {
+            hasRscHeader = !!((init.headers as any)["RSC"] || (init.headers as any)["rsc"])
+          }
+        }
+
+        // Check Prefetch headers
+        let isPrefetch = urlStr.includes("prefetch=1")
+        if (init?.headers) {
+          if (init.headers instanceof Headers) {
+            isPrefetch = isPrefetch || init.headers.has("Next-Router-Prefetch") || init.headers.has("next-router-prefetch") || init.headers.get("Purpose") === "prefetch"
+          } else if (Array.isArray(init.headers)) {
+            isPrefetch = isPrefetch || init.headers.some(([key, val]) => {
+              const k = key.toLowerCase()
+              return k === "next-router-prefetch" || (k === "purpose" && val === "prefetch")
+            })
+          } else {
+            isPrefetch = isPrefetch || 
+              !!((init.headers as any)["Next-Router-Prefetch"] || 
+                 (init.headers as any)["next-router-prefetch"] || 
+                 (init.headers as any)["Purpose"] === "prefetch" || 
+                 (init.headers as any)["purpose"] === "prefetch")
+          }
+        }
+
+        if (input instanceof Request) {
+          hasRscHeader = hasRscHeader || input.headers.has("RSC") || input.headers.has("rsc")
+          isPrefetch = isPrefetch || input.headers.has("Next-Router-Prefetch") || input.headers.has("next-router-prefetch") || input.headers.get("Purpose") === "prefetch"
+        }
+
+        const isRsc = urlStr.includes("_rsc=") || hasRscHeader
+
+        if (isRsc && !isPrefetch) {
+          isRscNav = true
+          startLoading()
+        }
+      } catch (err) {
+        // fail-silent
+      }
+
+      try {
+        return await originalFetch.apply(this, arguments as any)
+      } finally {
+        if (isRscNav) {
+          // Keep active
+        }
       }
     }
 
     document.addEventListener("mouseover", handlePrefetch, { passive: true })
     document.addEventListener("touchstart", handlePrefetch, { passive: true })
     document.addEventListener("click", handleAnchorClick, { capture: true })
+    document.addEventListener("submit", handleFormSubmit, { capture: true })
 
     return () => {
       document.removeEventListener("mouseover", handlePrefetch)
       document.removeEventListener("touchstart", handlePrefetch)
       document.removeEventListener("click", handleAnchorClick, { capture: true })
+      document.removeEventListener("submit", handleFormSubmit, { capture: true })
+      window.fetch = originalFetch
     }
   }, [router])
 
   if (!visible) return null
 
   return (
-    <>
-      {/* Laptop & Desktop View: Top progress loader bar */}
-      <div 
-        className="hidden md:block fixed top-0 left-0 right-0 h-[3.5px] z-[99999] pointer-events-none transition-all duration-200"
-        style={{ 
-          width: `${progress}%`,
-          background: "linear-gradient(90deg, #F59E0B 0%, #fbbf24 50%, #1e40af 100%)",
-          boxShadow: "0 1px 12px rgba(245, 158, 11, 0.4)",
-          opacity: progress === 100 ? 0 : 1
-        }}
-      />
-
-      {/* Mobile View: Premium Center Viewport Loading Spinner */}
-      <div className="md:hidden fixed inset-0 bg-slate-950/15 backdrop-blur-[1px] z-[99999] flex items-center justify-center pointer-events-none">
-        <div className="bg-white/95 border border-slate-200/60 p-4 rounded-2xl shadow-xl flex flex-col items-center gap-2.5 max-w-[140px] w-full text-center">
-          <div className="w-8 h-8 rounded-full border-[3px] border-slate-100 border-t-[#F59E0B] animate-spin" />
-          <span className="text-[8px] font-black uppercase tracking-wider text-slate-500">Loading Page...</span>
-        </div>
+    <div className="fixed inset-0 bg-slate-950/20 backdrop-blur-[2px] z-[99999] flex items-center justify-center pointer-events-none transition-all duration-300">
+      <div className="bg-white/95 border border-slate-200/60 p-5 rounded-2xl shadow-2xl flex flex-col items-center gap-3 max-w-[150px] w-full text-center scale-95 animate-in fade-in zoom-in-95 duration-200">
+        <div className="w-9 h-9 rounded-full border-[3px] border-slate-100 border-t-[#F59E0B] animate-spin" />
+        <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Loading Page...</span>
       </div>
-    </>
+    </div>
   )
 }
 
