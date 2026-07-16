@@ -3,6 +3,7 @@
 import React, { useRef } from "react"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 interface SpotlightItem {
   name: string
@@ -34,7 +35,7 @@ export function SpotlightRow({ items }: SpotlightRowProps) {
   return (
     <div className="bg-[#FACC15] rounded-2xl p-4 md:p-6 shadow-md text-slate-900 select-none">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-black uppercase tracking-wide">Spotlight's On</h3>
+        <h3 className="text-lg font-black uppercase tracking-wide">{"Spotlight's On"}</h3>
         <button 
           onClick={scrollRight}
           className="bg-slate-950/10 hover:bg-slate-950/20 p-2 rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900/40 flex items-center justify-center"
@@ -50,14 +51,13 @@ export function SpotlightRow({ items }: SpotlightRowProps) {
       >
         {items.map((item, idx) => (
           <Link href={`/?query=${encodeURIComponent(item.name)}`} key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-            <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
-              <img 
+            <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0 relative">
+              <Image 
                 src={item.image} 
                 alt={item.name} 
-                width={400} 
-                height={300} 
-                fetchPriority={idx === 0 ? "high" : "auto"}
-                decoding="async"
+                fill
+                sizes="(max-width: 640px) 150px, 300px"
+                priority={idx === 0}
                 className="w-full h-full object-cover" 
               />
             </div>

@@ -3,6 +3,7 @@
 import React, { useRef } from "react"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 interface TopSelectionItem {
   name: string
@@ -49,14 +50,13 @@ export function TopSelectionRow({ items }: TopSelectionRowProps) {
       >
         {items.map((item, idx) => (
           <Link href={`/?query=${encodeURIComponent(item.name)}`} key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-            <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
-              <img 
+            <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0 relative">
+              <Image 
                 src={item.image} 
                 alt={item.name} 
-                width={400} 
-                height={300} 
-                fetchPriority={idx === 0 ? "high" : "auto"}
-                decoding="async"
+                fill
+                sizes="(max-width: 640px) 150px, 300px"
+                priority={idx === 0}
                 className="w-full h-full object-cover" 
               />
             </div>

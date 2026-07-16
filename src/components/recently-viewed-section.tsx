@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface MiniProduct {
@@ -76,11 +77,52 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
   }, [])
 
   if (!mounted) {
+    const skeletonCards = Array.from({ length: 8 })
     return (
       <div 
-        className="w-full rounded-2xl border border-blue-900/40 bg-gradient-to-br from-[#0b132b] via-[#1e3a8a]/85 to-[#0b132b] h-[302px] animate-pulse flex items-center justify-center shrink-0"
+        className="relative w-full rounded-2xl py-5 px-0 border border-blue-900/40 shadow-sm overflow-hidden bg-gradient-to-br from-[#0b132b] via-[#1e3a8a]/85 to-[#0b132b]"
       >
-        <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Loading recommendations...</span>
+        {/* Decorative subtle visual grid */}
+        <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.04] pointer-events-none" />
+
+        {/* Section Header Skeleton */}
+        <div className="flex justify-between items-center mb-4 relative z-10 px-5">
+          <div className="h-6 bg-white/20 rounded w-64 animate-pulse" />
+          
+          <div className="flex gap-1">
+            <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
+            <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
+          </div>
+        </div>
+
+        {/* Horizontal Cards Viewport Skeleton */}
+        <div 
+          className="w-full flex gap-4 overflow-x-hidden relative z-10 pb-1 px-5"
+        >
+          {skeletonCards.map((_, idx) => (
+            <div 
+              key={idx}
+              className="flex-shrink-0 w-[160px] sm:w-[180px]"
+            >
+              <div className="bg-white rounded-xl p-3 border border-slate-200/50 shadow-sm flex flex-col justify-between h-[225px] animate-pulse">
+                {/* Product Image Box Skeleton */}
+                <div className="aspect-square bg-slate-200/80 rounded-lg overflow-hidden relative" />
+
+                {/* Text Description Box Skeleton */}
+                <div className="mt-2 text-left flex flex-col justify-between flex-grow">
+                  <div className="space-y-1.5 mt-1">
+                    <div className="h-3 bg-slate-200 rounded w-11/12" />
+                    <div className="h-3 bg-slate-200 rounded w-8/12" />
+                  </div>
+                  <div className="pt-2 mt-auto flex items-baseline justify-between">
+                    <div className="h-3 bg-slate-200 rounded w-16" />
+                    <div className="h-3 bg-slate-200 rounded w-10" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
@@ -141,10 +183,13 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
               {/* Product Image Box */}
               <div className="aspect-square bg-slate-50 flex items-center justify-center rounded-lg overflow-hidden border border-slate-100 relative">
                 {product.image && product.image.startsWith("http") ? (
-                  <img 
+                  <Image 
                     src={product.image} 
                     alt={product.name} 
+                    fill
+                    sizes="(max-width: 640px) 160px, 180px"
                     className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                    unoptimized={!product.image.startsWith("https://images.unsplash.com")}
                   />
                 ) : (
                   <span className="text-[10px] text-slate-350 font-bold uppercase">Rentkart</span>
