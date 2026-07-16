@@ -531,7 +531,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
               return (
                 <Card
                   key={product.id}
-                  className="group border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-[#F59E0B]/40 transition-all duration-200 rounded-lg relative p-0 gap-0"
+                  className="group cursor-pointer border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-[#F59E0B]/40 transition-all duration-200 rounded-lg relative p-0 gap-0"
                   style={{ boxShadow: PREMIUM_BOX_SHADOW }}
                 >
                   {/* Header Image Area */}
@@ -554,6 +554,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                       productId={product.id}
                       initialIsWishlisted={isWishlisted}
                       variant="floating"
+                      className="z-20"
                     />
 
                     <Badge className="absolute top-2.5 right-2.5 bg-slate-900/85 hover:bg-slate-900 text-white uppercase font-black text-[7.5px] sm:text-[8px] border-none select-none tracking-wider px-1.5 py-0.5 rounded shadow-sm pointer-events-none">
@@ -568,6 +569,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                         <h4 className="text-[11px] sm:text-xs font-bold text-slate-800 hover:text-[#D97706] line-clamp-2 tracking-wide leading-tight min-h-[30px] sm:min-h-[34px]">
                           {product.name}
                         </h4>
+                        <span className="absolute inset-0 z-10 cursor-pointer" aria-hidden="true" />
                       </Link>
 
                       {/* Ratings and Rentkart Assured (Flipkart Style) */}
@@ -603,7 +605,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                       <span className="text-[9.5px] font-black text-emerald-600">({discount}% Off)</span>
                     </div>
 
-                    <div className="select-none">
+                    <div className="select-none relative z-20">
                       <RentButton
                         productId={product.id}
                         price={product.priceDaily}

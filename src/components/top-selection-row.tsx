@@ -50,7 +50,15 @@ export function TopSelectionRow({ items }: TopSelectionRowProps) {
         {items.map((item, idx) => (
           <Link href={`/?query=${encodeURIComponent(item.name)}`} key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
             <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0">
-              <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+              <img 
+                src={item.image} 
+                alt={item.name} 
+                width={400} 
+                height={300} 
+                fetchPriority={idx === 0 ? "high" : "auto"}
+                decoding="async"
+                className="w-full h-full object-cover" 
+              />
             </div>
             <div className="pt-2 flex flex-col justify-end flex-grow">
               <p className="text-slate-900 text-xs font-black uppercase leading-tight line-clamp-2">{item.name}</p>

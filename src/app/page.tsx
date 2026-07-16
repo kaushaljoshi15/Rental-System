@@ -731,7 +731,13 @@ export default async function HomePage({
                                     className="flex-shrink-0 w-44 bg-white border border-slate-200/85 rounded-2xl p-2 flex flex-col justify-between h-[285px] shadow-sm hover:border-[#F59E0B]/50 hover:scale-[1.015] transition-all"
                                   >
                                     <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
-                                      <img src={product.image || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f1f5f9'/></svg>"} alt={product.name} className="w-full h-full object-cover" />
+                                      <Image 
+                                        src={product.image || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f1f5f9'/></svg>"} 
+                                        alt={product.name} 
+                                        fill
+                                        sizes="(max-width: 640px) 150px, 200px"
+                                        className="object-cover" 
+                                      />
                                       <span className="absolute bottom-2 left-2 text-white font-extrabold text-[8px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none" style={{ backgroundColor: '#0A5C36' }}>
                                         {rating} <Star className="w-2 h-2 fill-current" />
                                       </span>
@@ -814,7 +820,13 @@ export default async function HomePage({
                                     className="flex-shrink-0 w-44 bg-white border border-slate-200/85 rounded-2xl p-2 flex flex-col justify-between h-[285px] shadow-sm hover:border-[#F59E0B]/50 hover:scale-[1.015] transition-all"
                                   >
                                     <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
-                                      <img src={product.image || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f1f5f9'/></svg>"} alt={product.name} className="w-full h-full object-cover" />
+                                      <Image 
+                                        src={product.image || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f1f5f9'/></svg>"} 
+                                        alt={product.name} 
+                                        fill
+                                        sizes="(max-width: 640px) 150px, 200px"
+                                        className="object-cover" 
+                                      />
                                       <span className="absolute bottom-2 left-2 text-white font-extrabold text-[8px] px-1.5 py-0.5 rounded-md flex items-center gap-0.5 select-none" style={{ backgroundColor: '#0A5C36' }}>
                                         {rating} <Star className="w-2 h-2 fill-current" />
                                       </span>

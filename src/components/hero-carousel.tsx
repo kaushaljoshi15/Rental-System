@@ -300,7 +300,7 @@ export function HeroCarousel({ categorySlug }: HeroCarouselProps) {
                     fill
                     sizes="(max-width: 768px) 35vw, 25vw"
                     className="object-cover object-center transform group-hover:scale-105 transition-transform duration-500" 
-                    priority={index === 0}
+                    priority={index < 3}
                   />
                   {/* Gradient mask on left of the image */}
                   <div className={`absolute inset-y-0 left-0 w-12 bg-gradient-to-r ${slide.maskGradient} to-transparent`} />

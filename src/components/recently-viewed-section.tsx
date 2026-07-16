@@ -22,6 +22,7 @@ interface RecentlyViewedSectionProps {
 
 export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedSectionProps) {
   const [items, setItems] = useState<MiniProduct[]>([])
+  const [mounted, setMounted] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   // Get user first name (e.g. "Kaushal" from "Kaushal Joshi")
@@ -31,6 +32,7 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
     : "Continue exploring your rentals?"
 
   useEffect(() => {
+    setMounted(true)
     try {
       const stored = localStorage.getItem("rentkart_recently_viewed")
       const viewedIds: string[] = stored ? JSON.parse(stored) : []
@@ -72,6 +74,16 @@ export function RecentlyViewedSection({ allProducts, userName }: RecentlyViewedS
       })
     }
   }, [])
+
+  if (!mounted) {
+    return (
+      <div 
+        className="w-full rounded-2xl border border-blue-900/40 bg-gradient-to-br from-[#0b132b] via-[#1e3a8a]/85 to-[#0b132b] h-[302px] animate-pulse flex items-center justify-center shrink-0"
+      >
+        <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Loading recommendations...</span>
+      </div>
+    )
+  }
 
   if (items.length === 0) return null
 

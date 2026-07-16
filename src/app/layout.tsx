@@ -105,11 +105,6 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
-        <link 
-          rel="preload" 
-          as="image" 
-          href="/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1516035069371-29a1b244cc32%3Fauto%3Dformat%26fit%3Dcrop%26q%3D80%26w%3D400&w=640&q=75"
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

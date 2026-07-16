@@ -89,6 +89,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <img
                   src={product.image}
                   alt={product.name}
+                  width={800}
+                  height={600}
+                  fetchPriority="high"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
                 />
               ) : (
