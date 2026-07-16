@@ -121,7 +121,7 @@ export function ReportCharts({ popularityData, vendorData }: ReportChartsProps) 
                   tickLine={false}
                 />
                 <Tooltip 
-                  formatter={(value: number | string | undefined) => [`₹${Number(value || 0).toLocaleString()}`, "Earnings"]}
+                  formatter={(value: any) => [`₹${Number(value || 0).toLocaleString()}`, "Earnings"]}
                   cursor={{ fill: "rgba(16, 185, 129, 0.04)" }}
                   contentStyle={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", fontSize: "11px", fontWeight: 600 }}
                 />
