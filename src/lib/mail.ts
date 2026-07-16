@@ -1,5 +1,6 @@
 // src/lib/mail.ts
 import { Resend } from 'resend';
+import { qstash } from './qstash';
 
 // Initialize Resend with your API Key
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -10,7 +11,7 @@ const getBaseUrl = () => process.env.NEXTAUTH_URL || 'http://localhost:3000';
 // ==========================================
 // 1. EMAIL VERIFICATION (For Registration)
 // ==========================================
-export async function sendVerificationEmail(
+export async function sendVerificationEmailReal(
   email: string, 
   token: string, 
   name: string, 
@@ -65,7 +66,7 @@ export async function sendVerificationEmail(
 // ==========================================
 // 2. PASSWORD RESET (For Forgot Password)
 // ==========================================
-export async function sendPasswordResetEmail(email: string, token: string) {
+export async function sendPasswordResetEmailReal(email: string, token: string) {
   const resetLink = `${getBaseUrl()}/reset-password?token=${token}`;
 
   // HACKATHON BACKUP: Always log the link locally so you can test without real emails
@@ -111,3 +112,43 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     return false;
   }
 }
+
+// ==========================================
+// 3. QSTASH WRAPPER FUNCTIONS (Queue dispatchers)
+// ==========================================
+export async function sendVerificationEmail(
+  email: string,
+  token: string,
+  name: string,
+  role: string = 'CUSTOMER'
+) {
+  if (qstash) {
+    try {
+      await qstash.publishJSON({
+        url: `${getBaseUrl()}/api/jobs/send-email`,
+        body: { type: 'VERIFICATION', email, token, name, role },
+      });
+      console.log(`📡 Queued Verification Email via QStash to: ${email}`);
+      return true;
+    } catch (err) {
+      console.error("❌ QStash dispatch failed, falling back to inline Resend email:", err);
+    }
+  }
+  return sendVerificationEmailReal(email, token, name, role);
+}
+
+export async function sendPasswordResetEmail(email: string, token: string) {
+  if (qstash) {
+    try {
+      await qstash.publishJSON({
+        url: `${getBaseUrl()}/api/jobs/send-email`,
+        body: { type: 'RESET_PASSWORD', email, token },
+      });
+      console.log(`📡 Queued Password Reset Email via QStash to: ${email}`);
+      return true;
+    } catch (err) {
+      console.error("❌ QStash dispatch failed, falling back to inline Resend email:", err);
+    }
+  }
+  return sendPasswordResetEmailReal(email, token);
+}

@@ -3,6 +3,7 @@
 import { prisma, prismaRetry } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import { unstable_cache } from "next/cache"
+import { openai } from "@/lib/openai"
 
 const fetchProductsCached = unstable_cache(
   async (whereStr: string, orderStr: string) => {
@@ -315,5 +316,92 @@ export async function searchHalls(filters: SearchFilters) {
   } catch (error) {
     console.error("Hall Search Failed:", error instanceof Error ? error.message : error)
     return { success: false, message: (error instanceof Error ? error.message : "") || "Failed to search halls." }
+  }
+}
+
+/**
+ * AI-powered semantic search using OpenAI text embeddings and pgvector cosine similarity.
+ * Automatically falls back to high-performance fuzzy trigram search if keys or tables are missing.
+ */
+export async function searchHallsSemantic(query: string) {
+  if (!query || query.trim() === "") {
+    return { success: true, data: [] }
+  }
+
+  // 1. Fallback if OpenAI client is not initialized
+  if (!openai) {
+    console.log("⚠️ OpenAI key missing, falling back to standard text-fuzzy search.");
+    return await searchHalls({ query });
+  }
+
+  try {
+    // 2. Fetch Query Embeddings from OpenAI
+    const response = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: query.trim(),
+    });
+    const embedding = response.data[0].embedding;
+
+    // 3. Query PostgreSQL using pgvector cosine distance similarity (<=>)
+    try {
+      const dbQueryRes = await prisma.$queryRaw<any[]>`
+        SELECT id FROM "Product"
+        WHERE "isRentable" = true AND "isApproved" = true
+        ORDER BY embedding <=> ${embedding}::vector
+        LIMIT 12
+      `;
+
+      if (dbQueryRes.length === 0) {
+        return { success: true, data: [] };
+      }
+
+      const matchIds = dbQueryRes.map(item => item.id);
+      
+      // Fetch full product objects matching those IDs
+      const halls = await prisma.product.findMany({
+        where: {
+          id: { in: matchIds }
+        },
+        include: {
+          category: true,
+          vendor: {
+            select: {
+              id: true,
+              name: true,
+              companyName: true
+            }
+          },
+          reviews: {
+            select: {
+              rating: true
+            }
+          }
+        }
+      });
+
+      // Map average rating in-memory
+      const mappedHalls = halls.map(hall => {
+        const totalReviews = hall.reviews.length;
+        const avgRating = totalReviews > 0
+          ? hall.reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews
+          : 0;
+        return {
+          ...hall,
+          avgRating,
+          totalReviews
+        };
+      });
+
+      // Sort mappedHalls to preserve the pgvector distance order
+      const sortedHalls = mappedHalls.sort((a, b) => matchIds.indexOf(a.id) - matchIds.indexOf(b.id));
+
+      return { success: true, data: sortedHalls };
+    } catch (dbError) {
+      console.warn("⚠️ pgvector query failed (embedding column likely missing). Falling back to fuzzy search. Error:", dbError);
+      return await searchHalls({ query });
+    }
+  } catch (error) {
+    console.error("Semantic search failed, falling back to standard text-fuzzy search. Error:", error);
+    return await searchHalls({ query });
   }
 }

@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { calculateHallRent } from "@/lib/pricing"
+import { redis } from "@/lib/redis"
 import crypto from "crypto"
 
 /**
@@ -51,6 +52,8 @@ export async function confirmBooking(
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in to complete checkout." }
   }
+
+  const acquiredLocks: string[] = []
 
   try {
     // 1. Fetch user making the request
@@ -101,6 +104,34 @@ export async function confirmBooking(
     const bookingDates = getDatesInRange(order.startDate, order.endDate)
     if (bookingDates.length === 0) {
       return { success: false, message: "Invalid booking duration selected." }
+    }
+
+    // Try to acquire distributed locks in Upstash Redis to prevent double booking race conditions
+    let lockFailed = false
+
+    if (redis) {
+      for (const line of order.lines) {
+        for (const date of bookingDates) {
+          const dateStr = date.toISOString().split('T')[0]
+          const key = `lock:hall:${line.productId}:${dateStr}`
+          const success = await redis.set(key, user.id, { nx: true, ex: 600 })
+          if (success === "OK") {
+            acquiredLocks.push(key)
+          } else {
+            lockFailed = true
+            break
+          }
+        }
+        if (lockFailed) break
+      }
+
+      if (lockFailed) {
+        // Release any partial locks acquired
+        for (const key of acquiredLocks) {
+          await redis.del(key)
+        }
+        return { success: false, message: "This hall is temporarily reserved for checkout. Please try again in a few minutes." }
+      }
     }
 
     // Run the checkout inside an atomic database transaction
@@ -387,6 +418,13 @@ export async function confirmBooking(
       timeout: 30000 // 30 seconds timeout to handle Neon DB/serverless cold start latency
     }))
 
+    // Release locks upon successful booking confirmation
+    if (redis && acquiredLocks.length > 0) {
+      for (const key of acquiredLocks) {
+        await redis.del(key).catch(err => console.error("Error releasing Redis lock:", err))
+      }
+    }
+
     revalidatePath("/")
     return { 
       success: true, 
@@ -396,6 +434,12 @@ export async function confirmBooking(
     }
 
   } catch (error) {
+    // Release locks on failure
+    if (redis && acquiredLocks.length > 0) {
+      for (const key of acquiredLocks) {
+        await redis.del(key).catch(err => console.error("Error releasing Redis lock on error path:", err))
+      }
+    }
     console.error("Booking Transaction Failed:", error instanceof Error ? error.message : error)
     return { success: false, message: error instanceof Error ? error.message : "An unexpected error occurred during checkout." }
   }

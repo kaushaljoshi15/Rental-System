@@ -3,6 +3,7 @@
 import { prisma, prismaRetry } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { UserProfileSchema } from "@/lib/schemas"
 import { revalidatePath } from "next/cache"
 import { seedDefaultNotificationsIfEmpty } from "./notifications"
 
@@ -21,18 +22,25 @@ export async function updateProfile(data: {
     return { success: false, message: "Unauthorized. Please log in." }
   }
 
+  // Validate inputs
+  const validation = UserProfileSchema.safeParse(data)
+  if (!validation.success) {
+    return { success: false, message: validation.error.issues[0].message }
+  }
+  const validatedData = validation.data
+
   try {
     const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
       data: {
-        name: data.name,
-        phoneNumber: data.phoneNumber,
-        address: data.address,
-        image: data.image,
-        gender: data.gender,
-        birthday: data.birthday,
-        alternatePhone: data.alternatePhone,
-        email: data.email
+        name: validatedData.name,
+        phoneNumber: validatedData.phoneNumber,
+        address: validatedData.address,
+        image: validatedData.image,
+        gender: validatedData.gender,
+        birthday: validatedData.birthday,
+        alternatePhone: validatedData.alternatePhone,
+        email: validatedData.email
       } as any
     })
 

@@ -4,6 +4,7 @@ import { prisma, prismaRetry } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { VendorProfileSchema, VendorKycSchema } from "@/lib/schemas"
 
 async function getCurrentUser() {
   const session = await getServerSession(authOptions)
@@ -234,15 +235,22 @@ export async function updateVendorSettings(data: {
       return { success: false, message: "Unauthorized." }
     }
 
+    // Validate inputs
+    const validation = VendorProfileSchema.safeParse(data)
+    if (!validation.success) {
+      return { success: false, message: validation.error.issues[0].message }
+    }
+    const validatedData = validation.data
+
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        companyName: data.companyName || null,
-        gstin: data.gstin || null,
-        address: data.address || null,
-        phoneNumber: data.phoneNumber || null,
-        signature: data.signature || null,
-        bankDetails: data.bankDetails || null,
+        companyName: validatedData.companyName || null,
+        gstin: validatedData.gstin || null,
+        address: validatedData.address || null,
+        phoneNumber: validatedData.phoneNumber || null,
+        signature: validatedData.signature || null,
+        bankDetails: validatedData.bankDetails || null,
       }
     })
 
@@ -266,13 +274,20 @@ export async function submitVendorKyc(data: {
       return { success: false, message: "Unauthorized." }
     }
 
+    // Validate inputs
+    const validation = VendorKycSchema.safeParse(data)
+    if (!validation.success) {
+      return { success: false, message: validation.error.issues[0].message }
+    }
+    const validatedData = validation.data
+
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        aadhaarNumber: data.aadhaarNumber,
-        panNumber: data.panNumber.toUpperCase(),
+        aadhaarNumber: validatedData.aadhaarNumber,
+        panNumber: validatedData.panNumber.toUpperCase(),
         kycStatus: "VERIFIED",
-        kycDocUrl: data.kycDocUrl,
+        kycDocUrl: validatedData.kycDocUrl,
         isVerifiedVendor: true
       }
     })
