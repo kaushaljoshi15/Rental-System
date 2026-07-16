@@ -1,10 +1,10 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import Razorpay from "razorpay"
 import { prisma } from "@/lib/prisma"
 import { calculateHallRent } from "@/lib/pricing"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 
 // Initialize Razorpay client. It will fetch keys from environment variables.
 const getRazorpayClient = () => {
@@ -62,7 +62,7 @@ export async function initiateRazorpayCheckout(
 ): Promise<InitiatePaymentResponse> {
   try {
     // 1. Session Authentication & Security Validation
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session?.user?.email) {
       return { success: false, message: "Unauthorized. Please log in to complete checkout." }
     }

@@ -1,9 +1,9 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma } from "@/lib/prisma"
 
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 
 export async function validateCoupon(code: string, cartTotal?: number) {
   try {
@@ -11,7 +11,7 @@ export async function validateCoupon(code: string, cartTotal?: number) {
       return { success: false, message: "Coupon code is required." }
     }
 
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session?.user?.email) {
       return { success: false, message: "Unauthorized. Please log in to apply coupons." }
     }

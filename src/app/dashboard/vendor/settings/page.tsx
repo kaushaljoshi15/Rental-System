@@ -1,11 +1,10 @@
+import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { SettingsClient } from "./settings-client"
 
 export default async function VendorSettingsPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) redirect("/login")
 
   const user = await prisma.user.findUnique({

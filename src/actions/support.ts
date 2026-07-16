@@ -1,8 +1,8 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 
 interface BotResponse {
   reply: string;
@@ -18,7 +18,7 @@ export async function askSupportBot(message: string): Promise<BotResponse> {
   const query = message.toLowerCase().trim()
 
   // 1. Resolve Session and User Details
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   const userEmail = session?.user?.email
 
   let user: any = null

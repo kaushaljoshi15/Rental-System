@@ -1,13 +1,13 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma, prismaRetry } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { VendorProfileSchema, VendorKycSchema } from "@/lib/schemas"
 
 async function getCurrentUser() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) return null
   return await prisma.user.findUnique({
     where: { email: session.user.email }

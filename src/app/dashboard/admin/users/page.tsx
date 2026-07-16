@@ -1,3 +1,4 @@
+import { auth } from "@/auth"
 import { requireRole } from "@/lib/middleware";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -15,14 +16,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { UserActionsMenu } from "./user-actions";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 
 export default async function UserManagementPage() {
   // 1. Security Check
   await requireRole(["ADMIN"]);
   
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const isMasterAdmin = session?.user?.email?.toLowerCase() === "joshikaushald1596@gmail.com";
 
   // 2. Fetch Users

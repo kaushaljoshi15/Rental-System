@@ -1,19 +1,18 @@
-// src/lib/auth.ts
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { prisma } from "@/lib/prisma";
-import * as bcrypt from "bcryptjs";
-import { cookies } from "next/headers";
+import NextAuth from "next-auth"
+import Credentials from "next-auth/providers/credentials"
+import Google from "next-auth/providers/google"
+import { prisma } from "@/lib/prisma"
+import * as bcrypt from "bcryptjs"
+import { cookies } from "next/headers"
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
   },
   providers: [
-    GoogleProvider({
+    Google({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       authorization: {
@@ -24,7 +23,7 @@ export const authOptions: NextAuthOptions = {
         }
       }
     }),
-    CredentialsProvider({
+    Credentials({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -35,7 +34,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email.toLowerCase() },
+            where: { email: (credentials.email as string).toLowerCase() },
           });
 
           if (!user) throw new Error("User not found");
@@ -45,13 +44,11 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Please verify your email before logging in");
           }
 
-          const isValid = await bcrypt.compare(credentials.password, user.password);
+          const isValid = await bcrypt.compare(credentials.password as string, user.password);
           if (!isValid) throw new Error("Invalid password");
 
-          // Get role from user (role is stored as string in schema)
           const roleName = user.role || "CUSTOMER";
 
-          // Read target role from cookie to isolate Customer and Seller portals
           const cookieStore = await cookies();
           const targetRole = cookieStore.get("next-auth.target-role")?.value || "CUSTOMER";
 
@@ -84,7 +81,6 @@ export const authOptions: NextAuthOptions = {
 
         const emailLower = user.email.toLowerCase();
         try {
-          // Read target role from cookie (next-auth.target-role)
           const cookieStore = await cookies();
           const targetRole = cookieStore.get("next-auth.target-role")?.value || "CUSTOMER";
 
@@ -96,8 +92,6 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!existingUser) {
-            // Register new Google OAuth user
-            // We generate a secure randomized password to satisfy the DB constraint
             const randomPassword = Math.random().toString(36) + Date.now().toString();
             const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
@@ -112,14 +106,12 @@ export const authOptions: NextAuthOptions = {
               },
             });
           } else {
-            // Upgrade to ADMIN if the master admin logs in but is currently not set as ADMIN in DB
             if (isMasterAdminEmail && existingUser.role !== "ADMIN") {
               await prisma.user.update({
                 where: { email: emailLower },
                 data: { role: "ADMIN" },
               });
             } else if (targetRole === "VENDOR" && existingUser.role === "CUSTOMER") {
-              // Upgrade existing CUSTOMER to VENDOR if they sign in from vendor portal
               await prisma.user.update({
                 where: { email: emailLower },
                 data: { role: "VENDOR" },
@@ -135,8 +127,8 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as { role?: string; id?: string }).role = token.role as string;
-        (session.user as { role?: string; id?: string }).id = token.id as string;
+        (session.user as any).role = token.role as string;
+        (session.user as any).id = token.id as string;
         if (token.email) {
           session.user.email = token.email.toLowerCase();
         }
@@ -145,12 +137,11 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as { role?: string }).role;
+        token.role = (user as any).role;
         token.id = user.id;
         if (user.email) {
           token.email = user.email.toLowerCase();
         }
-        // Force database lookup on initial login if role is missing (Google OAuth)
         if (!token.role && token.email) {
           const dbUser = await prisma.user.findUnique({
             where: { email: token.email },
@@ -162,9 +153,8 @@ export const authOptions: NextAuthOptions = {
           }
         }
       } else if (token.email) {
-        // Resolve latest role and ID from database to prevent stale session data
         const dbUser = await prisma.user.findUnique({
-          where: { email: token.email.toLowerCase() },
+          where: { email: (token.email as string).toLowerCase() },
           select: { id: true, role: true },
         });
         if (dbUser) {
@@ -175,4 +165,4 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
   },
-};
+})

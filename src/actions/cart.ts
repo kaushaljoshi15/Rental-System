@@ -1,14 +1,14 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 
 // --- ADD TO CART (With Date Logic) ---
 export async function addToCart(productId: string, price: number, dateRange?: { from: Date, to: Date }) {
   // 1. Check Auth
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Please log in to rent items.", code: "UNAUTHORIZED" }
   }
@@ -144,7 +144,7 @@ export async function addBundleToCart(
   dateRange: { from: Date; to: Date }
 ) {
   // 1. Check Auth
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Please log in to rent items.", code: "UNAUTHORIZED" }
   }

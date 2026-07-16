@@ -1,7 +1,6 @@
+import { auth } from "@/auth"
 import { requireRole } from "@/lib/middleware"
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { ProductWizard } from "../../product-wizard"
 
@@ -13,7 +12,7 @@ export default async function EditVendorProductPage({
   await requireRole(["VENDOR"])
   
   const { id } = await params
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) redirect("/login")
 
   const user = await prisma.user.findUnique({

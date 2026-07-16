@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { askSupportBot } from './support'
 
-// Mock next-auth
-vi.mock('next-auth', () => ({
-  getServerSession: vi.fn(),
+// Mock Auth.js
+vi.mock('@/auth', () => ({
+  auth: vi.fn(),
 }))
 
 // Mock prisma client

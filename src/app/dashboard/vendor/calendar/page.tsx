@@ -1,11 +1,10 @@
+import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { CalendarClient } from "./calendar-client"
 
 export default async function VendorCalendarPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) redirect("/login")
 
   const user = await prisma.user.findUnique({

@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { auth } from "@/auth"
 import Link from "next/link"
 import { Suspense } from "react"
 import { SearchBar } from "@/components/search-bar"
@@ -8,7 +7,7 @@ import { NavbarClient } from "@/components/navbar-client"
 import { Logo } from "@/components/logo"
 
 export async function Navbar() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   const isLoggedIn = !!session?.user
   const userName = session?.user?.name || "Guest"
 

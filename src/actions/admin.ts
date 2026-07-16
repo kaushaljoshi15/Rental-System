@@ -1,11 +1,11 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { sendVerificationEmail } from "@/lib/mail";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 // Create admin account (only reserved admin email can create)
@@ -13,7 +13,7 @@ export async function createAdmin(formData: FormData) {
   const RESERVED_ADMIN_EMAIL = "joshikaushald1596@gmail.com";
   
   // Check if current user is the reserved admin
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   
   if (!session?.user) {
     return { error: "Unauthorized. Please log in." };
@@ -80,7 +80,7 @@ export async function createAdmin(formData: FormData) {
 
 // Create category action (Admin-only)
 export async function createCategory(formData: FormData) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.email) {
     return { error: "Unauthorized. Please log in." };
   }
@@ -142,7 +142,7 @@ export async function createCategory(formData: FormData) {
 
 // Delete category action (Admin-only)
 export async function deleteCategory(categoryId: string) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.email) {
     return { error: "Unauthorized. Please log in." };
   }
@@ -192,7 +192,7 @@ export async function deleteCategory(categoryId: string) {
 }
 
 export async function approveProduct(productId: string) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in." };
   }
@@ -256,7 +256,7 @@ export async function approveProduct(productId: string) {
 }
 
 export async function rejectProduct(productId: string) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in." };
   }
@@ -318,7 +318,7 @@ export async function rejectProduct(productId: string) {
 }
 
 export async function approveVendor(vendorId: string) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in." };
   }
@@ -381,7 +381,7 @@ export async function approveVendor(vendorId: string) {
 }
 
 export async function rejectVendor(vendorId: string) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in." };
   }

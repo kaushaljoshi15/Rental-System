@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma, prismaRetry } from "@/lib/prisma"
 import Link from "next/link"
@@ -241,7 +240,7 @@ export default async function HomePage({
     vendorId?: string;
   }>
 }) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
 
   // If logged in as VENDOR or ADMIN, redirect them immediately to their portals
   if (session?.user) {

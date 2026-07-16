@@ -1,8 +1,8 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma, prismaRetry } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { calculateHallRent } from "@/lib/pricing"
 import { redis } from "@/lib/redis"
@@ -48,7 +48,7 @@ export async function confirmBooking(
   deliveryAddress?: string,
   deliveryCharge: number = 0
 ) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in to complete checkout." }
   }
@@ -450,7 +450,7 @@ export async function confirmBooking(
  * and debits the refunded earnings share from vendor balances.
  */
 export async function cancelBookingAndRefund(orderId: string) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in." }
   }

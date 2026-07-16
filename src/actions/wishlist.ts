@@ -1,12 +1,12 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 
 export async function toggleWishlist(productId: string) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Please login first to save items to your wishlist.", code: "UNAUTHORIZED" }
   }
@@ -63,7 +63,7 @@ export async function toggleWishlist(productId: string) {
 }
 
 export async function getWishlistStatus(productId: string) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: true, isWishlisted: false }
   }

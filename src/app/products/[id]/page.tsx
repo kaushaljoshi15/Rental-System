@@ -1,3 +1,4 @@
+import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma";
 import { BookingWidget } from "@/components/booking-widget";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +16,6 @@ import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
 import { Navbar } from "@/components/navbar";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { WishlistButton } from "@/components/wishlist-button";
 
 // Cache individual product details for 60 seconds by ID to reduce direct DB hits under concurrent traffic
@@ -48,7 +47,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const discount = Math.round(((mrp - product.priceDaily) / mrp) * 100);
 
   // Check if current product is wishlisted
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   let isWishlisted = false;
   if (session?.user?.email) {
     const existing = await prisma.wishlistItem.findFirst({

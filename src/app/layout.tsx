@@ -1,3 +1,4 @@
+import { auth } from "@/auth"
 /*  */import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -5,8 +6,6 @@ import { Providers } from "@/components/providers";
 import { SupportBot } from "@/components/support-bot";
 import { PageSpeedOptimizer, PageTransition } from "@/components/page-speed-optimizer";
 import { Suspense } from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/bottom-nav";
 
@@ -84,7 +83,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   const isLoggedIn = !!session?.user
 
   // Cart count is fetched client-side via CustomerContext to minimize server response latency (TTFB)

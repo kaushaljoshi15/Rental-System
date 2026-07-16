@@ -1,6 +1,5 @@
+import { auth } from "@/auth"
 import { requireRole } from "@/lib/middleware"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { VendorLayoutClient } from "./layout-client"
@@ -14,7 +13,7 @@ export default async function VendorDashboardLayout({
   await requireRole(["VENDOR"])
 
   // 2. Resolve session details
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     redirect("/login")
   }

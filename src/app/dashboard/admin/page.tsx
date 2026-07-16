@@ -1,7 +1,6 @@
+import { auth } from "@/auth"
 import { requireRole } from "@/lib/middleware";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,7 @@ export default async function AdminDashboard() {
   // 1. Check Role & Security
   await requireRole(["ADMIN"]);
   
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const isMasterAdmin = session?.user?.email?.toLowerCase() === RESERVED_ADMIN_EMAIL.toLowerCase();
 
   // 2. Fetch Data (Optimized with Promise.all for speed)

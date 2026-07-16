@@ -1,12 +1,11 @@
+import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { OrdersClient } from "./orders-client"
 import { calculateVendorRevenueForOrder, calculateHallRent } from "@/lib/pricing"
 
 export default async function VendorOrdersPage() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     redirect("/login")
   }

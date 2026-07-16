@@ -1,8 +1,8 @@
 'use server'
 
+import { auth } from "@/auth"
+
 import { prisma, prismaRetry } from "@/lib/prisma"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
 import { UserProfileSchema } from "@/lib/schemas"
 import { revalidatePath } from "next/cache"
 import { seedDefaultNotificationsIfEmpty } from "./notifications"
@@ -17,7 +17,7 @@ export async function updateProfile(data: {
   alternatePhone?: string
   email?: string
 }) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in." }
   }
@@ -63,7 +63,7 @@ export async function updateProfile(data: {
 
 // Add money to wallet (mock transaction)
 export async function addMoneyToWallet(amount: number, paymentMethod: string) {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized." }
   }
@@ -122,7 +122,7 @@ export async function addMoneyToWallet(amount: number, paymentMethod: string) {
 }
 
 export async function deleteAccount() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized. Please log in." }
   }
@@ -181,7 +181,7 @@ export async function deleteAccount() {
 }
 
 export async function getCustomerDashboardData() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   if (!session?.user?.email) {
     return { success: false, message: "Unauthorized." }
   }
