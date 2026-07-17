@@ -24,7 +24,9 @@ import {
   ArrowLeft,
   ShoppingBag,
   Star,
-  Building
+  Building,
+  Minus,
+  Plus
 } from "lucide-react"
 import { SettingsForm } from "@/components/customer/settings-form"
 import { AVATAR_PRESETS } from "@/lib/avatars"
@@ -43,6 +45,8 @@ import { CartAddressSelector } from "@/components/customer/cart-address-selector
 import { GiftCardsManager, SavedCardsManager, SavedUpiManager } from "@/components/customer/payment-managers"
 import { OrdersListClient } from "@/components/customer/orders-list-client"
 import { LogoutLink } from "@/components/logout-button"
+import { updateCartDates } from "@/actions/cart"
+import { toast } from "sonner"
 
 interface CustomerDashboardClientProps {
   activeTab: string
@@ -71,7 +75,29 @@ export function CustomerDashboardClient({
   allProductsForSearch,
   searchParams
 }: CustomerDashboardClientProps) {
-  const { customerData, loading } = useCustomer()
+  const { customerData, loading, refresh } = useCustomer()
+  const [isAdjustingDays, startAdjustingDays] = React.useTransition()
+
+  const handleAdjustDays = (amount: number) => {
+    if (!customerData?.cart) return
+    const cart = customerData.cart
+    const currentStart = new Date(cart.startDate)
+    const currentEnd = new Date(cart.endDate)
+    const newEnd = new Date(currentEnd)
+    newEnd.setDate(newEnd.getDate() + amount)
+
+    if (newEnd < currentStart) return
+
+    startAdjustingDays(async () => {
+      const res = await updateCartDates(cart.id, currentStart, newEnd)
+      if (res.success) {
+        toast.success(`Rental period updated to ${Math.round((newEnd.getTime() - currentStart.getTime()) / (1000 * 60 * 60 * 24)) + 1} days.`)
+        await refresh()
+      } else {
+        toast.error(res.message || "Failed to adjust rental days.")
+      }
+    })
+  }
 
   if (loading || !customerData) {
     return (
@@ -152,19 +178,39 @@ export function CustomerDashboardClient({
                     <div className="lg:col-span-8 space-y-6">
                       <div className="bg-white border border-slate-200/60 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden divide-y divide-slate-100">
                         {/* Schedule Summary Banner */}
-                        <div className="p-6 bg-slate-50/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-                          <div className="flex items-center gap-4">
-                            <div className="bg-white p-2.5 rounded-xl text-slate-700 shrink-0 border border-slate-100 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-                              <CalendarIcon className="w-4 h-4 text-slate-500" />
+                        <div className="p-6 bg-gradient-to-br from-slate-50/80 via-white to-slate-50/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100">
+                          <div className="flex items-center gap-4 w-full sm:w-auto">
+                            <div className="bg-amber-50/60 p-3 rounded-2xl text-[#F59E0B] shrink-0 border border-amber-100/40 shadow-sm shadow-amber-500/5">
+                              <CalendarIcon className="w-5 h-5" />
                             </div>
-                            <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-slate-450">Scheduled Rental Window</p>
-                              <p className="text-sm text-slate-850 font-bold mt-1 font-sans">
-                                {format(cartStartDate, "MMM dd")} - {format(cartEndDate, "MMM dd, yyyy")}
-                                <span className="ml-2.5 text-xs font-bold text-slate-650 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
-                                  {cartDuration} {cartDuration === 1 ? "Day" : "Days"}
+                            <div className="space-y-0.5">
+                              <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Scheduled Rental Window</p>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-sm sm:text-base text-slate-900 font-black tracking-tight">
+                                  {format(cartStartDate, "MMM dd")} - {format(cartEndDate, "MMM dd, yyyy")}
                                 </span>
-                              </p>
+                                <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold text-slate-700 bg-slate-100/80 border border-slate-200/50 px-2 py-0.5 rounded-lg font-mono select-none">
+                                  {cartDuration} {cartDuration === 1 ? "Day" : "Days"}
+                                  <span className="inline-flex items-center ml-1 bg-white border border-slate-200/80 rounded-md p-0.5 gap-0.5 shadow-xs">
+                                    <button
+                                      onClick={() => handleAdjustDays(-1)}
+                                      disabled={cartDuration <= 1 || isAdjustingDays}
+                                      className="p-0.5 rounded text-slate-450 hover:text-rose-600 hover:bg-rose-50 disabled:opacity-30 transition-all cursor-pointer"
+                                      title="Decrease Days"
+                                    >
+                                      <Minus className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                      onClick={() => handleAdjustDays(1)}
+                                      disabled={isAdjustingDays}
+                                      className="p-0.5 rounded text-slate-450 hover:text-[#F59E0B] hover:bg-amber-55 transition-all cursor-pointer"
+                                      title="Increase Days"
+                                    >
+                                      <Plus className="w-3 h-3" />
+                                    </button>
+                                  </span>
+                                </span>
+                              </div>
                             </div>
                           </div>
                           <div className="w-full sm:w-auto shrink-0 flex justify-end">

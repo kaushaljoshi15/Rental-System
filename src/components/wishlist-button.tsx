@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { cn } from "@/lib/utils"
+import { useCustomer } from "@/context/customer-context"
 
 interface WishlistButtonProps {
   productId: string
@@ -16,6 +17,7 @@ interface WishlistButtonProps {
 }
 
 export function WishlistButton({ productId, initialIsWishlisted, className, variant = "floating" }: WishlistButtonProps) {
+  const { refresh } = useCustomer()
   const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted)
   const [isAnimating, setIsAnimating] = useState(false)
   const router = useRouter()
@@ -69,6 +71,7 @@ export function WishlistButton({ productId, initialIsWishlisted, className, vari
     try {
       const res = await toggleWishlist(productId)
       if (res.success) {
+        await refresh()
         setIsWishlisted(res.isWishlisted ?? nextState)
         toast.success(res.message)
       } else {

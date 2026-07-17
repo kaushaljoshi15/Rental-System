@@ -9,8 +9,9 @@ import { Card } from "@/components/ui/card"
 import { validateCoupon } from "@/actions/coupon"
 import { confirmBooking } from "@/actions/bookings"
 import { addMoneyToWallet } from "@/actions/profile"
-import { initiateRazorpayCheckout } from "@/actions/payments"
+import { initiateRazorpayCheckout, getRazorpayKeyId } from "@/actions/payments"
 import { toast } from "sonner"
+import { useCustomer } from "@/context/customer-context"
 import { 
   Ticket, 
   CreditCard, 
@@ -27,7 +28,8 @@ import {
   Building,
   Smartphone,
   CheckCircle2,
-  Plus
+  Plus,
+  Coins
 } from "lucide-react"
 
 interface Address {
@@ -71,10 +73,13 @@ export function CheckoutPanel({
   userAddressJson = null
 }: CheckoutPanelProps) {
   const router = useRouter()
+  const { customerData, refresh } = useCustomer()
+  const [rzpKey, setRzpKey] = useState<string | null>(null)
 
   // Warm up redirected target page
   useEffect(() => {
     router.prefetch("/?tab=orders")
+    getRazorpayKeyId().then(key => setRzpKey(key))
   }, [router])
 
 
@@ -119,6 +124,8 @@ export function CheckoutPanel({
   // UPI states
   const [upiId, setUpiId] = useState("")
   const [upiStatus, setUpiStatus] = useState<"idle" | "requested" | "success">("idle")
+  const [upiApp, setUpiApp] = useState<string | null>(null)
+  const [upiShowScanner, setUpiShowScanner] = useState(false)
 
   // Net banking states
   const [selectedBank, setSelectedBank] = useState("")
@@ -276,6 +283,7 @@ export function CheckoutPanel({
     try {
       const res = await confirmBooking(orderId, paymentMethod, appliedCoupon?.code, undefined, location, deliveryCharge)
       if (res.success) {
+        await refresh()
         toast.success("Payment completed successfully!")
         if (res.unlockedCoupon) {
           setUnlockedCoupon(res.unlockedCoupon)
@@ -334,9 +342,18 @@ export function CheckoutPanel({
       return
     }
 
+    let razorpayMethod: string | undefined = undefined
+    if (paymentMethod === "CREDIT_CARD" || paymentMethod === "DEBIT_CARD") {
+      razorpayMethod = "card"
+    } else if (paymentMethod === "UPI") {
+      razorpayMethod = "upi"
+    } else if (paymentMethod === "NET_BANKING") {
+      razorpayMethod = "netbanking"
+    }
+
     // 2. Options for the Razorpay SDK checkout overlay
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, 
+      key: rzpKey || "", 
       amount: gatewayOrder.amount, // in paise
       currency: gatewayOrder.currency || "INR",
       name: "RentKart",
@@ -354,6 +371,7 @@ export function CheckoutPanel({
           }, location, deliveryCharge)
           
           if (res.success) {
+            await refresh()
             toast.success("Payment confirmed and booking verified!")
             if (res.unlockedCoupon) {
               setUnlockedCoupon(res.unlockedCoupon)
@@ -377,8 +395,7 @@ export function CheckoutPanel({
         }
       },
       prefill: {
-        name: prefillName,
-        contact: prefillPhone,
+        method: razorpayMethod,
       },
       theme: {
         color: "#1e3a8a",
@@ -417,7 +434,7 @@ export function CheckoutPanel({
       await executeCheckoutBackend()
     } else {
       // Check if Razorpay keys are configured
-      const hasRazorpayKeys = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
+      const hasRazorpayKeys = !!rzpKey
       
       if (hasRazorpayKeys) {
         // Run actual real-time payment gateway popup
@@ -452,6 +469,7 @@ export function CheckoutPanel({
     try {
       const res = await addMoneyToWallet(neededAmount, "Simulated Checkout Quick Recharge")
       if (res.success) {
+        await refresh()
         toast.success(`Successfully recharged ₹${neededAmount.toLocaleString()} to your wallet!`)
         router.refresh()
       } else {
@@ -547,55 +565,53 @@ export function CheckoutPanel({
             </div>
           )}
         </div>
-
-        {/* Grand Estimate Card */}
-        <div className="flex justify-between items-center mb-6 bg-slate-950 text-white p-4 rounded-xl border border-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_12px_rgba(0,0,0,0.1)] select-none">
-          <div className="space-y-0.5">
-            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Grand Estimate</span>
-            <p className="text-[8px] text-slate-500 font-semibold leading-none">All inclusive simulation</p>
+          {/* Grand Estimate Card */}
+        <div className="flex justify-between items-center mb-6 bg-gradient-to-r from-slate-900 to-slate-950 text-white p-4.5 rounded-2xl border border-slate-800/80 shadow-md relative overflow-hidden select-none">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/[0.03] rounded-full blur-2xl pointer-events-none" />
+          <div className="space-y-1 relative z-10 text-left">
+            <span className="text-[9px] font-black uppercase tracking-widest text-amber-500/80">Estimated Total Due</span>
+            <p className="text-[8px] text-slate-450 font-bold leading-none">Simulation all inclusive</p>
           </div>
-          <span className="text-xl font-black text-[#F59E0B] font-mono tracking-tight">
+          <span className="text-xl font-black text-[#F59E0B] font-mono tracking-tight relative z-10">
             ₹{grandTotal.toLocaleString()}
           </span>
         </div>
 
         {/* Delivery Location Status */}
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-2.5">
-          <Label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-            <Building className="w-3.5 h-3.5 text-[#F59E0B]" /> Delivery Destination (Ahmedabad & Gandhinagar)
-          </Label>
-          <div className="space-y-1.5 p-3.5 bg-slate-50 rounded-xl border border-slate-200/50">
+          <div className="flex items-center justify-between text-left">
+            <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Building className="w-3.5 h-3.5 text-[#F59E0B]" /> Delivery Destination
+            </span>
+            {!defaultAddress && (
+              <span className="text-[8px] font-black text-rose-600 uppercase bg-rose-50 border border-rose-100/70 px-1.5 py-0.5 rounded-md">Required</span>
+            )}
+          </div>
+          <div className="p-3.5 bg-slate-50/80 border border-slate-200/40 rounded-2xl text-xs font-semibold text-slate-700 text-left">
             {defaultAddress ? (
-              <div>
-                <p className="text-xs font-bold text-slate-800">
-                  {defaultAddress.name} <span className="text-slate-400 font-normal">|</span> <span className="font-mono text-slate-600">{defaultAddress.phone}</span>
+              <div className="space-y-1">
+                <p className="truncate text-slate-800 font-bold">
+                  {defaultAddress.locality}, {defaultAddress.city}
                 </p>
-                <p className="text-[11px] text-slate-550 leading-relaxed mt-1 font-semibold">
-                  {defaultAddress.areaStreet}, {defaultAddress.locality}, {defaultAddress.city}, {defaultAddress.state} - <span className="font-mono">{defaultAddress.pincode}</span>
-                </p>
+                {locationError ? (
+                  <div className="flex gap-1.5 items-start text-[10px] text-rose-600 font-bold bg-rose-50 p-2 rounded-lg border border-rose-100/50 mt-1.5">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>{locationError}</span>
+                  </div>
+                ) : deliveryDetails.isFreePromotion ? (
+                  <p className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-1 font-sans">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 animate-pulse" /> Free Delivery Promo Applied (₹0)
+                  </p>
+                ) : (
+                  <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-1 font-medium font-sans">
+                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" /> Delivery Location Verified (₹{deliveryCharge})
+                  </p>
+                )}
               </div>
             ) : (
-              <p className="text-xs text-slate-500 font-semibold">No active address selected.</p>
-            )}
-
-            {locationError && (
-              <div className="flex gap-2 items-start mt-2 text-[10px] text-rose-600 font-bold bg-rose-50 p-2 rounded-lg border border-rose-100/50">
+              <div className="flex gap-2 items-start text-[10px] text-rose-600 font-bold bg-rose-50/70 p-2.5 rounded-xl border border-rose-100/30">
                 <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                <span>{locationError}</span>
-              </div>
-            )}
-
-            {defaultAddress && !locationError && deliveryDetails.isFreePromotion && (
-              <div className="flex gap-2 items-center mt-2 text-[10px] text-emerald-600 font-bold bg-emerald-50/60 p-2 rounded-lg border border-emerald-100/50">
-                <Check className="w-3.5 h-3.5 shrink-0" />
-                <span>Free Delivery Applied! (First 3 Orders Promo: ₹0 instead of ₹{deliveryDetails.originalCharge})</span>
-              </div>
-            )}
-
-            {defaultAddress && !locationError && !deliveryDetails.isFreePromotion && (
-              <div className="flex gap-2 items-center mt-2 text-[10px] text-slate-600 font-bold bg-slate-100/80 p-2 rounded-lg border border-slate-200/50">
-                <Check className="w-3.5 h-3.5 shrink-0" />
-                <span>Delivery Area Verified. Charge: ₹{deliveryCharge}</span>
+                <span>Please select or add a setup address at the top of the cart to continue checkout.</span>
               </div>
             )}
           </div>
@@ -603,7 +619,7 @@ export function CheckoutPanel({
 
         {/* Promo Coupon Form */}
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-2.5">
-          <Label htmlFor="coupon" className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <Label htmlFor="coupon" className="text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
             <Ticket className="w-3.5 h-3.5 text-[#F59E0B]" /> Apply Coupon Code
           </Label>
           <div className="flex gap-2">
@@ -614,14 +630,14 @@ export function CheckoutPanel({
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
               disabled={!!appliedCoupon || validatingCoupon}
-              className="text-xs rounded-xl h-9.5 border-slate-200 uppercase font-mono tracking-wide focus-visible:ring-slate-450"
+              className="text-xs rounded-xl h-10 border-slate-200 uppercase font-mono tracking-wide focus-visible:ring-slate-450 text-slate-800 bg-white placeholder:text-slate-400"
             />
             {appliedCoupon ? (
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleRemoveCoupon}
-                className="text-xs font-bold h-9.5 rounded-xl px-4 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 transition-colors cursor-pointer"
+                className="text-xs font-black h-10 rounded-full px-5 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer uppercase tracking-wider"
               >
                 Remove
               </Button>
@@ -630,34 +646,33 @@ export function CheckoutPanel({
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={validatingCoupon || !couponCode.trim()}
-                className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-9.5 rounded-xl px-5 transition-colors cursor-pointer"
+                className="bg-[#f5820b] hover:bg-[#e07505] disabled:bg-slate-100 disabled:text-slate-400 text-white font-black text-xs h-10 rounded-full px-6 shadow-[0_2px_8px_rgba(245,130,11,0.2)] transition-all cursor-pointer border-0"
               >
                 {validatingCoupon ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
               </Button>
-            )
-          }
+            )}
           </div>
-          {couponError && <p className="text-[10px] text-rose-600 font-semibold">{couponError}</p>}
+          {couponError && <p className="text-[10px] text-rose-600 font-bold text-left">{couponError}</p>}
           {couponSuccess && (
-            <p className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-              <Check className="w-3.5 h-3.5" /> {couponSuccess}
+            <p className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 text-left">
+              <Check className="w-3.5 h-3.5 text-emerald-600" /> {couponSuccess}
             </p>
           )}
         </div>
 
         {/* Payment Methods */}
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-3">
-          <Label className="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <Label className="text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
             <CreditCard className="w-3.5 h-3.5 text-[#F59E0B]" /> Select Payment Method
           </Label>
           <div className="grid grid-cols-1 gap-2.5">
             {[
-              { value: "CREDIT_CARD", label: "Credit Card" },
-              { value: "DEBIT_CARD", label: "Debit Card" },
-              { value: "UPI", label: "BHIM UPI (GPay / Paytm)" },
-              { value: "NET_BANKING", label: "Net Banking" },
-              { value: "WALLET", label: "Digital Wallet Balance", isWallet: true },
-              { value: "CASH_ON_DELIVERY", label: "Cash on Delivery (COD)" },
+              { value: "CREDIT_CARD", label: "Credit Card", desc: "Visa, Mastercard, RuPay cards" },
+              { value: "DEBIT_CARD", label: "Debit Card", desc: "ATM / Debit transfers" },
+              { value: "UPI", label: "BHIM UPI (GPay / PhonePe)", desc: "Instant checkout via secure UPI" },
+              { value: "NET_BANKING", label: "Net Banking", desc: "Support for 50+ Indian banks" },
+              { value: "WALLET", label: "Digital Wallet Balance", desc: "Pay using RentKart wallet", isWallet: true },
+              { value: "CASH_ON_DELIVERY", label: "Cash on Delivery (COD)", desc: "Pay on order setup completion" },
             ].map((opt) => {
               const isSelected = paymentMethod === opt.value;
               const isWallet = !!opt.isWallet;
@@ -667,25 +682,28 @@ export function CheckoutPanel({
                 <div
                   key={opt.value}
                   onClick={() => setPaymentMethod(opt.value)}
-                  className={`flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all duration-200 select-none ${
+                  className={`group flex items-center justify-between p-3.5 border rounded-2xl cursor-pointer transition-all duration-200 select-none text-left ${
                     isSelected 
-                      ? "border-slate-900 bg-slate-50/50 shadow-[0_2px_8px_rgba(0,0,0,0.03)]" 
-                      : "border-slate-200/60 hover:border-slate-350 hover:bg-slate-50/20"
+                      ? "border-[#F59E0B] bg-amber-500/[0.03] shadow-xs" 
+                      : "border-slate-200/60 hover:border-slate-300 hover:bg-slate-50/20"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                      isSelected ? "border-slate-900 bg-slate-900" : "border-slate-300 bg-white"
+                      isSelected ? "border-[#F59E0B] bg-[#F59E0B]" : "border-slate-350 bg-white group-hover:border-slate-450"
                     }`}>
-                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-slate-950" />}
                     </div>
-                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5 font-sans">
-                      {isWallet && <Wallet className="w-3.5 h-3.5 text-[#F59E0B]" />}
-                      {opt.label}
-                    </span>
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        {isWallet && <Wallet className="w-3.5 h-3.5 text-[#F59E0B]" />}
+                        {opt.label}
+                      </span>
+                      <p className="text-[10px] text-slate-400 font-semibold leading-none">{opt.desc}</p>
+                    </div>
                   </div>
                   {isWallet && (
-                    <span className="text-xs font-bold text-slate-700 font-mono">
+                    <span className="text-xs font-black text-slate-900 font-mono">
                       ₹{initialWalletBalance.toLocaleString()}
                     </span>
                   )}
@@ -694,39 +712,59 @@ export function CheckoutPanel({
             })}
           </div>
 
-          {hasInsufficientWallet && (
-            <div className="flex flex-col gap-2.5 p-3.5 bg-rose-50 text-rose-800 rounded-xl border border-rose-200/40 text-xs mt-3.5 font-sans">
+          {paymentMethod === "CASH_ON_DELIVERY" && (
+            <div className="flex flex-col gap-2 p-3.5 bg-amber-50/60 text-amber-900 rounded-2xl border border-amber-200/40 text-xs mt-3.5 font-sans text-left">
               <div className="flex gap-2.5 items-start">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <Coins className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+                <div className="space-y-1">
+                  <p className="font-extrabold text-slate-900">Cash on Delivery (COD) Selected</p>
+                  <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
+                    You can pay the delivery executive in cash or via UPI scan once the items are delivered to your location and setup is complete.
+                  </p>
+                  <div className="mt-2 bg-amber-100/50 rounded-xl p-2.5 border border-amber-200/60 text-[9.5px] leading-normal font-sans">
+                    <span className="font-black text-[#F59E0B] uppercase tracking-wider block">Website Note for Delivery Executive:</span>
+                    <p className="font-bold text-slate-700 mt-1">
+                      "Collect ₹{grandTotal.toLocaleString()} in cash or via scanner from the customer at the time of delivery/setup before handing over the rental items."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {hasInsufficientWallet && (
+            <div className="flex flex-col gap-2.5 p-3.5 bg-rose-50 text-rose-800 rounded-2xl border border-rose-200/40 text-xs mt-3.5 font-sans text-left">
+              <div className="flex gap-2.5 items-start">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
                 <div>
                   <p className="font-bold">Insufficient Wallet Balance</p>
                   <p className="text-[11px] opacity-90 mt-0.5 leading-relaxed font-semibold">
-                    You need ₹{grandTotal.toLocaleString()} but only have ₹{initialWalletBalance.toLocaleString()}.
+                    Required: ₹{grandTotal.toLocaleString()}, Available: ₹{initialWalletBalance.toLocaleString()}.
                   </p>
+                  <Button
+                    type="button"
+                    onClick={handleRechargeWallet}
+                    disabled={recharging}
+                    className="w-full bg-[#f5820b] hover:bg-[#e07505] disabled:bg-slate-100 disabled:text-slate-400 text-white font-black text-xs h-10.5 rounded-full cursor-pointer border-0 shadow-[0_3px_10px_rgba(245,130,11,0.25)] transition-all active:scale-[0.99] flex items-center justify-center gap-1.5"
+                  >
+                    {recharging ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Recharging Wallet...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-3.5 h-3.5" /> Recharge & Add ₹{Math.ceil(grandTotal - initialWalletBalance).toLocaleString()}
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
-              <Button
-                type="button"
-                onClick={handleRechargeWallet}
-                disabled={recharging}
-                className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-9.5 rounded-xl cursor-pointer"
-              >
-                {recharging ? (
-                  <span className="flex items-center gap-1 justify-center">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Recharging Wallet...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 justify-center">
-                    <Plus className="w-3.5 h-3.5" /> Recharge & Add ₹{Math.ceil(grandTotal - initialWalletBalance).toLocaleString()}
-                  </span>
-                )}
-              </Button>
             </div>
           )}
         </div>
 
         {checkoutError && (
-          <div className="p-3 bg-rose-50 text-rose-800 rounded-xl border border-rose-200/50 text-xs mb-4 font-semibold font-sans">
+          <div className="p-3.5 bg-rose-50 text-rose-800 rounded-xl border border-rose-200/50 text-xs mb-4 font-bold font-sans text-left">
             {checkoutError}
           </div>
         )}
@@ -735,20 +773,19 @@ export function CheckoutPanel({
           <Button 
             type="submit" 
             disabled={checkoutLoading || hasInsufficientWallet || !defaultAddress || !!locationError}
-            className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-11.5 shadow-sm transition-all rounded-xl cursor-pointer animate-all"
+            className="w-full bg-[#f5820b] hover:bg-[#e07505] disabled:from-slate-100 disabled:to-slate-100 disabled:bg-slate-100 text-white disabled:text-slate-400 font-black text-xs uppercase tracking-wider h-12 shadow-[0_4px_14px_rgba(245,130,11,0.3)] hover:shadow-[0_6px_20px_rgba(245,130,11,0.4)] active:scale-[0.99] hover:-translate-y-0.5 disabled:translate-y-0 disabled:shadow-none transition-all rounded-full cursor-pointer border-0 flex items-center justify-center gap-2"
           >
             {checkoutLoading ? (
-              <span className="flex items-center gap-1.5 justify-center">
-                <Loader2 className="w-4 h-4 animate-spin" /> Finalizing Booking...
+              <span className="flex items-center gap-1.5 justify-center font-black">
+                <Loader2 className="w-4 h-4 animate-spin" /> Processing Transaction...
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 justify-center">
-                Confirm & Pay <ArrowRight className="w-4 h-4" />
+              <span className="flex items-center gap-1.5 justify-center font-black">
+                Confirm & Pay Booking <ArrowRight className="w-4 h-4" />
               </span>
             )}
           </Button>
         </form>
-        
         <p className="text-[10px] text-center text-slate-400 mt-4 leading-relaxed font-semibold font-sans">
           *Contract is locked instantly. Cancellation policies apply upon confirmation.
         </p>
@@ -759,7 +796,7 @@ export function CheckoutPanel({
         <div className="flex gap-2.5 items-start">
           <Lock className="w-4 h-4 text-slate-450 mt-0.5 shrink-0" />
           <p className="text-[11px] text-slate-500 font-medium leading-relaxed font-semibold">
-            <span className="font-bold text-slate-800">100% Encrypted Transactions</span>. Secure digital payments simulated.
+            <span className="font-bold text-slate-800">100% Secure Checkout</span>. Secure digital payments processed via 256-bit SSL encryption.
           </p>
         </div>
         <div className="flex gap-2.5 items-start">
@@ -790,8 +827,8 @@ export function CheckoutPanel({
                   <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider">Secure Card Gateway</h4>
                 </div>
                 
-                <p className="text-[11px] text-slate-500 leading-relaxed font-semibold font-sans">
-                  Simulating payment of <span className="font-bold text-slate-800">₹{grandTotal.toLocaleString()}</span>. Please enter mock card credentials.
+                <p className="text-[11px] text-slate-500 leading-relaxed font-semibold font-sans text-left">
+                  Please enter your card details below to authorize payment of <span className="font-bold text-slate-800">₹{grandTotal.toLocaleString()}</span>.
                 </p>
 
                 <div className="space-y-3 pt-2 font-sans">
@@ -883,8 +920,8 @@ export function CheckoutPanel({
                   <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider font-sans">3D Secure OTP Portal</h4>
                 </div>
                 
-                <p className="text-[11px] text-slate-500 leading-relaxed font-semibold font-sans">
-                  A verification code has been simulated for your transaction of <span className="font-bold text-slate-800">₹{grandTotal.toLocaleString()}</span>. Please enter any 6-digit code.
+                <p className="text-[11px] text-slate-500 leading-relaxed font-semibold font-sans text-left">
+                  Enter the 6-digit secure verification code (OTP) sent to your registered mobile number to authorize the transaction of <span className="font-bold text-slate-800">₹{grandTotal.toLocaleString()}</span>.
                 </p>
 
                 <div className="space-y-2 pt-2 font-sans">
@@ -921,99 +958,178 @@ export function CheckoutPanel({
           {activeModal === "UPI_FORM" && (
             <Card className="w-full max-w-md bg-white rounded-3xl p-6 border border-slate-100 shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
               <button 
-                onClick={() => setActiveModal(null)}
+                onClick={() => {
+                  setActiveModal(null)
+                  setUpiStatus("idle")
+                  setUpiApp(null)
+                  setUpiShowScanner(false)
+                }}
                 className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="space-y-5 text-center">
-                <div className="flex items-center gap-2 border-b border-slate-100 pb-3 text-left">
-                  <QrCode className="w-5 h-5 text-[#F59E0B]" />
-                  <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider font-sans">UPI Payments Hub</h4>
+              <div className="space-y-5">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 text-left">
+                  <div>
+                    <span className="text-[9px] uppercase font-black tracking-wider text-slate-400">Razorpay Secure Checkout</span>
+                    <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider font-sans">UPI / Instant Pay</h4>
+                  </div>
+                  <div className="text-right font-sans">
+                    <span className="text-[9px] text-slate-400 font-black uppercase block tracking-wider">Amount Due</span>
+                    <span className="font-mono text-sm font-black text-slate-850">₹{grandTotal.toLocaleString()}</span>
+                  </div>
                 </div>
 
                 {upiStatus === "idle" ? (
-                  <div className="space-y-4">
-                    {/* Pulsing Scan QR Panel */}
-                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden max-w-[220px] mx-auto shadow-sm">
-                      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#F59E0B] to-transparent animate-[bounce_2s_infinite]" />
-                      <QrCode className="w-36 h-36 text-slate-800 animate-pulse" strokeWidth={1.2} />
-                      <span className="text-[9px] font-black uppercase text-slate-400 mt-2 tracking-widest">RentKart Merchant QR</span>
-                    </div>
+                  <div className="space-y-4 text-left font-sans">
+                    {!upiShowScanner ? (
+                      <>
+                        <Label className="text-[10px] font-black uppercase text-slate-450 tracking-wider">Select UPI Application</Label>
+                        <div className="grid grid-cols-2 gap-3">
+                          {[
+                            { id: "gpay", label: "Google Pay", color: "border-blue-500/10 hover:border-blue-500/40 hover:bg-blue-50/5 text-blue-600" },
+                            { id: "phonepe", label: "PhonePe", color: "border-purple-500/10 hover:border-purple-500/40 hover:bg-purple-50/5 text-purple-600" },
+                            { id: "paytm", label: "Paytm", color: "border-sky-500/10 hover:border-sky-500/40 hover:bg-sky-50/5 text-sky-600" },
+                            { id: "amazon", label: "Amazon Pay", color: "border-amber-500/10 hover:border-amber-500/40 hover:bg-amber-50/5 text-amber-600" },
+                          ].map((app) => (
+                            <button
+                              type="button"
+                              key={app.id}
+                              onClick={() => {
+                                setUpiApp(app.label)
+                                setUpiId(`${customerData?.name?.toLowerCase().replace(/\s/g, "") || "user"}@ok${app.id}`)
+                                setUpiStatus("requested")
+                              }}
+                              className={`flex items-center justify-center gap-2 p-3.5 border rounded-2xl font-black text-xs transition-all hover:-translate-y-0.5 cursor-pointer bg-white ${app.color}`}
+                            >
+                              <span>{app.label}</span>
+                            </button>
+                          ))}
+                        </div>
 
-                    <div className="space-y-1 font-sans">
-                      <p className="text-[11px] font-black text-slate-800">Scan QR Code to Pay ₹{grandTotal.toLocaleString()}</p>
-                      <p className="text-[10px] text-slate-455 leading-relaxed font-semibold">Open GPay, Paytm, or PhonePe to scan and authorize.</p>
-                    </div>
+                        <div className="relative flex py-1 items-center">
+                          <div className="flex-grow border-t border-slate-100"></div>
+                          <span className="flex-shrink mx-3 text-[9px] text-slate-400 uppercase tracking-widest font-black">Or Scan Merchant QR</span>
+                          <div className="flex-grow border-t border-slate-100"></div>
+                        </div>
 
-                    <div className="relative flex py-1 items-center font-sans">
-                      <div className="flex-grow border-t border-slate-100"></div>
-                      <span className="flex-shrink mx-3 text-[10px] text-slate-400 uppercase tracking-widest font-black">Or Use UPI ID</span>
-                      <div className="flex-grow border-t border-slate-100"></div>
-                    </div>
+                        <button
+                          type="button"
+                          onClick={() => setUpiShowScanner(true)}
+                          className="w-full flex items-center justify-center gap-2.5 p-3.5 border border-slate-200 hover:border-[#F59E0B] hover:bg-amber-50/[0.02] rounded-2xl font-bold text-xs text-slate-800 transition-all cursor-pointer bg-white"
+                        >
+                          <QrCode className="w-4 h-4 text-[#F59E0B]" />
+                          <span>Display Merchant QR Code</span>
+                        </button>
 
-                    <div className="flex gap-2 font-sans">
-                      <Input
-                        type="text"
-                        placeholder="e.g. kaushal@okaxis"
-                        value={upiId}
-                        onChange={(e) => setUpiId(e.target.value)}
-                        className="text-xs h-10 rounded-xl"
-                      />
-                      <Button
-                        onClick={() => {
-                          if (!upiId.includes("@")) {
-                            toast.error("Please enter a valid UPI ID (e.g. user@okaxis).")
-                            return
-                          }
-                          setUpiStatus("requested")
-                        }}
-                        className="bg-slate-900 text-white font-extrabold text-xs rounded-xl px-4 cursor-pointer"
-                      >
-                        Request
-                      </Button>
-                    </div>
+                        <div className="relative flex py-1 items-center">
+                          <div className="flex-grow border-t border-slate-100"></div>
+                          <span className="flex-shrink mx-3 text-[9px] text-slate-400 uppercase tracking-widest font-black">Or Pay via UPI ID</span>
+                          <div className="flex-grow border-t border-slate-100"></div>
+                        </div>
 
-                    <div className="pt-2">
-                      <Button
-                        onClick={executeCheckoutBackend}
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs h-11 rounded-xl cursor-pointer"
-                      >
-                        Simulate Scan Success & Complete
-                      </Button>
-                    </div>
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            placeholder="e.g. user@okaxis"
+                            value={upiId}
+                            onChange={(e) => setUpiId(e.target.value)}
+                            className="text-xs h-10 rounded-xl"
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              if (!upiId.includes("@")) {
+                                toast.error("Please enter a valid UPI ID (e.g. user@okaxis).")
+                                return
+                              }
+                              setUpiApp("UPI app")
+                              setUpiStatus("requested")
+                            }}
+                            className="bg-slate-900 text-white font-extrabold text-xs rounded-xl px-4 cursor-pointer border-0"
+                          >
+                            Verify
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="space-y-4 flex flex-col items-center w-full">
+                        {/* Pulsing Scan QR Panel */}
+                        <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden max-w-[200px] shadow-sm">
+                          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#F59E0B] to-transparent animate-[bounce_2s_infinite]" />
+                          <QrCode className="w-36 h-36 text-slate-900 animate-pulse" strokeWidth={1.2} />
+                          <span className="text-[9px] font-black uppercase text-slate-450 mt-2 tracking-widest">RentKart Merchant QR</span>
+                        </div>
+
+                        <div className="space-y-1 font-sans text-center">
+                          <p className="text-xs font-black text-slate-800">Scan QR to pay ₹{grandTotal.toLocaleString()}</p>
+                          <p className="text-[10px] text-slate-450 leading-relaxed font-semibold">Open GPay, Paytm, or PhonePe to scan and authorize.</p>
+                        </div>
+
+                        <div className="w-full flex gap-3 pt-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setUpiShowScanner(false)}
+                            className="flex-1 text-xs font-bold h-10.5 rounded-xl cursor-pointer"
+                          >
+                            Back
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={executeCheckoutBackend}
+                            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs h-10.5 rounded-xl cursor-pointer border-0 shadow-sm"
+                          >
+                            Confirm Success
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="space-y-4 py-3 font-sans">
-                    <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mx-auto border border-amber-100 animate-pulse">
-                      <Smartphone className="w-6 h-6" />
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-xs font-bold text-slate-800">Collect Request Dispatched</p>
-                      <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
-                        A payment collect request for <span className="font-bold text-slate-700">₹{grandTotal.toLocaleString()}</span> has been simulated on your UPI app <span className="font-bold text-slate-800">"{upiId}"</span>.
-                      </p>
+                  <div className="space-y-5 text-center font-sans py-3">
+                    <div className="w-14 h-14 rounded-full bg-amber-50 text-[#F59E0B] border border-amber-100 flex items-center justify-center mx-auto animate-pulse">
+                      <Smartphone className="w-7 h-7" />
                     </div>
 
-                    <div className="bg-slate-50/50 border border-slate-100 rounded-xl p-3.5 text-[10px] text-slate-500 leading-normal text-left font-semibold">
-                      Open your mobile app (GPay/Paytm), check notification box, enter secure UPI PIN, and confirm the transaction.
+                    <div className="space-y-1">
+                      <h5 className="font-extrabold text-slate-900 text-sm">Payment Request Sent</h5>
+                      <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                        We have dispatched a secure payment request for <span className="font-bold text-slate-800">₹{grandTotal.toLocaleString()}</span> to your {upiApp || "UPI app"} link:
+                      </p>
+                      <span className="inline-block bg-slate-100 border border-slate-200/50 text-slate-800 font-mono font-bold text-xs px-3 py-1 rounded-lg mt-1">
+                        {upiId}
+                      </span>
+                    </div>
+
+                    <div className="bg-slate-50 border border-slate-105 rounded-2xl p-4 text-[10.5px] text-slate-500 leading-relaxed text-left font-semibold space-y-1.5 shadow-sm">
+                      <p className="font-bold text-slate-800">Next steps to pay:</p>
+                      <ol className="list-decimal pl-4.5 space-y-1">
+                        <li>Open the {upiApp || "UPI App"} on your phone.</li>
+                        <li>Check your pending notifications or request alerts.</li>
+                        <li>Confirm the booking request amount and enter your UPI PIN.</li>
+                      </ol>
                     </div>
 
                     <div className="pt-2 flex gap-3">
                       <Button
+                        type="button"
                         variant="outline"
-                        onClick={() => setUpiStatus("idle")}
+                        onClick={() => {
+                          setUpiStatus("idle")
+                          setUpiApp(null)
+                        }}
                         className="flex-1 text-xs font-bold h-11 rounded-xl cursor-pointer"
                       >
-                        Back
+                        Cancel
                       </Button>
                       <Button
+                        type="button"
                         onClick={executeCheckoutBackend}
-                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs h-11 rounded-xl cursor-pointer"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs h-11 rounded-xl cursor-pointer border-0 shadow-sm shadow-emerald-500/10"
                       >
-                        Simulate Mobile Approval
+                        Authorize Debit
                       </Button>
                     </div>
                   </div>
@@ -1182,9 +1298,9 @@ export function CheckoutPanel({
                 <div className="absolute w-16 h-16 rounded-full border-4 border-slate-100 border-t-[#F59E0B] animate-spin" />
                 <Lock className="w-5 h-5 text-[#F59E0B] animate-pulse" />
               </div>
-              <p className="text-xs font-black text-slate-800 uppercase tracking-widest mb-1.5">Processing secure payment</p>
-              <p className="text-[10px] text-slate-400 leading-normal font-semibold max-w-[190px]">
-                Validating transaction ledger data with gateway simulation. Please wait.
+              <p className="text-xs font-black text-slate-805 uppercase tracking-widest mb-1.5 font-sans">Processing secure payment</p>
+              <p className="text-[10px] text-slate-400 leading-normal font-semibold max-w-[190px] font-sans">
+                Validating transaction with security ledger. Please wait.
               </p>
             </Card>
           )}

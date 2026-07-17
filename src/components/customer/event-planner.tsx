@@ -25,6 +25,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { addBundleToCart } from "@/actions/cart"
+import { useCustomer } from "@/context/customer-context"
 
 interface Product {
   id: string
@@ -59,6 +60,7 @@ interface EventPlannerProps {
 
 export function EventPlanner({ products, categories }: EventPlannerProps) {
   const router = useRouter()
+  const { refresh } = useCustomer()
   const [isPending, startTransition] = useTransition()
   
   // Wizard steps: 1 (Config), 2 (Budget), 3 (Optimize & Swap), 4 (Quotation & Lock)
@@ -293,6 +295,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
       })
 
       if (result.success) {
+        await refresh()
         toast.success("Event package locked successfully!", {
           description: `Automatic ${discountRate * 100}% Bundle Discount applied.`,
         })

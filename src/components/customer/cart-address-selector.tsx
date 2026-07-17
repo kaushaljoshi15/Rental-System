@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { MapPin, Home, Briefcase, Check, Plus, Loader2, X, AlertCircle } from "lucide-react"
 import { updateProfile } from "@/actions/profile"
 import { Button } from "@/components/ui/button"
+import { useCustomer } from "@/context/customer-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -44,6 +45,7 @@ const INDIAN_STATES = [
 ]
 
 export function CartAddressSelector({ initialAddress, userName }: CartAddressSelectorProps) {
+  const { refresh } = useCustomer()
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -106,8 +108,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
         <div className="shrink-0 flex items-center justify-end w-full sm:w-auto">
           <Link href="/?tab=addresses">
             <Button
-              variant="outline"
-              className="border-amber-250 hover:border-amber-350 hover:bg-amber-500/10 text-[#F59E0B] font-extrabold text-xs h-9 px-4.5 rounded-xl transition-all cursor-pointer"
+              className="bg-[#f5820b] hover:bg-[#e07505] text-white font-extrabold text-xs h-9.5 px-6 rounded-full transition-all cursor-pointer border-0 shadow-[0_2.5px_8px_rgba(245,130,11,0.2)]"
             >
               Configure Address
             </Button>
@@ -127,6 +128,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
       }))
       const res = await updateProfile({ address: JSON.stringify(updated) })
       if (res.success) {
+        await refresh()
         toast.success("Delivery address updated")
         setIsOpen(false)
       } else {
@@ -169,6 +171,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
 
       const res = await updateProfile({ address: JSON.stringify(updatedList) })
       if (res.success) {
+        await refresh()
         toast.success("New address added successfully")
         setShowAddForm(false)
         setFormData({
@@ -191,29 +194,29 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
   }
 
   return (
-    <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-slate-200/60 rounded-3xl">
-      <div className="flex items-center gap-4 w-full sm:w-auto">
-        <div className="bg-slate-50 p-3 rounded-xl text-slate-700 shrink-0 border border-slate-100">
-          <MapPin className="w-4 h-4" />
+    <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-br from-slate-50/85 via-white to-slate-50/40 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-sm">
+      <div className="flex items-center gap-4 w-full sm:w-auto text-left">
+        <div className="bg-rose-50/60 p-3 rounded-2xl text-rose-550 shrink-0 border border-rose-100/40 shadow-sm shadow-rose-500/5">
+          <MapPin className="w-5 h-5 text-rose-550" />
         </div>
         <div className="min-w-0">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Deliver to</span>
+          <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Delivery Destination</span>
           {defaultAddress ? (
             <div className="mt-1">
-              <p className="text-xs font-bold text-slate-800">
-                {defaultAddress.name} <span className="text-slate-400 font-normal">|</span> <span className="font-mono text-slate-600">{defaultAddress.phone}</span>
+              <p className="text-xs font-black text-slate-900 leading-none">
+                {defaultAddress.name} <span className="text-slate-200 font-normal mx-1">|</span> <span className="font-mono text-slate-600 font-bold">{defaultAddress.phone}</span>
               </p>
-              <p className="text-xs text-slate-500 font-medium truncate mt-0.5 max-w-sm sm:max-w-md">
+              <p className="text-xs text-slate-500 font-semibold truncate mt-1.5 max-w-sm sm:max-w-md">
                 {defaultAddress.areaStreet}, {defaultAddress.locality}, {defaultAddress.city}, {defaultAddress.state} - <span className="font-mono font-bold text-slate-700">{defaultAddress.pincode}</span>
               </p>
             </div>
           ) : (
-            <p className="text-xs text-slate-450 font-bold mt-1">No saved address configured</p>
+            <p className="text-xs text-slate-455 font-bold mt-1">No active delivery address configured</p>
           )}
         </div>
       </div>
 
-      <div className="shrink-0 flex items-center justify-end w-full sm:w-auto">
+      <div className="shrink-0 flex items-center justify-end w-full sm:w-auto mt-2 sm:mt-0">
         <Popover open={isOpen} onOpenChange={(open) => {
           setIsOpen(open)
           if (!open) setShowAddForm(false)
@@ -221,7 +224,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
           <PopoverTrigger asChild>
             <Button
               disabled={isPending}
-              className="bg-slate-900 hover:bg-[#F59E0B] text-white hover:text-slate-955 font-extrabold text-xs h-9 px-4.5 rounded-xl transition-all cursor-pointer shadow-sm hover:scale-[1.02] border-0"
+              className="bg-[#f5820b] hover:bg-[#e07505] text-white font-extrabold text-xs h-9.5 px-6 rounded-full transition-all cursor-pointer border-0 shadow-[0_2.5px_8px_rgba(245,130,11,0.15)] flex items-center gap-1.5 active:scale-[0.98]"
             >
               {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
               <span>{defaultAddress ? "Change Address" : "Add Address"}</span>

@@ -12,6 +12,7 @@ import { Calendar as CalendarIcon, Loader2, Check, Edit2 } from "lucide-react"
 import { DateRange } from "react-day-picker"
 import { updateCartDates } from "@/actions/cart"
 import { toast } from "sonner"
+import { useCustomer } from "@/context/customer-context"
 
 interface CartDatePickerProps {
   orderId: string
@@ -20,6 +21,7 @@ interface CartDatePickerProps {
 }
 
 export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePickerProps) {
+  const { refresh } = useCustomer()
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
   const [date, setDate] = useState<DateRange | undefined>({
@@ -36,6 +38,7 @@ export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePick
     startTransition(async () => {
       const res = await updateCartDates(orderId, date.from!, date.to!)
       if (res.success) {
+        await refresh()
         toast.success(res.message)
         setIsOpen(false)
       } else {
@@ -49,7 +52,7 @@ export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePick
       <PopoverTrigger asChild>
         <Button 
           disabled={isPending}
-          className="bg-slate-900 hover:bg-[#F59E0B] text-white hover:text-slate-955 font-extrabold text-xs h-9 px-4.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-[1.02] border-0"
+          className="bg-[#f5820b] hover:bg-[#e07505] text-white font-extrabold text-xs h-9.5 px-6 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_2.5px_8px_rgba(245,130,11,0.15)] active:scale-[0.98] border-0"
         >
           {isPending ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -87,7 +90,7 @@ export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePick
         <Button
           onClick={handleUpdate}
           disabled={isPending || !date?.from || !date?.to}
-          className="w-full bg-slate-900 hover:bg-[#F59E0B] text-white hover:text-slate-955 font-extrabold text-xs h-9.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
+          className="w-full bg-[#f5820b] hover:bg-[#e07505] disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold text-xs h-9.5 rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-[0_2px_8px_rgba(245,130,11,0.15)] border-0 active:scale-[0.98]"
         >
           {isPending ? (
             <>

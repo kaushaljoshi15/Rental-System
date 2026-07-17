@@ -337,7 +337,9 @@ export async function confirmBooking(
           platformFee: platformFeeFinal,
           vendorPayout: vendorPayoutFinal,
           payoutStatus: "PENDING",
-          deliveryAddress: deliveryAddress || null,
+          deliveryAddress: paymentMethod === "CASH_ON_DELIVERY" && deliveryAddress
+            ? `[COD: Collect ₹${grandTotalAmount.toLocaleString()} from customer on delivery/setup] ${deliveryAddress}`
+            : deliveryAddress || null,
           deliveryCharge: deliveryCharge || 0
         }
       })

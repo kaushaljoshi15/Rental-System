@@ -272,3 +272,11 @@ export async function initiateRazorpayCheckout(
     }
   }
 }
+
+/**
+ * Exposes the public Razorpay Key ID from the server-side environment variables
+ * to client-side components to dynamically load and display the Razorpay Checkout popup.
+ */
+export async function getRazorpayKeyId(): Promise<string | null> {
+  return process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || null
+}

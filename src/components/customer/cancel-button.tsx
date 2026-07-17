@@ -4,8 +4,10 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { cancelBookingAndRefund } from "@/actions/bookings"
 import { AlertTriangle, Loader2 } from "lucide-react"
+import { useCustomer } from "@/context/customer-context"
 
 export function CancelButton({ orderId, className }: { orderId: string, className?: string }) {
+  const { refresh } = useCustomer()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -17,6 +19,7 @@ export function CancelButton({ orderId, className }: { orderId: string, classNam
     try {
       const res = await cancelBookingAndRefund(orderId)
       if (res.success) {
+        await refresh()
         setSuccess(true)
       } else {
         setError(res.message || "Failed to cancel booking")

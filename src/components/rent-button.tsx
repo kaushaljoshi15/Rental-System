@@ -15,6 +15,7 @@ import { ShoppingCart, Loader2, Check, Calendar as CalendarIcon, Edit2 } from "l
 import { toast } from "sonner"
 import { addToCart } from "@/actions/cart"
 import { useRouter } from "next/navigation"
+import { useCustomer } from "@/context/customer-context"
 
 interface RentButtonProps {
   productId: string
@@ -23,6 +24,7 @@ interface RentButtonProps {
 }
 
 export function RentButton({ productId, price, stock }: RentButtonProps) {
+  const { refresh } = useCustomer()
   const [isPending, startTransition] = useTransition()
   const [isAdded, setIsAdded] = useState(false)
   const [date, setDate] = React.useState<DateRange | undefined>(undefined)
@@ -51,6 +53,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
       })
 
       if (result.success) {
+        await refresh()
         setIsAdded(true)
         toast.success(result.message, {
           description: `Added for ${days} days rental.`,
