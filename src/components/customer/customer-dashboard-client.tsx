@@ -26,7 +26,8 @@ import {
   Star,
   Building,
   Minus,
-  Plus
+  Plus,
+  Clock
 } from "lucide-react"
 import { SettingsForm } from "@/components/customer/settings-form"
 import { AVATAR_PRESETS } from "@/lib/avatars"
@@ -173,9 +174,9 @@ export function CustomerDashboardClient({
                     </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start">
                     {/* Left Column: Cart Items (8 cols) */}
-                    <div className="lg:col-span-8 space-y-6">
+                    <div className="md:col-span-8 space-y-6">
                       <div className="bg-white border border-slate-200/60 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden divide-y divide-slate-100">
                         {/* Schedule Summary Banner */}
                         <div className="p-6 bg-gradient-to-br from-slate-50/80 via-white to-slate-50/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100">
@@ -237,7 +238,7 @@ export function CustomerDashboardClient({
                     </div>
 
                     {/* Right Column: Checkout Details and Selection Panel (4 cols) */}
-                    <div className="lg:col-span-4">
+                    <div className="md:col-span-4">
                       <CheckoutPanel
                         orderId={cart.id}
                         duration={cartDuration}
@@ -259,9 +260,9 @@ export function CustomerDashboardClient({
         </main>
       ) : (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 md:pt-10 pb-18 md:pb-8 flex-1 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start">
             {/* Left Sidebar Navigation Card */}
-            <aside className="hidden lg:block lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md">
+            <aside className="hidden md:block md:col-span-4 lg:col-span-3 bg-[#0F172A] border border-slate-800/80 rounded-2xl p-5 shadow-2xl shadow-slate-950/30 space-y-6 text-slate-200 backdrop-blur-md sticky top-24 self-start">
 
               {/* Profile Card Summary */}
               <div className="flex items-center gap-3.5 pb-4 border-b border-slate-800/60">
@@ -453,11 +454,11 @@ export function CustomerDashboardClient({
               </nav>
             </aside>
 
-            <div className="lg:col-span-9 space-y-6 pt-0 lg:pt-2.5">
+            <div className="md:col-span-8 lg:col-span-9 space-y-6 pt-0 md:pt-2.5">
               {/* Tab: Account (Mobile consolidated Account Dashboard) */}
               {activeTab === "account" && (
                 <>
-                  <div className="lg:hidden space-y-6 animate-in fade-in duration-300">
+                  <div className="md:hidden space-y-6 animate-in fade-in duration-300">
                     {/* Profile Header */}
                     <div className="bg-[#0F172A] text-slate-100 rounded-3xl p-6 border border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.12)] relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -644,7 +645,7 @@ export function CustomerDashboardClient({
                   </div>
 
                   {/* Desktop View */}
-                  <div className="hidden lg:block space-y-6">
+                  <div className="hidden md:block space-y-6">
                     <div>
                       <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Personal Details</h1>
                       <p className="text-slate-505 text-xs mt-0.5">Manage your contact number, user picture, and core account credentials.</p>
@@ -667,6 +668,10 @@ export function CustomerDashboardClient({
                   : null;
 
                 if (selectedOrder) {
+                  const start = new Date(selectedOrder.startDate)
+                  const end = new Date(selectedOrder.endDate)
+                  const durationDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
+
                   return (
                     <div className="space-y-6">
                       {/* Breadcrumbs / Header */}
@@ -680,131 +685,129 @@ export function CustomerDashboardClient({
                           <h1 className="text-lg font-black text-slate-900 uppercase mt-1 tracking-tight">Order #{selectedOrder.id.slice(-8).toUpperCase()}</h1>
                         </div>
                         <Link href="/?tab=orders">
-                          <Button variant="outline" size="sm" className="font-extrabold text-xs h-9 rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors">
+                          <Button className="font-extrabold text-xs h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 transition-colors shadow-xs px-4">
                             Back to Orders
                           </Button>
                         </Link>
                       </div>
 
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                        <div className="lg:col-span-8 space-y-6">
-                          <Card className="border border-slate-200/55 shadow-xs rounded-2xl overflow-hidden bg-white">
-                            <CardHeader className="border-b border-slate-100 bg-slate-50/40 p-4.5">
-                              <CardTitle className="text-xs font-bold text-slate-800 uppercase tracking-wide">Items Rented</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-4 divide-y divide-slate-100/60 space-y-3">
-                              {selectedOrder.lines.map((line: any) => (
-                                <div key={line.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40 p-3 rounded-xl border border-slate-100 transition-colors">
-                                  <div className="flex gap-3 items-center min-w-0">
-                                    <div className="w-14 h-14 bg-white border border-slate-200/60 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-xs">
-                                      {line.product.image ? (
-                                        <img src={line.product.image} alt={line.product.name} className="w-full h-full object-cover" />
-                                      ) : (
-                                        <Building className="w-5 h-5 text-slate-350" />
-                                      )}
-                                    </div>
-                                    <div className="min-w-0">
-                                      <h4 className="text-xs font-bold text-slate-900 truncate uppercase tracking-wide">
-                                        {line.product.name}
-                                      </h4>
-                                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-505">
-                                        <span className="font-semibold text-slate-700 font-mono">₹{line.price.toLocaleString()} / day</span>
-                                        <span className="text-slate-300">•</span>
-                                        <span className="font-medium">{line.quantity} Qty</span>
-                                      </div>
-                                      <p className="text-[9px] font-bold text-slate-455 uppercase mt-1 select-none">
-                                        Vendor: <span className="text-[#F59E0B] font-bold">{line.product.vendor?.companyName || line.product.vendor?.name || "Prime Partner"}</span>
-                                      </p>
-                                    </div>
+                      {/* Merged Unified Receipt Card */}
+                      <Card className="border border-slate-200/60 shadow-lg rounded-3xl overflow-hidden bg-white">
+                        
+                        {/* Section 1: Rented Items */}
+                        <div className="p-6 border-b border-slate-100 bg-slate-50/20">
+                          <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Package className="w-4 h-4 text-[#F59E0B]" /> Items Rented
+                          </h3>
+                          <div className="space-y-3">
+                            {selectedOrder.lines.map((line: any) => (
+                              <div key={line.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-100/85 shadow-xs hover:border-slate-200/80 transition-all">
+                                <div className="flex gap-3 items-center min-w-0">
+                                  <div className="w-14 h-14 bg-slate-50 border border-slate-200/60 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
+                                    {line.product.image ? (
+                                      <img src={line.product.image} alt={line.product.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <Building className="w-5 h-5 text-slate-350" />
+                                    )}
                                   </div>
-                                  <div className="flex sm:flex-col justify-between items-center sm:items-end border-t border-slate-100/60 sm:border-t-0 pt-2 sm:pt-0 shrink-0 text-xs">
-                                    <span className="text-[10px] text-slate-505 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
-                                    <span className="text-xs text-slate-700 font-mono font-bold mt-1 sm:mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
+                                  <div className="min-w-0">
+                                    <h4 className="text-xs font-bold text-slate-900 truncate uppercase tracking-wide">
+                                      {line.product.name}
+                                    </h4>
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[11px] text-slate-505">
+                                      <span className="font-semibold text-slate-700 font-mono">₹{line.price.toLocaleString()} / day</span>
+                                      <span className="text-slate-300">•</span>
+                                      <span className="font-medium">{line.quantity} Qty</span>
+                                      <span className="text-slate-300">•</span>
+                                      <span className="font-bold text-slate-650 font-mono">{durationDays} {durationDays === 1 ? "Day" : "Days"}</span>
+                                    </div>
+                                    <p className="text-[9px] font-bold text-slate-455 uppercase mt-1 select-none">
+                                      Vendor: <span className="text-[#F59E0B] font-bold">{line.product.vendor?.companyName || line.product.vendor?.name || "Prime Partner"}</span>
+                                    </p>
                                   </div>
                                 </div>
-                              ))}
-                            </CardContent>
-                          </Card>
-
-                          {/* Progress Timeline */}
-                          <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white p-6 relative overflow-hidden">
-                            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wide mb-8 border-b border-slate-100 pb-3">Rental Lifecycle Track</h3>
-                            <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-4">
-                              <div className="absolute top-4.5 left-[12%] right-[12%] hidden md:block h-[2px] bg-slate-100" />
-                              <div className="absolute left-[17px] top-4.5 bottom-4.5 md:hidden w-[2px] bg-slate-100" />
-
-                              {[
-                                { id: "PLACED", label: "Booking Placed", desc: "Verification success", active: true },
-                                { id: "CONFIRMED", label: "Confirmed", desc: "Venue date locked", active: ["CONFIRMED", "PICKED_UP", "RETURNED"].includes(selectedOrder.status) },
-                                { id: "PICKED_UP", label: "Dispatched", desc: "Rental period live", active: ["PICKED_UP", "RETURNED"].includes(selectedOrder.status) },
-                                { id: "RETURNED", label: "Returned", desc: "Audit resolved", active: selectedOrder.status === "RETURNED" }
-                              ].map((step, idx) => {
-                                const isDone = step.active;
-                                const isCancelled = selectedOrder.status === "CANCELLED";
-                                return (
-                                  <div key={idx} className="flex-1 flex gap-4 md:flex-col md:items-center md:text-center relative z-10">
-                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0 border-2 transition-all duration-300 ${isCancelled && idx > 0
-                                        ? "bg-rose-50 border-rose-200 text-rose-500"
-                                        : isDone
-                                          ? "bg-[#F59E0B] border-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10 ring-4 ring-amber-100"
-                                          : "bg-white border-slate-200 text-slate-400"
-                                      }`}>
-                                      {isCancelled && idx > 0 ? "✕" : isDone ? "✓" : idx + 1}
-                                    </div>
-                                    <div className="space-y-0.5">
-                                      <p className={`text-xs font-bold uppercase tracking-wide ${isDone ? 'text-slate-900' : 'text-slate-400'}`}>{isCancelled && idx > 0 ? "Cancelled" : step.label}</p>
-                                      <p className="text-[9.5px] text-slate-400 font-semibold">{step.desc}</p>
-                                    </div>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          </Card>
-
-                          {/* Support Chat Card */}
-                          <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white p-5 flex items-center justify-between gap-4">
-                            <div className="space-y-1">
-                              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Need assistance with this order?</h4>
-                              <p className="text-xs text-slate-500 font-semibold">Connect with our support team to verify setup requirements or modify details.</p>
-                            </div>
-                            <Link href="/?tab=profile">
-                              <Button className="bg-primary hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-9 rounded-xl px-5 transition-colors">
-                                Contact Support
-                              </Button>
-                            </Link>
-                          </Card>
+                                <div className="flex sm:flex-col justify-between items-center sm:items-end border-t border-slate-100 sm:border-t-0 pt-2 sm:pt-0 shrink-0 text-xs">
+                                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none select-none">Refundable Hold</span>
+                                  <span className="text-xs text-slate-700 font-mono font-bold mt-1 sm:mt-0.5">₹{Math.round(calculateHallRent(line.price, start, end).total * line.quantity * 0.10).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
 
-                        {/* Right Column */}
-                        <div className="lg:col-span-4 space-y-6">
-                          <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white p-5">
-                            <h3 className="text-xs font-bold text-slate-550 uppercase tracking-wide mb-3 flex items-center gap-1.5 border-b border-slate-100 pb-2.5">
-                              <MapPin className="w-3.5 h-3.5 text-slate-400" /> Venue / Booking details
+                        {/* Section 2: Lifecycle Tracker */}
+                        <div className="p-6 border-b border-slate-100 bg-white">
+                          <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider mb-8 flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-[#F59E0B]" /> Rental Lifecycle Track
+                          </h3>
+                          <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-4 max-w-3xl mx-auto">
+                            <div className="absolute top-4.5 left-[12%] right-[12%] hidden md:block h-[2px] bg-slate-100" />
+                            <div className="absolute left-[17px] top-4.5 bottom-4.5 md:hidden w-[2px] bg-slate-100" />
+
+                            {[
+                              { id: "PLACED", label: "Booking Placed", desc: "Verification success", active: true },
+                              { id: "CONFIRMED", label: "Confirmed", desc: "Venue date locked", active: ["CONFIRMED", "PICKED_UP", "RETURNED"].includes(selectedOrder.status) },
+                              { id: "PICKED_UP", label: "Dispatched", desc: "Rental period live", active: ["PICKED_UP", "RETURNED"].includes(selectedOrder.status) },
+                              { id: "RETURNED", label: "Returned", desc: "Audit resolved", active: selectedOrder.status === "RETURNED" }
+                            ].map((step, idx) => {
+                              const isDone = step.active;
+                              const isCancelled = selectedOrder.status === "CANCELLED";
+                              return (
+                                <div key={idx} className="flex-1 flex gap-4 md:flex-col md:items-center md:text-center relative z-10">
+                                  <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0 border-2 transition-all duration-300 ${isCancelled && idx > 0
+                                      ? "bg-rose-50 border-rose-200 text-rose-500"
+                                      : isDone
+                                        ? "bg-[#F59E0B] border-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10 ring-4 ring-amber-100"
+                                        : "bg-white border-slate-200 text-slate-400"
+                                    }`}>
+                                    {isCancelled && idx > 0 ? "✕" : isDone ? "✓" : idx + 1}
+                                  </div>
+                                  <div className="space-y-0.5">
+                                    <p className={`text-xs font-bold uppercase tracking-wide ${isDone ? 'text-slate-900' : 'text-slate-400'}`}>{isCancelled && idx > 0 ? "Cancelled" : step.label}</p>
+                                    <p className="text-[9.5px] text-slate-400 font-semibold">{step.desc}</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Section 3: Details & Price side-by-side grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100 border-b border-slate-100 bg-slate-50/[0.07]">
+                          {/* Venue Details */}
+                          <div className="p-6 space-y-4">
+                            <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-2.5 border-b border-slate-100">
+                              <MapPin className="w-4 h-4 text-[#F59E0B]" /> Venue / Booking Details
                             </h3>
-                            <div className="space-y-2.5 text-xs font-semibold">
+                            <div className="space-y-3.5 text-xs font-semibold leading-relaxed text-slate-700">
                               <div>
                                 <p className="font-bold text-slate-900">{userName}</p>
-                                <p className="text-slate-500 font-medium mt-1 leading-relaxed">{formatAddress(user.address)}</p>
+                                <p className="text-slate-500 mt-1 leading-relaxed">{formatAddress(user.address)}</p>
                               </div>
-                              <div className="pt-2.5 border-t border-slate-100 mt-2 text-slate-550 flex justify-between items-center">
+                              <div className="pt-2.5 border-t border-slate-100/60 text-slate-500 flex justify-between items-center">
                                 <span>Phone Number:</span>
                                 <span className="font-mono text-slate-900 font-bold">{user.phoneNumber || "N/A"}</span>
                               </div>
                             </div>
-                          </Card>
+                          </div>
 
-                          <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white p-5 space-y-4">
-                            <h3 className="text-xs font-bold text-slate-555 uppercase tracking-wide pb-2.5 border-b border-slate-100">
-                              Price Details
+                          {/* Billing & Payout */}
+                          <div className="p-6 space-y-4">
+                            <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-2.5 border-b border-slate-100">
+                              <CreditCard className="w-4 h-4 text-[#F59E0B]" /> Price Details
                             </h3>
-
+                            
                             {(() => {
                               const start = new Date(selectedOrder.startDate);
                               const end = new Date(selectedOrder.endDate);
 
+                              let preTaxBaseTotal = 0;
+                              let preTaxSurcharge = 0;
                               let lineBaseTotal = 0;
                               for (const line of selectedOrder.lines) {
                                 const breakdown = calculateHallRent(line.price, start, end);
+                                preTaxBaseTotal += breakdown.baseTotal * line.quantity;
+                                preTaxSurcharge += breakdown.weekendSurcharge * line.quantity;
                                 lineBaseTotal += breakdown.total * line.quantity;
                               }
 
@@ -816,61 +819,101 @@ export function CustomerDashboardClient({
 
                               return (
                                 <div className="space-y-3.5 text-xs">
-                                  <div className="flex justify-between font-semibold text-slate-505">
-                                    <span>Gross Rental Price (Incl. Tax)</span>
-                                    <span className="font-mono text-slate-900 font-bold">₹{listingPriceWithTax.toLocaleString()}</span>
-                                  </div>
+                                  {discountWithTax > 0 ? (
+                                    <>
+                                      <div className="flex justify-between font-semibold text-slate-500">
+                                        <span>Gross Rental Price (Incl. Tax)</span>
+                                        <span className="font-mono text-slate-900 font-bold">₹{listingPriceWithTax.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between font-semibold text-emerald-650">
+                                        <span>Voucher Discount (Incl. Tax)</span>
+                                        <span className="font-mono font-bold">-₹{discountWithTax.toLocaleString()}</span>
+                                      </div>
+                                    </>
+                                  ) : null}
 
-                                  {discountWithTax > 0 && (
-                                    <div className="flex justify-between font-semibold text-emerald-600">
-                                      <span>Voucher Discount (Incl. Tax)</span>
-                                      <span className="font-mono font-bold">-₹{discountWithTax.toLocaleString()}</span>
-                                    </div>
+                                  {preTaxSurcharge > 0 && (
+                                    <>
+                                      <div className="flex justify-between font-semibold text-slate-500">
+                                        <span>Base Rental Price (Excl. Tax)</span>
+                                        <span className="font-mono text-slate-800">₹{preTaxBaseTotal.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between font-semibold text-amber-600">
+                                        <span>Weekend Surcharge (Excl. Tax)</span>
+                                        <span className="font-mono">+₹{preTaxSurcharge.toLocaleString()}</span>
+                                      </div>
+                                    </>
                                   )}
 
-                                  <div className="flex justify-between font-semibold text-slate-505">
+                                  <div className="flex justify-between font-semibold text-slate-500">
                                     <span>Taxable Value (Excl. Tax)</span>
                                     <span className="font-mono text-slate-900 font-bold">₹{baseRentValue.toLocaleString()}</span>
                                   </div>
 
-                                  <div className="flex justify-between font-semibold text-slate-505">
+                                  <div className="flex justify-between font-semibold text-slate-500">
                                     <span>CGST (9%) + SGST (9%)</span>
                                     <span className="font-mono text-slate-900 font-bold">₹{finalTax.toLocaleString()}</span>
                                   </div>
 
-                                  <div className="flex justify-between font-semibold text-slate-550">
+                                  {discountWithTax > 0 ? (
+                                    <div className="flex justify-between font-semibold text-slate-500 border-t border-slate-100/50 pt-2">
+                                      <span>Net Rental Price (Incl. Tax)</span>
+                                      <span className="font-mono text-slate-900 font-bold">₹{rentPaidWithTax.toLocaleString()}</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex justify-between font-semibold text-slate-500">
+                                      <span>Gross Rental Price (Incl. Tax)</span>
+                                      <span className="font-mono text-slate-900 font-bold">₹{listingPriceWithTax.toLocaleString()}</span>
+                                    </div>
+                                  )}
+
+                                  <div className="flex justify-between font-semibold text-slate-500">
                                     <span>Refundable Deposit Hold</span>
                                     <span className="font-mono text-slate-900 font-bold">₹{selectedOrder.securityDeposit.toLocaleString()}</span>
                                   </div>
 
                                   <div className="flex justify-between pt-3.5 border-t border-slate-100 font-black text-slate-900 text-sm">
                                     <span>Grand Total Paid</span>
-                                    <span className="font-mono text-[#F59E0B]">₹{selectedOrder.totalAmount.toLocaleString()}</span>
+                                    <span className="font-mono text-[#F59E0B] text-sm">₹{selectedOrder.totalAmount.toLocaleString()}</span>
                                   </div>
 
-                                  <div className="pt-3.5 text-[10px] font-bold text-slate-455 uppercase flex items-center justify-between border-t border-slate-100">
+                                  <div className="pt-3 border-t border-slate-100/60 text-[10px] font-bold text-slate-500 uppercase flex items-center justify-between">
                                     <span>Paid Via: {selectedOrder.paymentMethod.replace("_", " ")}</span>
                                     <span>Date: {new Date(selectedOrder.createdAt).toLocaleDateString()}</span>
                                   </div>
-
-                                  {selectedOrder.invoice && (
-                                    <div className="pt-4 border-t border-slate-100">
-                                      <InvoicePrintButton
-                                        order={selectedOrder}
-                                        customerName={userName}
-                                        customerEmail={user.email}
-                                        customerPhone={user.phoneNumber}
-                                        customerAddress={user.address}
-                                        invoiceNumber={selectedOrder.invoice.invoiceNumber}
-                                      />
-                                    </div>
-                                  )}
                                 </div>
                               );
                             })()}
-                          </Card>
+                          </div>
                         </div>
-                      </div>
+
+                        {/* Section 4: Assistance and Actions footer */}
+                        <div className="p-6 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-6">
+                          <div className="space-y-1 text-center sm:text-left">
+                            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Need assistance with this order?</h4>
+                            <p className="text-xs text-slate-500 font-semibold">Connect with our support team to verify setup requirements or modify details.</p>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-3 shrink-0">
+                            <Link href="/?tab=profile">
+                              <Button className="bg-[#0F172A] hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-10 rounded-xl px-5 transition-colors border-0">
+                                Contact Support
+                              </Button>
+                            </Link>
+                            
+                            {selectedOrder.invoice && (
+                              <InvoicePrintButton
+                                order={selectedOrder}
+                                customerName={userName}
+                                customerEmail={user.email}
+                                customerPhone={user.phoneNumber}
+                                customerAddress={user.address}
+                                invoiceNumber={selectedOrder.invoice.invoiceNumber}
+                              />
+                            )}
+                          </div>
+                        </div>
+
+                      </Card>
                     </div>
                   );
                 }

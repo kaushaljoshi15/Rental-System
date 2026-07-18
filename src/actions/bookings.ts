@@ -46,7 +46,9 @@ export async function confirmBooking(
     razorpaySignature: string
   },
   deliveryAddress?: string,
-  deliveryCharge: number = 0
+  deliveryCharge: number = 0,
+  deliveryLat?: number,
+  deliveryLng?: number
 ) {
   const session = await auth()
   if (!session?.user?.email) {
@@ -235,6 +237,14 @@ export async function confirmBooking(
           throw new Error("The coupon code has expired.")
         }
 
+        // If it is a private user-specific coupon, deactivate it once it is used
+        if (coupon.userId) {
+          await tx.coupon.update({
+            where: { id: coupon.id },
+            data: { isActive: false }
+          })
+        }
+
         // 2. Profit-oriented minimum subtotal constraint
         if (uppercaseCode.startsWith("PROFIT-")) {
           if (dynamicOrderTotal < 3000) {
@@ -340,9 +350,28 @@ export async function confirmBooking(
           deliveryAddress: paymentMethod === "CASH_ON_DELIVERY" && deliveryAddress
             ? `[COD: Collect ₹${grandTotalAmount.toLocaleString()} from customer on delivery/setup] ${deliveryAddress}`
             : deliveryAddress || null,
-          deliveryCharge: deliveryCharge || 0
+          deliveryCharge: deliveryCharge || 0,
+          deliveryLat: deliveryLat || null,
+          deliveryLng: deliveryLng || null
         }
       })
+
+      // If delivery coordinates exist, create a Delivery task
+      if (deliveryLat && deliveryLng) {
+        // Delete any existing delivery task for this order to prevent duplicate DB locks
+        await tx.delivery.deleteMany({
+          where: { orderId: order.id }
+        })
+
+        await tx.delivery.create({
+          data: {
+            orderId: order.id,
+            deliveryLat: deliveryLat,
+            deliveryLng: deliveryLng,
+            status: "PENDING_ASSIGNMENT"
+          }
+        })
+      }
 
       await tx.notification.create({
         data: {

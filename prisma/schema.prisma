@@ -63,6 +63,7 @@ model User {
   wishlist          WishlistItem[]
   notifications     Notification[]
   coupons           Coupon[]
+  deliveryProfile   DeliveryPartnerProfile?
 }
 
 // ==========================================
@@ -178,6 +179,8 @@ model RentalOrder {
   // DELIVERY DETAILS
   deliveryAddress String?
   deliveryCharge  Float       @default(0)
+  deliveryLat     Float?
+  deliveryLng     Float?
   
   // SAAS COMMISSION FIELDS
   platformFee     Float       @default(0) // Platform's share
@@ -192,6 +195,7 @@ model RentalOrder {
   lines           OrderLine[]
   payments        Payment[]
   bookingAddOns   BookingAddOn[]
+  delivery        Delivery?
 
   @@index([userId])
   @@index([status])
@@ -391,9 +395,53 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title     String
   message   String
-  type      String   // e.g. "OFFER", "SYSTEM", "TRANSACTION", "COMPLIANCE"
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  type        String   // e.g. "OFFER", "SYSTEM", "TRANSACTION", "COMPLIANCE"
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
   @@index([userId])
+}
+
+// ==========================================
+// 14. HYPER-LOCAL DELIVERY MANAGEMENT
+// ==========================================
+model DeliveryPartnerProfile {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleNumber   String?
+  vehicleType     String    @default("BIKE") // "BIKE", "ACTIVA", "THREE_WHEELER"
+  isActive        Boolean   @default(false)  // Whether the driver is online to accept orders
+  currentLat      Float?
+  currentLng      Float?
+  updatedAt       DateTime  @updatedAt
+  deliveries      Delivery[]
+}
+
+model Delivery {
+  id                String      @id @default(uuid())
+  orderId           String      @unique
+  order             RentalOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  driverId          String?
+  driver            DeliveryPartnerProfile? @relation(fields: [driverId], references: [id])
+  
+  // Status: "PENDING_ASSIGNMENT", "ACCEPTED", "PICKED_UP", "DELIVERED", "CANCELLED"
+  status            String      @default("PENDING_ASSIGNMENT")
+  
+  // Delivery coordinates snapshot
+  deliveryLat       Float
+  deliveryLng       Float
+  
+  // Driver Live Coordinates (for ETA calculations)
+  driverLat         Float?
+  driverLng         Float?
+  
+  etaMinutes        Int?        // Calculated ETA
+  assignedAt        DateTime?
+  pickedUpAt        DateTime?
+  completedAt       DateTime?
+  
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 }

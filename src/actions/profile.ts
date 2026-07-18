@@ -221,7 +221,7 @@ export async function getCustomerDashboardData() {
     }
 
     // Fetch Coupons
-    const coupons = await prisma.coupon.findMany({
+    const rawCoupons = await prisma.coupon.findMany({
       where: { 
         isActive: true,
         OR: [
@@ -231,6 +231,29 @@ export async function getCustomerDashboardData() {
       },
       orderBy: { createdAt: 'desc' }
     });
+
+    // Retrieve all coupon codes used by this user in CONFIRMED or COMPLETED orders
+    const usedOrders = await prisma.rentalOrder.findMany({
+      where: {
+        userId: user.id,
+        couponCode: { not: null },
+        status: { in: ["CONFIRMED", "COMPLETED"] }
+      },
+      select: {
+        couponCode: true
+      }
+    });
+
+    const usedCouponCodes = new Set(
+      usedOrders
+        .map(o => o.couponCode?.toUpperCase().trim())
+        .filter(Boolean)
+    );
+
+    // Filter out used coupons
+    const coupons = rawCoupons.filter(
+      (c) => !usedCouponCodes.has(c.code.toUpperCase().trim())
+    );
 
     // Fetch Cart
     const cart = await prisma.rentalOrder.findFirst({

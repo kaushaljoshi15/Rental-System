@@ -268,8 +268,8 @@ export function CategoryBar() {
   }
 
   useEffect(() => {
-    const threshold = isDashboardPage ? 250 : 80
-    const resetThreshold = isDashboardPage ? 180 : 15
+    const threshold = 80
+    const resetThreshold = 15
 
     const handleScrollY = () => {
       const currentScroll = window.scrollY
@@ -282,7 +282,7 @@ export function CategoryBar() {
     
     window.addEventListener("scroll", handleScrollY, { passive: true })
     return () => window.removeEventListener("scroll", handleScrollY)
-  }, [isDashboardPage])
+  }, [])
 
   useEffect(() => {
     const container = scrollRef.current
@@ -335,9 +335,9 @@ export function CategoryBar() {
   return (
     <div 
       className={`w-full bg-transparent border-t relative z-40 select-none transition-all duration-500 ease-in-out ${
-        isDashboardPage && isScrolled 
-          ? "max-h-0 opacity-0 overflow-hidden pointer-events-none border-transparent" 
-          : "max-h-28 opacity-100 border-slate-100/50"
+        isScrolled
+          ? "max-h-12 border-slate-100/10 shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
+          : "max-h-28 opacity-100 border-slate-100/30"
       }`}
       onMouseLeave={() => setHoveredCategory(null)}
     >
@@ -388,7 +388,7 @@ export function CategoryBar() {
         <div 
           ref={scrollRef}
           className={`flex justify-start md:justify-between items-center gap-3 sm:gap-5 md:gap-6 overflow-x-auto no-scrollbar scroll-smooth w-full transition-all duration-350 ${
-            !isDashboardPage && isScrolled ? "py-1.5" : "py-3"
+            isScrolled ? "py-1.5" : "py-3"
           }`}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
@@ -423,14 +423,14 @@ export function CategoryBar() {
                       ? "bg-amber-50 border border-amber-200 text-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.08)]"
                       : "bg-slate-50 border border-slate-100 text-slate-450 group-hover/item:bg-amber-50/50 group-hover/item:border-amber-200/40 group-hover/item:text-[#F59E0B] group-hover/item:shadow-[0_2px_8px_rgba(245,158,11,0.04)] group-hover/item:scale-105"
                   } ${
-                    !isDashboardPage && isScrolled 
+                    isScrolled 
                       ? "w-0 h-0 opacity-0 overflow-hidden mb-0 scale-75 select-none pointer-events-none" 
                       : "w-11 h-11 opacity-100 mb-1"
                   }`}
                 >
                   <Icon 
                     strokeWidth={1.8}
-                    className={`transition-all duration-300 ${(!isDashboardPage && isScrolled) ? "w-0 h-0 opacity-0" : "w-[18px] h-[18px] group-hover/item:scale-105"}`}
+                    className={`transition-all duration-300 ${isScrolled ? "w-0 h-0 opacity-0" : "w-[18px] h-[18px] group-hover/item:scale-105"}`}
                     fill="none"
                     stroke="currentColor"
                   />
@@ -443,7 +443,7 @@ export function CategoryBar() {
                       ? "text-slate-900 font-extrabold"
                       : "text-slate-500 group-hover/item:text-[#F59E0B]"
                   } ${
-                    !isDashboardPage && isScrolled ? "text-[9px] py-0.5" : "text-[11px]"
+                    isScrolled ? "text-[9px] py-0.5" : "text-[11px]"
                   }`}
                 >
                   {cat.name}

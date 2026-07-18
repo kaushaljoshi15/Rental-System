@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { updateProfile, addMoneyToWallet, deleteAccount } from "@/actions/profile"
 import { AVATAR_PRESETS } from "@/lib/avatars"
 import { cn } from "@/lib/utils"
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { getRazorpayKeyId, initiateWalletRazorpayOrder } from "@/actions/payments"
 import { Badge } from "@/components/ui/badge"
 import { 
   User, 
@@ -26,7 +27,8 @@ import {
   Check, 
   ArrowUpRight, 
   ArrowDownLeft, 
-  Copy 
+  Copy,
+  ShieldCheck
 } from "lucide-react"
 
 const SAMPLE_COUPONS = [
@@ -90,6 +92,11 @@ const SmoothSpinner = () => (
 
 export function SettingsForm({ initialUser, transactions: initialTransactions, defaultTab }: SettingsFormProps) {
   const [activeTab, setActiveTab] = useState<"profile" | "wallet">(defaultTab || "profile")
+  const [rzpKey, setRzpKey] = useState<string | null>(null)
+
+  useEffect(() => {
+    getRazorpayKeyId().then(key => setRzpKey(key))
+  }, [])
   
   // Split name to first and last name
   const getFirstAndLastName = (fullName: string) => {
@@ -361,6 +368,20 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
     }
   }
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if ((window as any).Razorpay) {
+        resolve(true)
+        return
+      }
+      const script = document.createElement("script")
+      script.src = "https://checkout.razorpay.com/v1/checkout.js"
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+  }
+
   const handleAddMoney = async (e: React.FormEvent) => {
     e.preventDefault()
     setWalletLoading(true)
@@ -373,30 +394,122 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
       return
     }
 
-    try {
-      const res = await addMoneyToWallet(amountNum, paymentMethod.replace("_", " "))
-      if (res.success) {
-        setWalletBalance(res.balance ?? (walletBalance + amountNum))
-        setWalletMsg({ success: true, text: `Successfully credited ₹${amountNum.toLocaleString()} to your wallet!` })
-        setLoadAmount("")
-        
-        // Optimistically add transaction to history
-        setWalletTransactions([
-          {
-            id: Math.random().toString(),
-            amount: amountNum,
-            type: "CREDIT",
-            description: `Loaded funds into wallet via ${paymentMethod.replace("_", " ")}`,
-            createdAt: new Date()
-          },
-          ...walletTransactions
-        ])
-      } else {
-        setWalletMsg({ success: false, text: res.message || "Failed to credit funds." })
+    // Determine descriptive payment method display
+    let razorpayMethodPrefill = "upi"
+    let displayMethodName = "UPI"
+    if (paymentMethod === "CREDIT_CARD" || paymentMethod === "DEBIT_CARD") {
+      razorpayMethodPrefill = "card"
+      displayMethodName = paymentMethod === "CREDIT_CARD" ? "Credit Card" : "Debit Card"
+    } else if (paymentMethod === "NET_BANKING") {
+      razorpayMethodPrefill = "netbanking"
+      displayMethodName = "Netbanking"
+    } else {
+      razorpayMethodPrefill = "upi"
+      displayMethodName = "UPI"
+    }
+
+    // 1. If Razorpay Key is not set or we are in Sandbox Mode, do simulated load instantly
+    const isLocalSandbox = !rzpKey || rzpKey.trim() === ""
+    if (isLocalSandbox) {
+      toast.info("Sandbox Mode: Simulating real-time wallet recharge...")
+      try {
+        const res = await addMoneyToWallet(amountNum, `Simulated ${displayMethodName}`)
+        if (res.success) {
+          setWalletBalance(res.balance ?? (walletBalance + amountNum))
+          setWalletMsg({ success: true, text: `Successfully loaded ₹${amountNum.toLocaleString()} into your wallet balance (Simulated).` })
+          setLoadAmount("")
+          
+          setWalletTransactions([
+            {
+              id: (res as any).transactionId || Math.random().toString(),
+              amount: amountNum,
+              type: "CREDIT",
+              description: `Loaded funds into wallet via Simulated ${displayMethodName}`,
+              createdAt: new Date()
+            },
+            ...walletTransactions
+          ])
+        } else {
+          setWalletMsg({ success: false, text: res.message || "Failed to load funds." })
+        }
+      } catch (err) {
+        setWalletMsg({ success: false, text: "An error occurred during payment simulation." })
+      } finally {
+        setWalletLoading(false)
       }
-    } catch {
-      setWalletMsg({ success: false, text: "Failed to load money." })
-    } finally {
+      return
+    }
+
+    // 2. Real Razorpay Mode!
+    const scriptLoaded = await loadRazorpayScript()
+    if (!scriptLoaded) {
+      toast.error("Failed to load payment gateway SDK. Please check your internet connection.")
+      setWalletLoading(false)
+      return
+    }
+
+    // Initiate Razorpay order from server
+    const gatewayOrder = await initiateWalletRazorpayOrder(amountNum)
+    if (!gatewayOrder.success || !gatewayOrder.id) {
+      toast.error(gatewayOrder.message || "Failed to initiate payment gateway order.")
+      setWalletLoading(false)
+      return
+    }
+
+    const options = {
+      key: rzpKey,
+      amount: gatewayOrder.amount, // in paise
+      currency: gatewayOrder.currency || "INR",
+      name: "RentKart",
+      description: `Load ₹${amountNum} to RentKart Virtual Wallet`,
+      order_id: gatewayOrder.id,
+      handler: async function (response: any) {
+        setWalletLoading(true)
+        try {
+          const res = await addMoneyToWallet(amountNum, `Razorpay ${displayMethodName}`)
+          if (res.success) {
+            setWalletBalance(res.balance ?? (walletBalance + amountNum))
+            toast.success(`Successfully loaded ₹${amountNum.toLocaleString()} into your wallet!`)
+            setWalletMsg({ success: true, text: `Successfully loaded ₹${amountNum.toLocaleString()} into your wallet.` })
+            setLoadAmount("")
+            
+            setWalletTransactions([
+              {
+                id: response.razorpay_payment_id || Math.random().toString(),
+                amount: amountNum,
+                type: "CREDIT",
+                description: `Loaded funds into wallet via Razorpay ${displayMethodName}`,
+                createdAt: new Date()
+              },
+              ...walletTransactions
+            ])
+          } else {
+            toast.error(res.message || "Recharge verification failed.")
+          }
+        } catch (err) {
+          toast.error("Failed to credit funds to your wallet.")
+        } finally {
+          setWalletLoading(false)
+        }
+      },
+      prefill: {
+        method: razorpayMethodPrefill,
+      },
+      theme: {
+        color: "#F59E0B", // Match RentKart brand theme (amber)
+      },
+      modal: {
+        ondismiss: function () {
+          setWalletLoading(false)
+        }
+      }
+    }
+
+    try {
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
+    } catch (err) {
+      toast.error("Razorpay SDK initialization failed.")
       setWalletLoading(false)
     }
   }
@@ -854,13 +967,15 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
             </div>
 
             {/* Load Funds Form */}
-            <Card className="border border-slate-200/60 shadow-xs rounded-2xl">
+            <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white">
               <CardHeader>
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
                   <Plus className="w-4 h-4 text-[#F59E0B]" /> Deposit Wallet Funds
                 </CardTitle>
-                <CardDescription className="text-xs">
-                  Simulate loading money into your wallet balance instantly.
+                <CardDescription className="text-xs text-slate-500 font-semibold leading-relaxed">
+                  {rzpKey 
+                    ? "Load real-time money into your virtual wallet securely via Razorpay." 
+                    : "Load simulated test money into your wallet instantly."}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -897,7 +1012,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       id="method"
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B] disabled:cursor-not-allowed disabled:opacity-50 font-semibold"
                     >
                       <option value="CREDIT_CARD" className="bg-white text-slate-900">Credit Card</option>
                       <option value="DEBIT_CARD" className="bg-white text-slate-900">Debit Card</option>
@@ -917,7 +1032,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   <Button 
                     type="submit" 
                     disabled={walletLoading}
-                    className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
+                    className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm uppercase tracking-wider"
                   >
                     {walletLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     Confirm Deposit

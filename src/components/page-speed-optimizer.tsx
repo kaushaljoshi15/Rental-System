@@ -126,10 +126,7 @@ export function PageSpeedOptimizer() {
       }
     }
 
-    // 3. Show loader on form submission (processing action)
-    const handleFormSubmit = () => {
-      startLoading()
-    }
+    // 3. Show loader on form submission (removed to prevent blocking client-side forms)
 
     // 4. Intercept programmatic Next.js RSC fetches (client-side page redirects / navigations)
     const originalFetch = window.fetch
@@ -195,7 +192,7 @@ export function PageSpeedOptimizer() {
         return await originalFetch.apply(this, arguments as any)
       } finally {
         if (isRscNav) {
-          // Keep active
+          stopLoading()
         }
       }
     }
@@ -203,13 +200,11 @@ export function PageSpeedOptimizer() {
     document.addEventListener("mouseover", handlePrefetch, { passive: true })
     document.addEventListener("touchstart", handlePrefetch, { passive: true })
     document.addEventListener("click", handleAnchorClick, { capture: true })
-    document.addEventListener("submit", handleFormSubmit, { capture: true })
 
     return () => {
       document.removeEventListener("mouseover", handlePrefetch)
       document.removeEventListener("touchstart", handlePrefetch)
       document.removeEventListener("click", handleAnchorClick, { capture: true })
-      document.removeEventListener("submit", handleFormSubmit, { capture: true })
       window.fetch = originalFetch
     }
   }, [router])

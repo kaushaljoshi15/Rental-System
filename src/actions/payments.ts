@@ -273,10 +273,42 @@ export async function initiateRazorpayCheckout(
   }
 }
 
-/**
- * Exposes the public Razorpay Key ID from the server-side environment variables
- * to client-side components to dynamically load and display the Razorpay Checkout popup.
- */
 export async function getRazorpayKeyId(): Promise<string | null> {
   return process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || null
+}
+
+/**
+ * Securely creates a Razorpay order for loading funds into the user's virtual wallet.
+ */
+export async function initiateWalletRazorpayOrder(amount: number): Promise<InitiatePaymentResponse> {
+  const session = await auth()
+  if (!session?.user?.email) {
+    return { success: false, message: "Unauthorized." }
+  }
+
+  if (amount <= 0) {
+    return { success: false, message: "Amount must be greater than zero." }
+  }
+
+  try {
+    const rzp = getRazorpayClient()
+    const rzpOrder = await rzp.orders.create({
+      amount: Math.round(amount * 100), // in paise
+      currency: "INR",
+      receipt: `wallet_load_${Date.now()}`
+    })
+
+    return {
+      success: true,
+      id: rzpOrder.id,
+      amount: Number(rzpOrder.amount),
+      currency: rzpOrder.currency
+    }
+  } catch (error) {
+    console.error("Wallet Razorpay order initiation failed:", error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to initiate wallet payment gateway order."
+    }
+  }
 }

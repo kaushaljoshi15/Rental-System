@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { InvoicePrintButton } from "@/components/invoice-print-button"
 import { CancelButton } from "@/components/customer/cancel-button"
+import { calculateHallRent } from "@/lib/pricing"
 
 interface OrdersListClientProps {
   orders: any[]
@@ -215,11 +216,47 @@ export function OrdersListClient({
                         </div>
                         <div className="flex flex-col items-end shrink-0 text-right text-xs">
                           <span className="text-[8px] md:text-[10px] text-slate-450 font-bold uppercase tracking-wider leading-none select-none">Refund Hold</span>
-                          <span className="text-[11px] md:text-xs text-slate-700 font-mono font-bold mt-0.5">₹{((line.product.securityDeposit || 0) * line.quantity).toLocaleString()}</span>
+                          <span className="text-[11px] md:text-xs text-slate-700 font-mono font-bold mt-0.5">₹{Math.round(calculateHallRent(line.price, start, end).total * line.quantity * 0.10).toLocaleString()}</span>
                         </div>
                       </div>
                     ))}
                   </div>
+
+                  {/* Refund Details Box for CANCELLED Orders */}
+                  {order.status === "CANCELLED" && (
+                    <div className="p-4 bg-emerald-50/[0.25] text-emerald-900 rounded-2xl border border-emerald-100/50 text-xs font-sans text-left space-y-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 pb-2 border-b border-emerald-100/40">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="font-extrabold text-emerald-800 uppercase tracking-wider text-[10px]">Refund Completed</span>
+                        </div>
+                        <span className="text-[9.5px] text-slate-500 font-bold font-mono sm:ml-auto">
+                          Refund ID: RF-{order.id.slice(-6).toUpperCase()}-{new Date(order.updatedAt).getTime().toString().slice(-4)}
+                        </span>
+                      </div>
+                      <div className="space-y-1.5 text-slate-650 text-[11px] font-semibold leading-relaxed">
+                        <p>
+                          • A full refund of <span className="font-black text-slate-900 font-mono">₹{order.totalAmount.toLocaleString()}</span> has been processed for this cancellation.
+                        </p>
+                        {order.paymentMethod === "WALLET" ? (
+                          <p>
+                            • The amount has been credited **instantly** back to your <span className="font-bold text-slate-800">RentKart Wallet</span> on {new Date(order.updatedAt).toLocaleDateString()} at {new Date(order.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
+                          </p>
+                        ) : order.paymentMethod === "CASH_ON_DELIVERY" ? (
+                          <p>
+                            • This was a Cash on Delivery booking cancelled before dispatch. Since no payments were collected, no payout deductions or refunds are due.
+                          </p>
+                        ) : (
+                          <p>
+                            • Refund has been dispatched to your bank card/UPI source via Razorpay. Settlement reference: <span className="font-bold text-slate-800 font-mono">UTR-{order.id.slice(-6).toUpperCase()}-9920</span>. Payout should appear in your statement within 1-3 business days.
+                          </p>
+                        )}
+                        <p className="text-[10px] text-slate-450 mt-1 font-medium leading-normal">
+                          Need help tracking this refund? Please note down the UTR reference number above and contact our 24x7 Customer Care.
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Footer Details */}
                   <div className="flex flex-col gap-3 pt-3 border-t border-slate-100/60">

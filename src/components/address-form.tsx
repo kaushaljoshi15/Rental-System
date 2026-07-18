@@ -24,6 +24,8 @@ import {
   X,
   Map 
 } from "lucide-react"
+import mapboxgl from "mapbox-gl"
+import "mapbox-gl/dist/mapbox-gl.css"
 
 interface Address {
   id: string
@@ -38,6 +40,8 @@ interface Address {
   altPhone?: string
   type: "HOME" | "WORK"
   isDefault: boolean
+  latitude?: number
+  longitude?: number
 }
 
 interface AddressFormProps {
@@ -94,6 +98,88 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
   // Geolocation detector track
   const [detecting, setDetecting] = useState(false)
 
+  // Mapbox Refs
+  const mapRef = React.useRef<mapboxgl.Map | null>(null)
+  const markerRef = React.useRef<mapboxgl.Marker | null>(null)
+
+  // Initialize Mapbox Map
+  useEffect(() => {
+    if (!showForm) {
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
+      }
+      markerRef.current = null
+      return
+    }
+
+    const timer = setTimeout(() => {
+      const defaultLat = formData.latitude || 23.0225 // Default Ahmedabad center
+      const defaultLng = formData.longitude || 72.5714
+
+      mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || ""
+      
+      const mapContainer = document.getElementById("mapbox-pin-map")
+      if (!mapContainer) return
+
+      try {
+        const map = new mapboxgl.Map({
+          container: "mapbox-pin-map",
+          style: "mapbox://styles/mapbox/streets-v12",
+          center: [defaultLng, defaultLat],
+          zoom: 13,
+        })
+
+        mapRef.current = map
+
+        // Add controls
+        map.addControl(new mapboxgl.NavigationControl(), "top-right")
+
+        // Draggable Marker
+        const marker = new mapboxgl.Marker({
+          draggable: true,
+          color: "#F59E0B"
+        })
+        .setLngLat([defaultLng, defaultLat])
+        .addTo(map)
+
+        markerRef.current = marker
+
+        // Handle Drag End to update coordinates
+        const onDragEnd = () => {
+          if (!markerRef.current) return
+          const lngLat = markerRef.current.getLngLat()
+          setFormData(prev => ({
+            ...prev,
+            latitude: lngLat.lat,
+            longitude: lngLat.lng
+          }))
+        }
+
+        marker.on("dragend", onDragEnd)
+
+        // Handle Map Click to position marker and get coordinates
+        map.on("click", (e) => {
+          const { lng, lat } = e.lngLat
+          if (markerRef.current) {
+            markerRef.current.setLngLat([lng, lat])
+          }
+          setFormData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng
+          }))
+        })
+      } catch (err) {
+        console.error("Mapbox init failed", err)
+      }
+    }, 150)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [showForm])
+
   // Form State
   const [formData, setFormData] = useState({
     name: "",
@@ -106,7 +192,9 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
     landmark: "",
     altPhone: "",
     type: "HOME" as "HOME" | "WORK",
-    isDefault: false
+    isDefault: false,
+    latitude: undefined as number | undefined,
+    longitude: undefined as number | undefined
   })
 
   useEffect(() => {
@@ -147,7 +235,9 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
       landmark: "",
       altPhone: "",
       type: "HOME",
-      isDefault: false
+      isDefault: false,
+      latitude: undefined,
+      longitude: undefined
     })
   }
 
@@ -165,7 +255,9 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
       landmark: address.landmark || "",
       altPhone: address.altPhone || "",
       type: address.type,
-      isDefault: address.isDefault
+      isDefault: address.isDefault,
+      latitude: address.latitude,
+      longitude: address.longitude
     })
     setShowForm(true)
     setActiveMenuId(null)
@@ -256,36 +348,56 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
     setDetecting(true)
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // Simulated high-quality reverse geocoder lookup based on real Indian coordinates
-        setTimeout(() => {
-          setFormData(prev => ({
-            ...prev,
-            pincode: "110001",
-            locality: "Connaught Place, Near Central Park",
-            areaStreet: "Flat 4B, 12 Parliament Street",
-            city: "New Delhi",
-            state: "Delhi"
-          }))
-          setDetecting(false)
-          setMsg({ success: true, text: "Location detected and autofilled successfully!" })
-        }, 1500)
+        const lat = position.coords.latitude
+        const lng = position.coords.longitude
+
+        setFormData(prev => ({
+          ...prev,
+          latitude: lat,
+          longitude: lng
+        }))
+
+        // Move marker & fly map to coordinates
+        if (mapRef.current && markerRef.current) {
+          mapRef.current.flyTo({ center: [lng, lat], zoom: 15 })
+          markerRef.current.setLngLat([lng, lat])
+        }
+
+        // Reverse Geocode using free OpenStreetMap Nominatim API
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.address) {
+              const addr = data.address
+              const road = addr.road || addr.suburb || addr.neighbourhood || ""
+              const city = addr.city || addr.town || addr.village || addr.county || "Ahmedabad"
+              const state = addr.state || "Gujarat"
+              const postcode = addr.postcode || ""
+              const locality = addr.suburb || addr.village || addr.residential || "GPS Location"
+
+              setFormData(prev => ({
+                ...prev,
+                pincode: postcode || prev.pincode,
+                locality: locality || prev.locality,
+                areaStreet: road || prev.areaStreet,
+                city: city || prev.city,
+                state: state || prev.state
+              }))
+              setMsg({ success: true, text: "Location pinned and address details autofilled!" })
+            }
+          })
+          .catch(() => {
+            setMsg({ success: true, text: "Coordinates pinned! Please input your details manually." })
+          })
+          .finally(() => {
+            setDetecting(false)
+          })
       },
       (error) => {
-        // Fallback simulated default lookup in case of container permissions blocks
-        setTimeout(() => {
-          setFormData(prev => ({
-            ...prev,
-            pincode: "560038",
-            locality: "Double Road, Stage 2",
-            areaStreet: "124 RentKart Office Building, Indiranagar",
-            city: "Bengaluru",
-            state: "Karnataka"
-          }))
-          setDetecting(false)
-          setMsg({ success: true, text: "Location simulated and autofilled successfully!" })
-        }, 1200)
+        setDetecting(false)
+        setMsg({ success: false, text: "Unable to detect location. Please check browser permissions." })
       },
-      { timeout: 10000 }
+      { timeout: 10000, enableHighAccuracy: true }
     )
   }
 
@@ -358,6 +470,11 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                       {addr.isDefault && (
                         <span className="text-[8.5px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/50 flex items-center gap-1">
                           <CheckCircle2 className="w-2.5 h-2.5" /> DEFAULT ADDRESS
+                        </span>
+                      )}
+                      {addr.latitude && addr.longitude && (
+                        <span className="text-[8.5px] font-black uppercase px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/50 flex items-center gap-1">
+                          <MapPin className="w-2.5 h-2.5 text-blue-500" /> GPS PINNED
                         </span>
                       )}
                     </div>
@@ -457,6 +574,22 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                 </Button>
               </div>
 
+              {/* Mapbox Live Pinning Container */}
+              <div className="space-y-1.5 text-left">
+                <Label className="text-xs font-bold text-slate-700">Pin Your Location *</Label>
+                <div className="relative w-full h-[250px] border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                  <div id="mapbox-pin-map" className="w-full h-full" />
+                  <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[9px] font-extrabold text-slate-700 shadow-xs border border-slate-100 flex items-center gap-1.5 z-10 select-none">
+                    <MapPin className="w-3.5 h-3.5 text-[#F59E0B]" /> Drag pin to your exact delivery house
+                  </div>
+                </div>
+                {formData.latitude && formData.longitude && (
+                  <div className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Coordinates Saved: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+                  </div>
+                )}
+              </div>
+
               {/* Grid 1: Name & Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
@@ -467,7 +600,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Rahul Sharma"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                   />
                 </div>
 
@@ -479,7 +612,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543210"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                   />
                 </div>
               </div>
@@ -494,7 +627,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 110001"
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                   />
                 </div>
 
@@ -506,7 +639,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Near Central Park"
                     value={formData.locality}
                     onChange={(e) => setFormData({ ...formData, locality: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                   />
                 </div>
               </div>
@@ -563,7 +696,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Opposite Public Park"
                     value={formData.landmark}
                     onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                   />
                 </div>
 
@@ -575,7 +708,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543211"
                     value={formData.altPhone}
                     onChange={(e) => setFormData({ ...formData, altPhone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
                   />
                 </div>
               </div>

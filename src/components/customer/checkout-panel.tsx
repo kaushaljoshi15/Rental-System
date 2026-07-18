@@ -45,6 +45,8 @@ interface Address {
   altPhone?: string
   type: "HOME" | "WORK"
   isDefault: boolean
+  latitude?: number
+  longitude?: number
 }
 
 interface CheckoutPanelProps {
@@ -281,7 +283,7 @@ export function CheckoutPanel({
     setCheckoutError(null)
     setActiveModal("PROCESSING")
     try {
-      const res = await confirmBooking(orderId, paymentMethod, appliedCoupon?.code, undefined, location, deliveryCharge)
+      const res = await confirmBooking(orderId, paymentMethod, appliedCoupon?.code, undefined, location, deliveryCharge, defaultAddress?.latitude, defaultAddress?.longitude)
       if (res.success) {
         await refresh()
         toast.success("Payment completed successfully!")
@@ -368,7 +370,7 @@ export function CheckoutPanel({
             razorpayOrderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature
-          }, location, deliveryCharge)
+          }, location, deliveryCharge, defaultAddress?.latitude, defaultAddress?.longitude)
           
           if (res.success) {
             await refresh()
@@ -618,15 +620,15 @@ export function CheckoutPanel({
         </div>
 
         {/* Promo Coupon Form */}
-        <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-2.5">
+        <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-2.5 font-sans">
           <Label htmlFor="coupon" className="text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Ticket className="w-3.5 h-3.5 text-[#F59E0B]" /> Apply Coupon Code
+            <Ticket className="w-3.5 h-3.5 text-[#F59E0B]" /> Add Promo Code
           </Label>
           <div className="flex gap-2">
             <Input
               id="coupon"
               type="text"
-              placeholder="e.g. WELCOME10"
+              placeholder="Enter Promo Code (e.g. WELCOME10)"
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
               disabled={!!appliedCoupon || validatingCoupon}
@@ -721,12 +723,6 @@ export function CheckoutPanel({
                   <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
                     You can pay the delivery executive in cash or via UPI scan once the items are delivered to your location and setup is complete.
                   </p>
-                  <div className="mt-2 bg-amber-100/50 rounded-xl p-2.5 border border-amber-200/60 text-[9.5px] leading-normal font-sans">
-                    <span className="font-black text-[#F59E0B] uppercase tracking-wider block">Website Note for Delivery Executive:</span>
-                    <p className="font-bold text-slate-700 mt-1">
-                      "Collect ₹{grandTotal.toLocaleString()} in cash or via scanner from the customer at the time of delivery/setup before handing over the rental items."
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
