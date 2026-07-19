@@ -1,4 +1,15 @@
 User-agent: *
 Allow: /
+Disallow: /admin-portal
+Disallow: /api
+Disallow: /dashboard
+Disallow: /driver
+Disallow: /forgot-password
+Disallow: /login
+Disallow: /orders
+Disallow: /register
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /wishlist
 
 Sitemap: https://www.rentkart.shop/sitemap.xml

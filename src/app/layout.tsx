@@ -40,9 +40,6 @@ export const metadata: Metadata = {
     "online rental platform",
     "rental system"
   ],
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     title: "RentKart | Rent Anything, Anytime",
     description: "RentKart is the best platform to rent electronics, furniture, and more. Fast, affordable, and secure.",
@@ -105,27 +102,6 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (typeof window === 'undefined') return;
-                const observer = new MutationObserver((mutations) => {
-                  for (const mutation of mutations) {
-                    if (mutation.type === 'attributes' && mutation.attributeName === 'wfd-invisible') {
-                      mutation.target.removeAttribute('wfd-invisible');
-                    }
-                  }
-                });
-                observer.observe(document.documentElement, {
-                  attributes: true,
-                  subtree: true,
-                  attributeFilter: ['wfd-invisible']
-                });
-              })();
-            `,
-          }}
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

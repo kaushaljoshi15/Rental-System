@@ -1,11 +1,16 @@
 import Link from "next/link"
 import { Scale, ShieldCheck, HelpCircle, FileText, ArrowLeft, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import type { Metadata } from "next"
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Terms of Service",
   description: "Review RentKart's terms of service, equipment rental standards, cancellation timelines, and deposit policies.",
+  alternates: {
+    canonical: "/terms-of-service",
+  },
 }
+
 
 export default function TermsOfServicePage() {
   return (

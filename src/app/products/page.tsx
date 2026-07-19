@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export default async function ProductsRedirectPage({
   searchParams,
@@ -21,5 +21,5 @@ export default async function ProductsRedirectPage({
   }
 
   const queryString = urlParams.toString();
-  redirect(queryString ? `/?${queryString}` : "/");
+  permanentRedirect(queryString ? `/?${queryString}` : "/");
 }

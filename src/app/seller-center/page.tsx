@@ -7,6 +7,15 @@ import {
   Calendar,
   DollarSign
 } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Seller Hub | Partner with RentKart",
+  description: "List your equipment, electronics, or event inventory on RentKart. Earn recurring revenue and manage bookings with ease.",
+  alternates: {
+    canonical: "/seller-center",
+  },
+}
 
 export default function SellerCenterPage() {
   return (

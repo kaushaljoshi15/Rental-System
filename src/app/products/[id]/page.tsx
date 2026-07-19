@@ -2,6 +2,32 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma";
 import { BookingWidget } from "@/components/booking-widget";
 import { Badge } from "@/components/ui/badge";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id },
+      select: { name: true, description: true }
+    });
+
+    if (!product) return {};
+
+    return {
+      title: product.name,
+      description: product.description || `Rent ${product.name} on RentKart at the best rates.`,
+      alternates: {
+        canonical: `/products/${id}`,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Product Details",
+    };
+  }
+}
+
 import {
   ArrowLeft,
   ShieldCheck,

@@ -1,11 +1,16 @@
 import Link from "next/link"
 import { ShieldCheck, Lock, Eye, FileText, ArrowLeft, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import type { Metadata } from "next"
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Learn how RentKart protects your personal data, secure billing information, and rental transaction histories.",
+  alternates: {
+    canonical: "/privacy-policy",
+  },
 }
+
 
 export default function PrivacyPolicyPage() {
   return (
