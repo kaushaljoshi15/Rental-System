@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const nextConfig: NextConfig = {
+  productionBrowserSourceMaps: false,
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts"],
   },
@@ -45,6 +46,10 @@ const nextConfig: NextConfig = {
           {
             key: "Cross-Origin-Opener-Policy",
             value: "same-origin",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self';",
           },
         ],
       },

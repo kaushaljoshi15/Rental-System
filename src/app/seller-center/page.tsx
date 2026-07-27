@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
 import { 
-  Building, 
+  Package, 
   ArrowRight,
   Calendar,
   DollarSign
@@ -10,8 +10,8 @@ import {
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Seller Hub | Partner with RentKart",
-  description: "List your equipment, electronics, or event inventory on RentKart. Earn recurring revenue and manage bookings with ease.",
+  title: "Seller Hub | Rent Out Clothes, Electronics & Gadgets | RentKart",
+  description: "Partner with RentKart to list your wedding wear, function clothing, gaming consoles, cameras, and electronics. Manage bookings and earn recurring revenue.",
   alternates: {
     canonical: "/seller-center",
   },
@@ -49,10 +49,10 @@ export default function SellerCenterPage() {
             Owner & Store Hub Portal
           </span>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none text-white">
-            Monetize Your <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">Event Space & Equipment</span>
+            Rent Out Your <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">Clothes, Electronics & Gadgets</span>
           </h1>
           <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-semibold">
-            List your banquet halls, seminar boardrooms, staging, concert sound lines, or camera kits. Manage bookings, slots locking, and request automated direct bank settlements.
+            List your wedding wear, family function clothing, gaming consoles, professional cameras, and tech products. Manage booking schedules, prevent overlapping slots, and get automated settlements.
           </p>
           <div className="pt-6 flex justify-center gap-4">
             <Link href="/login/vendor">
@@ -86,11 +86,11 @@ export default function SellerCenterPage() {
           <div className="bg-white border border-slate-200/60 hover:border-amber-500/30 p-8 rounded-2xl space-y-5 shadow-sm transition-all duration-300 hover:shadow-md group relative overflow-hidden">
             <div className="absolute top-0 right-0 h-24 w-24 bg-amber-500/[0.02] rounded-bl-full pointer-events-none" />
             <div className="h-12 w-12 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/25 group-hover:scale-105 transition-transform duration-300">
-              <Building className="w-5 h-5 text-amber-600" />
+              <Package className="w-5 h-5 text-amber-600" />
             </div>
-            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">Catalog Templates Clone</h3>
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-900">Product Templates Clone</h3>
             <p className="text-[11px] text-slate-550 leading-relaxed font-semibold">
-              Search a pre-verified global templates catalog containing venues and event sound packages. Clone details, rules, amenities and specs in under 3 clicks.
+              Search a pre-verified global templates catalog containing wedding outfits, cameras, gaming consoles, and tech gear. Clone details, sizing guides, and technical specs in under 3 clicks.
             </p>
           </div>
 

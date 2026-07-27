@@ -5,6 +5,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SupportBot } from "@/components/support-bot";
 import { PageSpeedOptimizer, PageTransition } from "@/components/page-speed-optimizer";
+import { SecurityShield } from "@/components/security-shield";
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/bottom-nav";
@@ -111,6 +112,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <SecurityShield />
           <Suspense fallback={null}>
             <PageSpeedOptimizer />
           </Suspense>
