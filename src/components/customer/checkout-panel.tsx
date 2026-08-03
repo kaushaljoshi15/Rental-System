@@ -241,8 +241,9 @@ export function CheckoutPanel({
 
   const subtotal = Math.max(0, cartTotal - discountAmount)
   const tax = Math.round(subtotal * 0.18 * 100) / 100
-  const dynamicSecurityDeposit = Math.round(subtotal * 0.10) // 10% Dynamic Security Deposit (not very much)
+  const dynamicSecurityDeposit = securityDeposit > 0 ? securityDeposit : Math.round(subtotal * 0.10)
   const grandTotal = Math.round((subtotal + tax + dynamicSecurityDeposit + deliveryCharge) * 100) / 100
+
 
   // Wallet check
   const isWalletPayment = paymentMethod === "WALLET"

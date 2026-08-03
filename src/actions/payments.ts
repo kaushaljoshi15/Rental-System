@@ -312,3 +312,49 @@ export async function initiateWalletRazorpayOrder(amount: number): Promise<Initi
     }
   }
 }
+
+/**
+ * Triggers full or partial refunds back to the customer's original payment method via Razorpay.
+ * Used for order cancellations and automated security deposit refunds after garment inspection.
+ */
+export async function refundRazorpayPayment(params: {
+  paymentId: string
+  amountInRupees?: number
+  reason?: string
+  notes?: Record<string, string>
+}): Promise<{ success: boolean; refundId?: string; message?: string }> {
+  try {
+    const session = await auth()
+    if (!session?.user?.email) {
+      return { success: false, message: "Unauthorized operation." }
+    }
+
+    const rzp = getRazorpayClient()
+    const refundOptions: any = {
+      notes: params.notes || {}
+    }
+
+    if (params.amountInRupees && params.amountInRupees > 0) {
+      refundOptions.amount = Math.round(params.amountInRupees * 100) // Razorpay requires paise
+    }
+
+    if (params.reason) {
+      refundOptions.notes.reason = params.reason
+    }
+
+    const refund = await rzp.payments.refund(params.paymentId, refundOptions)
+
+    return {
+      success: true,
+      refundId: refund.id,
+      message: `Refund of ₹${params.amountInRupees || 'Full Amount'} successfully processed via Razorpay.`
+    }
+  } catch (error) {
+    console.error("Razorpay refund error:", error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to execute Razorpay refund."
+    }
+  }
+}
+

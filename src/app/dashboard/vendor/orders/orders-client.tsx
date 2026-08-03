@@ -30,6 +30,8 @@ import { updateVendorOrderStatus } from '@/actions/vendor-actions'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { generateInvoiceHTML } from '@/lib/invoice-template'
+import { ClothingAuditModal } from '@/components/clothing-audit-modal'
+
 
 interface OrderLine {
   id: string
@@ -89,6 +91,8 @@ export function OrdersClient({ orders, vendorProfile }: OrdersClientProps) {
   
   // Selected Order for detail Drawer
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [auditModalOpen, setAuditModalOpen] = useState(false)
+
   
   // Simulated chat message input
   const [chatInput, setChatInput] = useState('')
@@ -484,29 +488,17 @@ export function OrdersClient({ orders, vendorProfile }: OrdersClientProps) {
                 {!damageDepositState[selectedOrder.id] && (
                   <div className="flex gap-1.5">
                     <Button 
-                      onClick={() => {
-                        setDamageDepositState({ ...damageDepositState, [selectedOrder.id]: 'RELEASED' })
-                        toast.success("Security deposit released back to customer.")
-                      }}
+                      onClick={() => setAuditModalOpen(true)}
                       size="sm" 
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-extrabold h-8 rounded-lg"
+                      className="bg-amber-500 hover:bg-amber-600 text-slate-950 text-[10px] font-bold h-8 rounded-lg"
                     >
-                      Release
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        setDamageDepositState({ ...damageDepositState, [selectedOrder.id]: 'CLAIMED' })
-                        toast.error("Damage deposit claimed.")
-                      }}
-                      size="sm" 
-                      className="bg-red-500 hover:bg-red-600 text-white text-[10px] font-extrabold h-8 rounded-lg"
-                    >
-                      Claim
+                      👗 Vendor Inspection & Deposit Refund
                     </Button>
                   </div>
                 )}
               </div>
             </div>
+
 
             {/* In-app Messaging Customer chat */}
             <div className="p-5 space-y-3">
@@ -571,9 +563,26 @@ export function OrdersClient({ orders, vendorProfile }: OrdersClientProps) {
             )}
 
           </Card>
+
+          {/* Vendor Inspection & Deposit Refund Modal */}
+          <ClothingAuditModal
+            orderId={selectedOrder.id}
+            customerName={selectedOrder.user.name}
+            customerPhone={selectedOrder.user.phoneNumber || ""}
+            totalDeposit={selectedOrder.securityDeposit}
+            outfitName={selectedOrder.lines[0]?.product?.name || "Occasion Outfit"}
+            isOpen={auditModalOpen}
+            onClose={() => setAuditModalOpen(false)}
+            onSuccess={() => {
+              setDamageDepositState({ ...damageDepositState, [selectedOrder.id]: 'RELEASED' })
+              router.refresh()
+            }}
+          />
         </div>
       )}
 
     </div>
   )
 }
+
+

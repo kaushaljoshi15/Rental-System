@@ -57,6 +57,8 @@ const getCachedProduct = unstable_cache(
 );
 
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker";
+import { StainDamagePolicy } from "@/components/stain-damage-policy";
+
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -256,14 +258,44 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         {product.vendor?.companyName || product.vendor?.name || "Prime Partner"}
                       </td>
                     </tr>
-                    <tr>
+                    <tr className="bg-slate-50 border-b border-slate-100">
                       <td className="px-4 py-2.5 font-bold text-slate-500">Security Deposit</td>
-                      <td className="px-4 py-2.5 text-slate-800">Refundable ₹0 during Betas</td>
+                      <td className="px-4 py-2.5 font-bold text-amber-600">
+                        ₹{(
+                          product.securityDeposit > 0 
+                            ? product.securityDeposit 
+                            : product.priceDaily > 3000 
+                              ? 3500 
+                              : product.priceDaily > 1500 
+                                ? 1500 
+                                : product.priceDaily > 800 
+                                  ? 1000 
+                                  : 500
+                        ).toLocaleString()} (100% Refundable in 48h)
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
+
+            {/* Stain & Damage Policy Card */}
+            <StainDamagePolicy 
+              outfitCategory={product.category?.name || "Occasion Wear"} 
+              depositAmount={
+                product.securityDeposit > 0 
+                  ? product.securityDeposit 
+                  : product.priceDaily > 3000 
+                    ? 3500 
+                    : product.priceDaily > 1500 
+                      ? 1500 
+                      : product.priceDaily > 800 
+                        ? 1000 
+                        : 500
+              }
+              variant="button"
+            />
+
 
             {/* Description */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3">
