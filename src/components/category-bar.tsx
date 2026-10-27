@@ -350,7 +350,7 @@ export function CategoryBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Horizontal scroll left fade gradient */}
         <div 
-          className={`absolute left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none transition-opacity duration-350 ${
+          className={`absolute left-4 top-0 bottom-0 w-12 bg-gradient-to-r from-[#0F1A36] via-[#0F1A36]/80 to-transparent z-10 pointer-events-none transition-opacity duration-350 ${
             showLeftFade ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -359,7 +359,7 @@ export function CategoryBar() {
         {showLeftFade && (
           <button 
             onClick={() => scrollRef.current?.scrollBy({ left: -200, behavior: "smooth" })}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-2 border border-slate-200/80 hover:bg-slate-50 hover:text-[#F59E0B] shadow-md z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-[#162447] text-white p-2 border border-white/20 hover:bg-[#1f315e] hover:text-[#C5A880] shadow-md z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
             aria-label="Scroll Left"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -368,7 +368,7 @@ export function CategoryBar() {
         
         {/* Horizontal scroll right fade gradient */}
         <div 
-          className={`absolute right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none transition-opacity duration-350 ${
+          className={`absolute right-4 top-0 bottom-0 w-12 bg-gradient-to-l from-[#0F1A36] via-[#0F1A36]/80 to-transparent z-10 pointer-events-none transition-opacity duration-350 ${
             showRightFade ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -378,7 +378,7 @@ export function CategoryBar() {
         {showRightFade && (
           <button 
             onClick={() => scrollRef.current?.scrollBy({ left: 200, behavior: "smooth" })}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white text-slate-800 p-2 border border-slate-200/80 hover:bg-slate-50 hover:text-[#F59E0B] shadow-md z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-[#162447] text-white p-2 border border-white/20 hover:bg-[#1f315e] hover:text-[#C5A880] shadow-md z-20 cursor-pointer hidden sm:flex items-center justify-center transition-all duration-200"
             aria-label="Scroll Right"
           >
             <ChevronRight className="w-4 h-4" />
@@ -420,8 +420,8 @@ export function CategoryBar() {
                 <div 
                   className={`rounded-2xl flex items-center justify-center transition-all duration-300 ease-out ${
                     active
-                      ? "bg-amber-50 border border-amber-200 text-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.08)]"
-                      : "bg-slate-50 border border-slate-100 text-slate-450 group-hover/item:bg-amber-50/50 group-hover/item:border-amber-200/40 group-hover/item:text-[#F59E0B] group-hover/item:shadow-[0_2px_8px_rgba(245,158,11,0.04)] group-hover/item:scale-105"
+                      ? "bg-[#C5A880] border border-[#C5A880] text-[#0F1A36] shadow-[0_2px_10px_rgba(197,168,128,0.3)] scale-105"
+                      : "bg-white/10 border border-white/15 text-white/80 group-hover/item:bg-[#C5A880]/20 group-hover/item:border-[#C5A880]/60 group-hover/item:text-[#C5A880] group-hover/item:shadow-[0_2px_8px_rgba(197,168,128,0.15)] group-hover/item:scale-105"
                   } ${
                     isScrolled 
                       ? "w-0 h-0 opacity-0 overflow-hidden mb-0 scale-75 select-none pointer-events-none" 
@@ -440,8 +440,8 @@ export function CategoryBar() {
                 <span 
                   className={`font-semibold tracking-wide transition-colors duration-300 font-sans ${
                     active
-                      ? "text-slate-900 font-extrabold"
-                      : "text-slate-500 group-hover/item:text-[#F59E0B]"
+                      ? "text-[#C5A880] font-black"
+                      : "text-white/80 group-hover/item:text-[#C5A880]"
                   } ${
                     isScrolled ? "text-[9px] py-0.5" : "text-[11px]"
                   }`}
@@ -451,7 +451,7 @@ export function CategoryBar() {
 
                 {/* Expanding Accent Gradient Line */}
                 <div 
-                  className={`h-[3px] rounded-full bg-gradient-to-r from-amber-500 to-orange-500 mt-1 transition-all duration-300 ease-out ${
+                  className={`h-[3px] rounded-full bg-gradient-to-r from-[#C5A880] to-[#E6E0F0] mt-1 transition-all duration-300 ease-out ${
                     active 
                       ? "w-6 opacity-100 scale-100" 
                       : "w-0 opacity-0 scale-50 group-hover/item:w-4 group-hover/item:opacity-60 group-hover/item:scale-100"
@@ -464,14 +464,14 @@ export function CategoryBar() {
 
         {/* Mega Menu Dropdown */}
         {isDashboardPage && hoveredCategory && megaMenuData[hoveredCategory] && (
-          <div className="hidden md:block absolute left-4 right-4 top-full bg-white rounded-2xl shadow-2xl border border-slate-100/80 z-50 p-6 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="hidden md:block absolute left-4 right-4 top-full bg-white rounded-2xl shadow-2xl border border-[#E5E4E2] z-50 p-6 animate-in fade-in slide-in-from-top-2 duration-200">
             <div 
               className="grid gap-8"
               style={{ gridTemplateColumns: `repeat(${megaMenuData[hoveredCategory].length}, minmax(0, 1fr))` }}
             >
               {megaMenuData[hoveredCategory].map((col, idx) => (
                 <div key={idx} className="space-y-3 text-left">
-                  <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-widest border-b border-slate-100 pb-1.5">
+                  <h4 className="text-[10px] font-black text-[#6F4E37] uppercase tracking-widest border-b border-[#E5E4E2] pb-1.5">
                     {col.title}
                   </h4>
                   <div className="space-y-1">
@@ -480,7 +480,7 @@ export function CategoryBar() {
                         key={itemIdx}
                         href={item.href}
                         onClick={() => setHoveredCategory(null)}
-                        className="block text-xs font-semibold text-slate-505 hover:text-[#F59E0B] py-1 transition-colors"
+                        className="block text-xs font-semibold text-slate-600 hover:text-[#C5A880] py-1 transition-colors"
                       >
                         {item.name}
                       </Link>

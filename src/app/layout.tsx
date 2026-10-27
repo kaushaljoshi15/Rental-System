@@ -9,6 +9,7 @@ import { SecurityShield } from "@/components/security-shield";
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/bottom-nav";
+import { LuxuryBackground } from "@/components/luxury-background";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -112,6 +113,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <LuxuryBackground />
           <SecurityShield />
           <Suspense fallback={null}>
             <PageSpeedOptimizer />

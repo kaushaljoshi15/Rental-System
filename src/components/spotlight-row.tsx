@@ -33,15 +33,20 @@ export function SpotlightRow({ items }: SpotlightRowProps) {
   }
 
   return (
-    <div className="bg-[#FACC15] rounded-2xl p-4 md:p-6 shadow-md text-slate-900 select-none">
+    <div className="bg-[#FAF5EF] border border-[#E5E4E2] rounded-2xl p-4 md:p-6 shadow-md text-[#6F4E37] select-none">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-black uppercase tracking-wide">{"Spotlight's On"}</h3>
+        <h3 className="text-lg font-black uppercase tracking-wide flex items-center gap-2">
+          <span>{"Spotlight's On"}</span>
+          <span className="text-[9px] bg-[#E6E0F0] text-[#3C2A21] border border-[#C5A880]/40 px-2 py-0.5 rounded-full font-bold">
+            Trending
+          </span>
+        </h3>
         <button 
           onClick={scrollRight}
-          className="bg-slate-950/10 hover:bg-slate-950/20 p-2 rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900/40 flex items-center justify-center"
+          className="bg-white/80 hover:bg-white p-2 rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-[#C5A880]/50 flex items-center justify-center border border-[#E5E4E2]"
           aria-label="Scroll Spotlight Right"
         >
-          <ChevronRight className="w-4 h-4 text-slate-900" />
+          <ChevronRight className="w-4 h-4 text-[#6F4E37]" />
         </button>
       </div>
       <div 
@@ -50,8 +55,8 @@ export function SpotlightRow({ items }: SpotlightRowProps) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {items.map((item, idx) => (
-          <Link href={`/?query=${encodeURIComponent(item.name)}`} key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white rounded-xl overflow-hidden p-2 flex flex-col justify-between h-52 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-            <div className="aspect-[4/3] bg-slate-100 rounded-lg overflow-hidden shrink-0 relative">
+          <Link href={`/?query=${encodeURIComponent(item.name)}`} key={idx} className="flex-shrink-0 w-[150px] md:w-auto bg-white border border-[#E5E4E2] rounded-xl overflow-hidden p-2.5 flex flex-col justify-between h-52 shadow-xs hover:shadow-md hover:scale-[1.02] transition-all duration-200">
+            <div className="aspect-[4/3] bg-[#F5F4F2] rounded-lg overflow-hidden shrink-0 relative">
               <Image 
                 src={item.image} 
                 alt={item.name} 
@@ -62,9 +67,13 @@ export function SpotlightRow({ items }: SpotlightRowProps) {
               />
             </div>
             <div className="pt-2 flex flex-col justify-end flex-grow">
-              <p className="text-slate-900 text-xs font-black uppercase leading-tight line-clamp-1">{item.name}</p>
-              <p className="text-slate-500 text-[10px] font-bold uppercase mt-0.5">{item.action}</p>
-              <p className="text-[#0A5C36] text-[10.5px] font-black uppercase tracking-wider mt-1">{item.badge}</p>
+              <p className="text-[#6F4E37] text-xs font-black uppercase leading-tight line-clamp-1">{item.name}</p>
+              <p className="text-[#8D7B68] text-[10px] font-bold uppercase mt-0.5">{item.action}</p>
+              <div className="mt-1">
+                <span className="text-[#3C2A21] bg-[#E6E0F0] border border-[#C5A880]/40 text-[9.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded inline-block">
+                  {item.badge}
+                </span>
+              </div>
             </div>
           </Link>
         ))}

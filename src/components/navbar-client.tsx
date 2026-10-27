@@ -69,31 +69,31 @@ export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps)
           <Link 
             href={isLoggedIn ? "/?tab=wishlist" : "/login"} 
             prefetch={true}
-            className="text-slate-700 hover:text-[#1d4ed8] transition-colors relative p-1 active:scale-95 duration-200 hover-heart"
+            className="text-white/90 hover:text-[#C5A880] transition-colors relative p-1 active:scale-95 duration-200 hover-heart"
             aria-label="Wishlist"
           >
-            <Heart className="w-5.5 h-5.5 text-slate-700 hover:text-[#1d4ed8]" />
+            <Heart className="w-5.5 h-5.5 text-white/90 hover:text-[#C5A880]" />
           </Link>
           
           {/* Notifications */}
           <Link 
             href={isLoggedIn ? "/?tab=notifications" : "/login"} 
             prefetch={true}
-            className="text-slate-700 hover:text-[#1d4ed8] transition-colors relative p-1 active:scale-95 duration-200 hover-bell"
+            className="text-white/90 hover:text-[#C5A880] transition-colors relative p-1 active:scale-95 duration-200 hover-bell"
             aria-label="Notifications"
           >
-            <Bell className="w-5.5 h-5.5 text-slate-700 hover:text-[#1d4ed8]" />
+            <Bell className="w-5.5 h-5.5 text-white/90 hover:text-[#C5A880]" />
           </Link>
 
           {/* Cart Icon */}
           <Link 
             href={isLoggedIn ? "/?tab=cart" : "/login"} 
             prefetch={true}
-            className="text-slate-700 hover:text-[#1d4ed8] transition-colors relative p-1 active:scale-95 duration-200 hover-cart"
+            className="text-white/90 hover:text-[#C5A880] transition-colors relative p-1 active:scale-95 duration-200 hover-cart"
             aria-label="Cart"
           >
             <div className="relative">
-              <ShoppingCart className="w-5.5 h-5.5 text-slate-700 hover:text-[#1d4ed8]" />
+              <ShoppingCart className="w-5.5 h-5.5 text-white/90 hover:text-[#C5A880]" />
               {cartCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white rounded-full text-[8px] font-black h-3.5 w-3.5 flex items-center justify-center border border-white">
                   {cartCount}
@@ -109,12 +109,12 @@ export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps)
           <Link 
             href={isLoggedIn ? "/?tab=cart" : "/login"} 
             prefetch={true}
-            className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] relative py-1 px-2.5 transition-all group font-bold text-xs sm:text-sm hover-underline-center animate-all hover-cart"
+            className="flex items-center gap-1.5 text-white/90 hover:text-[#C5A880] relative py-1 px-2.5 transition-all group font-bold text-xs sm:text-sm hover-underline-center animate-all hover-cart"
           >
             <div className="relative">
-              <ShoppingCart className="w-5 h-5 text-slate-700 group-hover:text-[#1e40af] transition-transform group-hover:scale-105" />
+              <ShoppingCart className="w-5 h-5 text-white/90 group-hover:text-[#C5A880] transition-transform group-hover:scale-105" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full text-[9px] h-4 w-4 flex items-center justify-center font-bold px-1 border border-white">
+                <span className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full text-[9px] h-4 w-4 flex items-center justify-center font-bold px-1 border border-[#0F1A36]">
                   {cartCount}
                 </span>
               )}
@@ -126,11 +126,11 @@ export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps)
             <div className="relative hover-dropdown-group py-2" ref={accountRef}>
               <button 
                 onClick={() => toggleDropdown("account")}
-                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
+                className="flex items-center gap-1.5 text-white/90 hover:text-[#C5A880] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
               >
-                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1e40af]" />
+                <User className="w-4 h-4 text-white/80 group-hover:text-[#C5A880]" />
                 <span className="max-w-[120px] truncate">{userName}</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#1e40af] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-white/70 group-hover:text-[#C5A880] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
@@ -214,11 +214,11 @@ export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps)
             <div className="relative hover-dropdown-group py-2" ref={accountRef}>
               <button 
                 onClick={() => toggleDropdown("account")}
-                className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
+                className="flex items-center gap-1.5 text-white/90 hover:text-[#C5A880] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
               >
-                <User className="w-4 h-4 text-slate-600 group-hover:text-[#1e40af]" />
+                <User className="w-4 h-4 text-white/80 group-hover:text-[#C5A880]" />
                 <span>Account</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#1e40af] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 text-white/70 group-hover:text-[#C5A880] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "account" ? "rotate-180" : ""}`} />
               </button>
               
               {/* Dropdown Panel */}
@@ -229,16 +229,16 @@ export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps)
               }`}>
                 <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 text-slate-700 text-xs overflow-hidden p-4 relative text-left">
                   <div className="mb-4">
-                    <p className="text-xs font-extrabold text-slate-900 leading-none">Welcome to RentKart</p>
-                    <p className="text-[10px] text-slate-400 mt-1">Rent premium equipment and wedding venues.</p>
+                    <p className="text-xs font-extrabold text-[#6F4E37] leading-none">Welcome to RentKart</p>
+                    <p className="text-[10px] text-[#8D7B68] mt-1">Rent premium equipment and wedding venues.</p>
                   </div>
                   
                   {/* Custom stacked buttons */}
                   <div className="grid grid-cols-2 gap-2 mb-4">
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center justify-center bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs shadow-sm shadow-amber-100">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center justify-center bg-[#E6E0F0] hover:bg-[#ded5eb] text-[#3C2A21] border border-[#C5A880] font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs shadow-xs">
                       Sign In
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/register" className="flex items-center justify-center bg-white hover:bg-slate-50 border border-slate-205 text-slate-700 font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs">
+                    <Link onClick={() => setActiveDropdown(null)} href="/register" className="flex items-center justify-center bg-[#FAF5EF] hover:bg-white border border-[#E5E4E2] text-[#6F4E37] font-bold py-2 px-3 rounded-xl transition-colors text-center text-xs">
                       Register
                     </Link>
                   </div>
@@ -247,27 +247,27 @@ export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps)
                   
                   {/* Links List */}
                   <div className="space-y-1">
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[#FAF5EF] hover:text-[#6F4E37] transition-colors font-semibold text-slate-600">
                       <User className="w-4 h-4 text-slate-400" />
                       <span>My Profile</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[#FAF5EF] hover:text-[#6F4E37] transition-colors font-semibold text-slate-600">
                       <Package className="w-4 h-4 text-slate-400" />
                       <span>Orders</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[#FAF5EF] hover:text-[#6F4E37] transition-colors font-semibold text-slate-600">
                       <Heart className="w-4 h-4 text-slate-400" />
                       <span>Wishlist</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
+                    <Link onClick={() => setActiveDropdown(null)} href="/seller-center" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[#FAF5EF] hover:text-[#6F4E37] transition-colors font-semibold text-slate-600">
                       <Store className="w-4 h-4 text-slate-400" />
                       <span>Become a Seller</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
+                    <Link onClick={() => setActiveDropdown(null)} href="#support" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[#FAF5EF] hover:text-[#6F4E37] transition-colors font-semibold text-slate-600">
                       <Headphones className="w-4 h-4 text-slate-400" />
                       <span>24x7 Customer Care</span>
                     </Link>
-                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-amber-50/50 hover:text-[#F59E0B] transition-colors font-semibold text-slate-600">
+                    <Link onClick={() => setActiveDropdown(null)} href="/login" className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[#FAF5EF] hover:text-[#6F4E37] transition-colors font-semibold text-slate-600">
                       <Calendar className="w-4 h-4 text-slate-400" />
                       <span>Event Planner</span>
                     </Link>
@@ -281,10 +281,10 @@ export function NavbarClient({ isLoggedIn, userName, email }: NavbarClientProps)
           <div className="relative hover-dropdown-group py-2" ref={moreRef}>
             <button 
               onClick={() => toggleDropdown("more")}
-              className="flex items-center gap-1.5 text-slate-700 hover:text-[#1e40af] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
+              className="flex items-center gap-1.5 text-white/90 hover:text-[#C5A880] font-bold text-sm focus:outline-none transition-colors py-1 px-2 hover-underline-center cursor-pointer group"
             >
               <span>More</span>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#1e40af] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "more" ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3.5 h-3.5 text-white/70 group-hover:text-[#C5A880] hover-dropdown-icon transition-transform duration-200 ${activeDropdown === "more" ? "rotate-180" : ""}`} />
             </button>
             
             {/* Dropdown Panel */}

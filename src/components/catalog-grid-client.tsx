@@ -457,38 +457,38 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
           </h1>
         </div>
 
-        {/* Flipkart style Sort By row (Desktop only) */}
-        <div className="bg-white border border-slate-200 rounded-lg p-3 px-4 flex items-center justify-between shadow-sm text-xs font-semibold text-slate-600 select-none hidden lg:flex">
+        {/* Sort By row (Desktop only) */}
+        <div className="bg-white border border-[#E5E4E2] rounded-xl p-3 px-4 flex items-center justify-between shadow-xs text-xs font-semibold text-[#8D7B68] select-none hidden lg:flex">
           <div className="flex items-center gap-4">
-            <span className="font-extrabold text-slate-800 text-xs">Sort By:</span>
+            <span className="font-extrabold text-[#6F4E37] text-xs">Sort By:</span>
             <button
               onClick={() => updateParams({ sort: null })}
-              className={`pb-0.5 border-b-2 hover:text-[#D97706] font-bold tracking-wide transition-all ${
-                !activeSort ? "text-[#D97706] border-[#F59E0B]" : "text-slate-500 border-transparent"
+              className={`pb-0.5 border-b-2 hover:text-[#6F4E37] font-bold tracking-wide transition-all ${
+                !activeSort ? "text-[#6F4E37] border-[#C5A880]" : "text-[#8D7B68] border-transparent"
               }`}
             >
               Relevance
             </button>
             <button
               onClick={() => updateParams({ sort: "price_asc" })}
-              className={`pb-0.5 border-b-2 hover:text-[#D97706] font-bold tracking-wide transition-all ${
-                activeSort === "price_asc" ? "text-[#D97706] border-[#F59E0B]" : "text-slate-500 border-transparent"
+              className={`pb-0.5 border-b-2 hover:text-[#6F4E37] font-bold tracking-wide transition-all ${
+                activeSort === "price_asc" ? "text-[#6F4E37] border-[#C5A880]" : "text-[#8D7B68] border-transparent"
               }`}
             >
               Price -- Low to High
             </button>
             <button
               onClick={() => updateParams({ sort: "price_desc" })}
-              className={`pb-0.5 border-b-2 hover:text-[#D97706] font-bold tracking-wide transition-all ${
-                activeSort === "price_desc" ? "text-[#D97706] border-[#F59E0B]" : "text-slate-500 border-transparent"
+              className={`pb-0.5 border-b-2 hover:text-[#6F4E37] font-bold tracking-wide transition-all ${
+                activeSort === "price_desc" ? "text-[#6F4E37] border-[#C5A880]" : "text-[#8D7B68] border-transparent"
               }`}
             >
               Price -- High to Low
             </button>
             <button
               onClick={() => updateParams({ sort: "rating_desc" })}
-              className={`pb-0.5 border-b-2 hover:text-[#D97706] font-bold tracking-wide transition-all ${
-                activeSort === "rating_desc" ? "text-[#D97706] border-[#F59E0B]" : "text-slate-500 border-transparent"
+              className={`pb-0.5 border-b-2 hover:text-[#6F4E37] font-bold tracking-wide transition-all ${
+                activeSort === "rating_desc" ? "text-[#6F4E37] border-[#C5A880]" : "text-[#8D7B68] border-transparent"
               }`}
             >
               Customer Ratings
@@ -531,11 +531,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
               return (
                 <Card
                   key={product.id}
-                  className="group cursor-pointer border border-slate-200 bg-white flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md hover:border-[#F59E0B]/40 transition-all duration-200 rounded-lg relative p-0 gap-0"
+                  className="group cursor-pointer border border-[#E5E4E2] bg-white flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-xl hover:border-[#C5A880]/70 transition-all duration-300 rounded-2xl relative p-0 gap-0"
                   style={{ boxShadow: PREMIUM_BOX_SHADOW }}
                 >
                   {/* Header Image Area */}
-                  <div className="w-full aspect-square relative bg-slate-50 overflow-hidden flex items-center justify-center border-b border-slate-100 shrink-0">
+                  <div className="w-full aspect-square relative bg-[#FAF5EF] overflow-hidden flex items-center justify-center border-b border-[#E5E4E2] shrink-0">
                     {product.image && product.image.startsWith("http") ? (
                       <Image
                         src={product.image}
@@ -547,7 +547,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                         loading={index < 4 ? "eager" : "lazy"}
                       />
                     ) : (
-                      <Building className="w-9 h-9 text-slate-300 animate-pulse" />
+                      <Building className="w-9 h-9 text-[#8D7B68] animate-pulse" />
                     )}
 
                     <WishlistButton
@@ -557,7 +557,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                       className="z-20"
                     />
 
-                    <Badge className="absolute top-2.5 right-2.5 bg-slate-900/85 hover:bg-slate-900 text-white uppercase font-black text-[7.5px] sm:text-[8px] border-none select-none tracking-wider px-1.5 py-0.5 rounded shadow-sm pointer-events-none">
+                    <Badge className="absolute top-2.5 right-2.5 bg-[#FAF5EF] hover:bg-[#FAF5EF] text-[#6F4E37] border border-[#E5E4E2] uppercase font-black text-[7.5px] sm:text-[8px] select-none tracking-wider px-2 py-0.5 rounded-full shadow-xs pointer-events-none">
                       {product.category?.name || "General"}
                     </Badge>
                   </div>
@@ -566,43 +566,43 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                   <CardHeader className="p-2.5 sm:p-4 pb-1 sm:pb-2 space-y-1.5 flex-grow flex flex-col justify-between">
                     <div className="space-y-1">
                       <Link href={`/products/${product.id}`} className="block">
-                        <h4 className="text-[11px] sm:text-xs font-bold text-slate-800 hover:text-[#D97706] line-clamp-2 tracking-wide leading-tight min-h-[30px] sm:min-h-[34px]">
+                        <h4 className="text-[11px] sm:text-xs font-bold text-[#6F4E37] hover:text-[#C5A880] line-clamp-2 tracking-wide leading-tight min-h-[30px] sm:min-h-[34px]">
                           {product.name}
                         </h4>
                         <span className="absolute inset-0 z-10 cursor-pointer" aria-hidden="true" />
                       </Link>
 
-                      {/* Ratings and Rentkart Assured (Flipkart Style) */}
+                      {/* Ratings and Rentkart Assured */}
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <div className="flex items-center text-white bg-[#388E3C] px-1 py-0.5 rounded text-[8px] sm:text-[9.5px] font-black">
+                        <div className="flex items-center text-white bg-[#047857] px-1.5 py-0.5 rounded text-[8px] sm:text-[9.5px] font-black">
                           {rating} <Star className="w-2 h-2 fill-current ml-0.5 shrink-0" />
                         </div>
-                        <span className="text-[8.5px] sm:text-[9.5px] text-slate-400 font-bold">({count} ratings)</span>
+                        <span className="text-[8.5px] sm:text-[9.5px] text-[#8D7B68] font-bold">({count} ratings)</span>
                       </div>
 
-                      {/* Rentkart Assured Badge (Capsule styling with brand colors) */}
+                      {/* Rentkart Assured Badge (Capsule styling in Midnight Navy and Champagne Gold) */}
                       <div className="flex items-center mt-1 select-none">
-                        <span className="bg-slate-900 text-white text-[7.5px] font-black uppercase px-1.5 py-0.5 rounded-l flex items-center gap-0.5 shadow-sm">
-                          <Check className="w-1.5 h-1.5 stroke-[4] text-[#F59E0B]" /> Rentkart
+                        <span className="bg-[#0F1A36] text-white text-[7.5px] font-black uppercase px-1.5 py-0.5 rounded-l flex items-center gap-0.5 shadow-xs">
+                          <Check className="w-1.5 h-1.5 stroke-[4] text-[#C5A880]" /> Rentkart
                         </span>
-                        <span className="bg-[#F59E0B] text-slate-950 text-[7.5px] font-black uppercase px-1.5 py-0.5 rounded-r shadow-sm">
+                        <span className="bg-[#C5A880] text-[#0F1A36] text-[7.5px] font-black uppercase px-1.5 py-0.5 rounded-r shadow-xs">
                           Assured
                         </span>
                       </div>
                     </div>
 
-                    <p className="hidden sm:block text-[11px] text-slate-600 leading-relaxed line-clamp-2 mt-2 select-text">
+                    <p className="hidden sm:block text-[11px] text-[#8D7B68] leading-relaxed line-clamp-2 mt-2 select-text">
                       {product.description || "Premium verified venue listed under platform safety parameters."}
                     </p>
                   </CardHeader>
 
                   {/* Pricing & Booking Trigger */}
-                  <div className="p-2.5 sm:p-4 pt-1 sm:pt-2 border-t border-slate-100/60 bg-slate-50/10 space-y-2 mt-auto">
+                  <div className="p-2.5 sm:p-4 pt-1 sm:pt-2 border-t border-[#E5E4E2] bg-[#FAF5EF]/40 space-y-2 mt-auto">
                     <div className="flex items-baseline gap-1 sm:gap-1.5 flex-wrap font-sans font-semibold">
-                      <span className="text-xs sm:text-sm font-black text-slate-900">₹{(product.priceDaily || 0).toLocaleString()}</span>
-                      <span className="text-[9px] text-slate-400">/day</span>
-                      <span className="text-[9px] text-slate-400 line-through">₹{mrp}</span>
-                      <span className="text-[9.5px] font-black text-emerald-600">({discount}% Off)</span>
+                      <span className="text-xs sm:text-sm font-black text-[#6F4E37]">₹{(product.priceDaily || 0).toLocaleString()}</span>
+                      <span className="text-[9px] text-[#8D7B68]">/day</span>
+                      <span className="text-[9px] text-[#8D7B68] line-through">₹{mrp}</span>
+                      <span className="text-[9.5px] font-black text-[#047857]">({discount}% Off)</span>
                     </div>
 
                     <div className="select-none relative z-20">

@@ -340,7 +340,7 @@ export default async function HomePage({
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans select-none text-slate-900 overflow-x-clip">
+    <div className="min-h-screen bg-transparent flex flex-col font-sans select-none text-[#6F4E37] overflow-x-clip relative">
       {activeTab ? (
         <div className="hidden md:block sticky top-0 z-50">
           <Navbar />
@@ -457,15 +457,15 @@ export default async function HomePage({
 
                 {/* Row 2: Premium Rent Partners */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Premium Rent Partners</h3>
+                  <h3 className="text-lg font-black text-[#6F4E37] uppercase tracking-tight">Premium Rent Partners</h3>
                   <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 md:grid md:grid-cols-3">
                     {[
                       { brand: "Sony Cinema", offer: "Up to 40% Off", desc: "Pro video packages", image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=400" },
                       { brand: "Manyavar Groom", offer: "Up to 30% Off", desc: "Luxury wedding fashion", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=400" },
                       { brand: "DJI Enterprise", offer: "Flat 15% Off", desc: "Drones & stabilizers", image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&q=80&w=400" },
                     ].map((partner, idx) => (
-                      <Link href={`/?query=${encodeURIComponent(partner.brand)}`} key={idx} className="flex-shrink-0 w-64 md:w-auto bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-3 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:shadow-md transition-all duration-200">
-                        <div className="aspect-[16/10] bg-slate-100 rounded-xl overflow-hidden relative shrink-0">
+                      <Link href={`/?query=${encodeURIComponent(partner.brand)}`} key={idx} className="flex-shrink-0 w-64 md:w-auto bg-white border border-[#E5E4E2] rounded-2xl overflow-hidden p-3 shadow-xs flex flex-col justify-between hover:border-[#C5A880]/60 hover:shadow-md transition-all duration-200">
+                        <div className="aspect-[16/10] bg-[#FAF5EF] rounded-xl overflow-hidden relative shrink-0">
                           <Image
                             src={partner.image}
                             alt={partner.brand}
@@ -473,12 +473,12 @@ export default async function HomePage({
                             sizes="(max-width: 768px) 50vw, 33vw"
                             className="object-cover"
                           />
-                          <span className="absolute top-2.5 right-2.5 bg-slate-900/60 text-white font-extrabold text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full select-none">Partner</span>
+                          <span className="absolute top-2.5 right-2.5 bg-[#0F1A36]/80 text-[#C5A880] border border-[#C5A880]/30 font-extrabold text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full select-none shadow-xs">Partner</span>
                         </div>
                         <div className="pt-3.5 space-y-1">
-                          <h4 className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">{partner.brand}</h4>
-                          <p className="text-slate-900 text-sm font-black uppercase tracking-wide leading-tight">{partner.offer}</p>
-                          <p className="text-slate-505 text-xs font-semibold">{partner.desc}</p>
+                          <h4 className="text-[10px] font-extrabold text-[#8D7B68] uppercase tracking-wider">{partner.brand}</h4>
+                          <p className="text-[#6F4E37] text-sm font-black uppercase tracking-wide leading-tight">{partner.offer}</p>
+                          <p className="text-[#8D7B68] text-xs font-semibold">{partner.desc}</p>
                         </div>
                       </Link>
                     ))}
@@ -487,7 +487,7 @@ export default async function HomePage({
 
                 {/* Row 3: Featured Brands */}
                 <div className="space-y-4 select-none">
-                  <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Featured Brands</h3>
+                  <h3 className="text-lg font-black text-[#6F4E37] uppercase tracking-tight">Featured Brands</h3>
                   <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
                     {[
                       { brand: "Canon", tagline: "Premium glass range", offer: "Shop now", image: "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&q=80&w=400" },
@@ -496,16 +496,16 @@ export default async function HomePage({
                       { brand: "Bose Pro", tagline: "Bold sound acoustics", offer: "Min. 30% Off", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400" },
                       { brand: "Apple Workstation", tagline: "MacBook Pro M3", offer: "From ₹1,599/d", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400" }
                     ].map((b, idx) => (
-                      <Link href={`/?query=${encodeURIComponent(b.brand)}`} key={idx} className="flex-shrink-0 w-64 bg-slate-900/90 rounded-2xl overflow-hidden p-3 relative h-36 flex flex-col justify-between text-white shadow-md hover:scale-[1.02] transition-transform duration-200">
-                        <div className="absolute inset-0 opacity-40 bg-cover bg-center" style={{ backgroundImage: `url(${b.image})` }} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-955 via-slate-955/60 to-transparent" />
+                      <Link href={`/?query=${encodeURIComponent(b.brand)}`} key={idx} className="flex-shrink-0 w-64 bg-[#0F1A36] border border-[#1A274E] rounded-2xl overflow-hidden p-3 relative h-36 flex flex-col justify-between text-white shadow-md hover:scale-[1.02] transition-transform duration-200">
+                        <div className="absolute inset-0 opacity-30 bg-cover bg-center" style={{ backgroundImage: `url(${b.image})` }} />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0F1A36] via-[#0F1A36]/70 to-transparent" />
                         <div className="relative z-10 flex justify-between items-start">
-                          <span className="text-[10px] font-black uppercase tracking-wider text-amber-500">{b.brand}</span>
+                          <span className="text-[10px] font-black uppercase tracking-wider text-[#C5A880]">{b.brand}</span>
                           <span className="text-[8px] bg-white/20 text-white font-extrabold px-1.5 py-0.5 rounded uppercase">AD</span>
                         </div>
                         <div className="relative z-10 space-y-1">
-                          <p className="text-[11px] font-semibold text-slate-300 leading-tight">{b.tagline}</p>
-                          <p className="text-xs font-black uppercase text-white tracking-wide">{b.offer}</p>
+                          <p className="text-[11px] font-semibold text-slate-200 leading-tight">{b.tagline}</p>
+                          <p className="text-xs font-black uppercase text-[#E6E0F0] tracking-wide">{b.offer}</p>
                         </div>
                       </Link>
                     ))}
@@ -525,18 +525,18 @@ export default async function HomePage({
                 {/* Row 5: Suggested For You */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Suggested For You</h2>
-                    <div className="bg-slate-200/60 hover:bg-slate-200/90 p-2 rounded-full cursor-pointer transition-colors select-none">
-                      <ChevronRight className="w-4 h-4 text-slate-700" />
+                    <h2 className="text-lg font-black text-[#6F4E37] uppercase tracking-tight">Suggested For You</h2>
+                    <div className="bg-white hover:bg-[#FAF5EF] border border-[#E5E4E2] p-2 rounded-full cursor-pointer transition-colors select-none">
+                      <ChevronRight className="w-4 h-4 text-[#6F4E37]" />
                     </div>
                   </div>
                   <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
                     {catalogProducts.slice(0, 6).map((product, idx) => {
                       const { rating } = getSimulatedRating(product.id)
-                      const { mrp, discount } = getSimulatedMRP(product.priceDaily)
+                      const { mrp } = getSimulatedMRP(product.priceDaily)
                       return (
-                        <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
-                          <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
+                        <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-[#E5E4E2] rounded-2xl overflow-hidden p-2.5 shadow-xs flex flex-col justify-between h-72 hover:border-[#C5A880]/60 hover:shadow-md transition-all">
+                          <div className="aspect-square bg-[#FAF5EF] rounded-xl overflow-hidden relative shrink-0">
                             <Image 
                               src={product.image || ''} 
                               alt={product.name} 
@@ -549,13 +549,13 @@ export default async function HomePage({
                             </span>
                           </div>
                           <div className="pt-2.5 flex flex-col justify-between flex-grow">
-                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
+                            <h4 className="text-xs font-black text-[#6F4E37] line-clamp-2 tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
                             <div className="mt-2 space-y-0.5 font-mono">
                               <div className="flex items-baseline gap-1">
-                                <span className="text-xs text-slate-450 line-through">₹{mrp}</span>
-                                <span className="text-sm font-black text-slate-955">₹{product.priceDaily.toLocaleString()}</span>
+                                <span className="text-xs text-[#8D7B68] line-through">₹{mrp}</span>
+                                <span className="text-sm font-black text-[#6F4E37]">₹{product.priceDaily.toLocaleString()}</span>
                               </div>
-                              <p className="text-[9.5px] font-bold text-amber-800">with Coupon + more</p>
+                              <p className="text-[9.5px] font-bold text-[#C5A880]">with Coupon + more</p>
                             </div>
                           </div>
                         </Link>
@@ -567,8 +567,8 @@ export default async function HomePage({
                 {/* Row 6: Great Finds For You */}
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Great finds for you</h3>
-                    <p className="text-slate-400 text-[9px] font-extrabold uppercase tracking-wide mt-0.5">Sponsored</p>
+                    <h3 className="text-lg font-black text-[#6F4E37] uppercase tracking-tight">Great finds for you</h3>
+                    <p className="text-[#8D7B68] text-[9px] font-extrabold uppercase tracking-wide mt-0.5">Sponsored</p>
                   </div>
                   <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
                     {catalogProducts.slice(6, 12).map((product, idx) => {
@@ -576,8 +576,8 @@ export default async function HomePage({
                       const { mrp } = getSimulatedMRP(product.priceDaily)
                       const bankOfferPrice = Math.round(product.priceDaily * 0.9)
                       return (
-                        <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-slate-200/80 rounded-2xl overflow-hidden p-2.5 shadow-sm flex flex-col justify-between h-72 hover:border-amber-500/40 transition-colors">
-                          <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
+                        <Link href={`/products/${product.id}`} key={idx} className="flex-shrink-0 w-48 bg-white border border-[#E5E4E2] rounded-2xl overflow-hidden p-2.5 shadow-xs flex flex-col justify-between h-72 hover:border-[#C5A880]/60 hover:shadow-md transition-all">
+                          <div className="aspect-square bg-[#FAF5EF] rounded-xl overflow-hidden relative shrink-0">
                             <Image 
                               src={product.image || ''} 
                               alt={product.name} 
@@ -590,13 +590,13 @@ export default async function HomePage({
                             </span>
                           </div>
                           <div className="pt-2.5 flex flex-col justify-between flex-grow">
-                            <h4 className="text-xs font-black text-slate-900 line-clamp-2 tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
+                            <h4 className="text-xs font-black text-[#6F4E37] line-clamp-2 tracking-wide leading-tight min-h-[32px]">{product.name}</h4>
                             <div className="mt-2 space-y-0.5 font-mono">
                               <div className="flex items-baseline gap-1">
-                                <span className="text-xs text-slate-455 line-through">₹{mrp}</span>
-                                <span className="text-sm font-black text-slate-955">₹{product.priceDaily.toLocaleString()}</span>
+                                <span className="text-xs text-[#8D7B68] line-through">₹{mrp}</span>
+                                <span className="text-sm font-black text-[#6F4E37]">₹{product.priceDaily.toLocaleString()}</span>
                               </div>
-                              <p className="text-[9.5px] font-bold text-indigo-650">₹{bankOfferPrice.toLocaleString()} with Bank offer</p>
+                              <p className="text-[9.5px] font-bold text-[#8D7B68]">₹{bankOfferPrice.toLocaleString()} with Bank offer</p>
                             </div>
                           </div>
                         </Link>
