@@ -303,7 +303,7 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
 
   const inputBg = isDark ? "bg-white/12 border-white/20 text-white placeholder:text-white/60 focus:bg-white/16" : "bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400"
   const micColor = isListening ? "text-rose-400 animate-pulse bg-rose-500/10" : isDark ? "text-white/70 hover:text-white transition-colors duration-200" : "text-slate-550 hover:text-slate-900"
-  const cameraColor = isAnalyzing ? "text-[#F59E0B] animate-spin" : isDark ? "text-white/70 hover:text-white transition-colors duration-200" : "text-slate-550 hover:text-slate-900"
+  const cameraColor = isAnalyzing ? "text-[#C5A880] animate-spin" : isDark ? "text-white/70 hover:text-white transition-colors duration-200" : "text-slate-550 hover:text-slate-900"
   const xColor = isDark ? "text-white/70 hover:text-white transition-colors duration-200" : "text-slate-550 hover:text-slate-900"
 
   return (
@@ -349,7 +349,7 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
               }
             }}
             placeholder={placeholder}
-            className={`w-full border text-sm rounded-xl pl-10 pr-24 py-2.5 focus:outline-none focus:border-[#F59E0B] focus:ring-4 focus:ring-amber-500/20 transition-all font-semibold ${inputBg}`}
+            className={`w-full border text-sm rounded-xl pl-10 pr-24 py-2.5 focus:outline-none focus:border-[#C5A880] focus:ring-4 focus:ring-[#C5A880]/20 transition-all font-semibold ${inputBg}`}
             suppressHydrationWarning
           />
 
@@ -408,7 +408,7 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-sm w-full mx-4 text-center shadow-2xl relative overflow-hidden flex flex-col items-center">
             
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-[#F59E0B] animate-pulse" />
+              <Sparkles className="w-5 h-5 text-[#C5A880] animate-pulse" />
               <span className="text-xs font-black text-slate-100 uppercase tracking-widest">
                 RentKart Vision AI
               </span>
@@ -420,13 +420,13 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
                 alt="Scanning..."
                 className="w-full h-full object-cover opacity-60"
               />
-              <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#F59E0B] to-transparent shadow-[0_0_10px_#F59E0B] animate-scan-laser" />
+              <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C5A880] to-transparent shadow-[0_0_10px_#C5A880] animate-scan-laser" />
             </div>
 
             <div className="space-y-3 w-full">
               <div className="flex justify-between items-center text-[10px] uppercase font-bold text-slate-400">
                 <span>Scan Status</span>
-                <span className="text-[#F59E0B] font-black">ACTIVE</span>
+                <span className="text-[#C5A880] font-black">ACTIVE</span>
               </div>
 
               <div className="h-10 flex items-center justify-center text-xs font-semibold text-white px-2">
@@ -443,7 +443,7 @@ export function SearchBar({ className = "", placeholder = "Search equipment...",
 
               <div className="w-full h-1 bg-slate-850 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-[#F59E0B] to-amber-400 transition-all duration-500 rounded-full"
+                  className="h-full bg-gradient-to-r from-[#C5A880] to-[#E6E0F0] transition-all duration-500 rounded-full"
                   style={{
                     width: `${
                       scanStep === 0 ? 15 :

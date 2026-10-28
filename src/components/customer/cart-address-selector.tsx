@@ -108,7 +108,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
         <div className="shrink-0 flex items-center justify-end w-full sm:w-auto">
           <Link href="/?tab=addresses">
             <Button
-              className="bg-[#f5820b] hover:bg-[#e07505] text-white font-extrabold text-xs h-9.5 px-6 rounded-full transition-all cursor-pointer border-0 shadow-[0_2.5px_8px_rgba(245,130,11,0.2)]"
+              className="btn-beast text-xs h-9.5 px-6 rounded-full transition-all cursor-pointer shadow-xs"
             >
               Configure Address
             </Button>
@@ -224,7 +224,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
           <PopoverTrigger asChild>
             <Button
               disabled={isPending}
-              className="bg-[#f5820b] hover:bg-[#e07505] text-white font-extrabold text-xs h-9.5 px-6 rounded-full transition-all cursor-pointer border-0 shadow-[0_2.5px_8px_rgba(245,130,11,0.15)] flex items-center gap-1.5 active:scale-[0.98]"
+              className="btn-beast text-xs h-9.5 px-6 rounded-full transition-all cursor-pointer shadow-xs flex items-center gap-1.5 active:scale-[0.98]"
             >
               {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
               <span>{defaultAddress ? "Change Address" : "Add Address"}</span>
@@ -239,7 +239,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                     onClick={() => setShowAddForm(true)}
                     variant="ghost"
                     size="sm"
-                    className="text-[10px] font-bold text-[#F59E0B] hover:bg-amber-500/10 px-2 py-1 rounded-lg h-7"
+                    className="text-[10px] font-bold text-[#6F4E37] hover:bg-[#FAF5EF] px-2 py-1 rounded-lg h-7"
                   >
                     <Plus className="w-3.5 h-3.5 mr-0.5" /> Add New
                   </Button>
@@ -419,7 +419,7 @@ export function CartAddressSelector({ initialAddress, userName }: CartAddressSel
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-9.5 rounded-xl cursor-pointer"
+                  className="w-full bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-9.5 rounded-xl cursor-pointer"
                 >
                   {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
                   Confirm & Save Address

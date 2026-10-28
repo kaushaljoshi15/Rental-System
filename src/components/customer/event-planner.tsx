@@ -312,9 +312,9 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
       
       {/* Sleek Gradient Header Banner */}
       <div className="relative bg-gradient-to-br from-slate-900 via-slate-850 to-slate-900 border border-slate-800 text-white rounded-3xl p-6 md:p-8 overflow-hidden shadow-xl shadow-slate-950/20">
-        <div className="absolute top-0 right-0 h-48 w-48 bg-[#F59E0B]/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 h-48 w-48 bg-[#C5A880]/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 space-y-4">
-          <span className="inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 text-[#F59E0B] text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-widest font-sans">
+          <span className="inline-flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 text-[#C5A880] text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-widest font-sans">
             <Sparkles className="w-3.5 h-3.5" /> 200 IQ event manager
           </span>
           <div className="space-y-1">
@@ -373,12 +373,12 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
               {/* Event Type Select */}
               <div className="space-y-2">
                 <label className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Briefcase className="w-4 h-4 text-[#F59E0B]" /> Select Event Category
+                  <Briefcase className="w-4 h-4 text-[#C5A880]" /> Select Event Category
                 </label>
                 <select
                   value={eventType}
                   onChange={(e) => setEventType(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-[#F59E0B] focus:ring-4 focus:ring-amber-500/10 transition-all cursor-pointer h-12"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-[#C5A880] focus:ring-4 focus:ring-amber-500/10 transition-all cursor-pointer h-12"
                 >
                   <option>Wedding Reception</option>
                   <option>Professional Photoshoot</option>
@@ -391,7 +391,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
               {/* Items Needed Checklist */}
               <div className="space-y-2.5">
                 <label className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Store className="w-4 h-4 text-[#F59E0B]" /> What items do you require?
+                  <Store className="w-4 h-4 text-[#C5A880]" /> What items do you require?
                 </label>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -422,7 +422,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                               setSelectedNeeds([...selectedNeeds, need])
                             }
                           }}
-                          className="accent-[#F59E0B] h-4 w-4 shrink-0 rounded"
+                          className="accent-[#C5A880] h-4 w-4 shrink-0 rounded"
                         />
                         <span className="text-xs font-bold text-slate-700">{need}</span>
                       </label>
@@ -435,7 +435,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
             <div className="flex justify-end pt-4 border-t border-slate-100">
               <Button 
                 onClick={handleNext} 
-                className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-1.5 h-11"
+                className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-1.5 h-11"
               >
                 <span>Define Budget</span> <ArrowRight className="w-4 h-4" />
               </Button>
@@ -456,7 +456,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
               {/* Target Budget Input */}
               <div className="space-y-2">
                 <label className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <DollarSign className="w-4 h-4 text-[#F59E0B]" /> Target Budget (₹)
+                  <DollarSign className="w-4 h-4 text-[#C5A880]" /> Target Budget (₹)
                 </label>
                 <div className="relative flex items-center">
                   <span className="absolute left-3 text-slate-400 font-extrabold text-xs">₹</span>
@@ -464,7 +464,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                     type="number" 
                     value={targetBudget}
                     onChange={(e) => setTargetBudget(Math.max(1, parseInt(e.target.value) || 0))}
-                    className="pl-7 text-xs font-bold rounded-xl h-11 focus:ring-amber-500/10 focus:border-[#F59E0B] border-slate-200"
+                    className="pl-7 text-xs font-bold rounded-xl h-11 focus:ring-amber-500/10 focus:border-[#C5A880] border-slate-200"
                   />
                 </div>
                 <p className="text-[10px] text-slate-400 font-bold uppercase">Estimated Event Budget Hold</p>
@@ -473,12 +473,12 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
               {/* Rental Duration */}
               <div className="space-y-2">
                 <label className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-[#F59E0B]" /> Rental Duration (Days)
+                  <Calendar className="w-4 h-4 text-[#C5A880]" /> Rental Duration (Days)
                 </label>
                 <select
                   value={durationDays}
                   onChange={(e) => setDurationDays(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-[#F59E0B] focus:ring-4 focus:ring-amber-500/10 transition-all cursor-pointer h-11"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:bg-white focus:border-[#C5A880] focus:ring-4 focus:ring-amber-500/10 transition-all cursor-pointer h-11"
                 >
                   {[1, 2, 3, 4, 5, 7, 10, 14].map((d) => (
                     <option key={d} value={d}>{d} {d === 1 ? 'Day' : 'Days'}</option>
@@ -490,13 +490,13 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
               {/* Guest / Staff Capacity */}
               <div className="space-y-2">
                 <label className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                  <Settings className="w-4 h-4 text-[#F59E0B]" /> Estimated Guests
+                  <Settings className="w-4 h-4 text-[#C5A880]" /> Estimated Guests
                 </label>
                 <Input 
                   type="number" 
                   value={guestCount}
                   onChange={(e) => setGuestCount(Math.max(1, parseInt(e.target.value) || 0))}
-                  className="text-xs font-bold rounded-xl h-11 focus:ring-amber-500/10 focus:border-[#F59E0B] border-slate-200"
+                  className="text-xs font-bold rounded-xl h-11 focus:ring-amber-500/10 focus:border-[#C5A880] border-slate-200"
                 />
                 <p className="text-[10px] text-slate-400 font-bold uppercase">Used to verify space capacities</p>
               </div>
@@ -505,11 +505,11 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
 
             {/* Visual Budget Target Banner */}
             <div className="bg-amber-50 border border-amber-200/50 p-4.5 rounded-2xl flex gap-3.5 items-start">
-              <Info className="w-4.5 h-4.5 text-[#F59E0B] shrink-0 mt-0.5" />
+              <Info className="w-4.5 h-4.5 text-[#C5A880] shrink-0 mt-0.5" />
               <div className="text-xs leading-relaxed font-semibold">
                 <p className="font-bold text-slate-900">Automatic Optimizer Configuration</p>
                 <p className="text-slate-500 text-[11px] mt-0.5">
-                  We have mapped your categories. Our budget algorithm will query the marketplace catalog to find prime equipment matching these parameters, ensuring the total cost remains under <span className="text-[#F59E0B] font-bold font-mono">₹{targetBudget.toLocaleString()}</span>.
+                  We have mapped your categories. Our budget algorithm will query the marketplace catalog to find prime equipment matching these parameters, ensuring the total cost remains under <span className="text-[#C5A880] font-bold font-mono">₹{targetBudget.toLocaleString()}</span>.
                 </p>
               </div>
             </div>
@@ -524,7 +524,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
               </Button>
               <Button 
                 onClick={handleNext} 
-                className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-1.5 h-11"
+                className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-1.5 h-11"
               >
                 <span>Optimize Setup</span> <ArrowRight className="w-4 h-4" />
               </Button>
@@ -586,7 +586,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                         </span>
                         <h4 className="text-xs font-black text-[#0F172A] truncate uppercase tracking-wider mt-1">{item.product.name}</h4>
                         <p className="text-[10px] text-slate-400 font-bold uppercase">
-                          Provided by: <span className="text-[#F59E0B]">{item.product.vendor?.companyName || item.product.vendor?.name || "Prime Partner"}</span>
+                          Provided by: <span className="text-[#C5A880]">{item.product.vendor?.companyName || item.product.vendor?.name || "Prime Partner"}</span>
                         </p>
                         
                         {/* Swapped details description */}
@@ -645,7 +645,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
               <Button 
                 onClick={handleNext} 
                 disabled={optimizedItems.length === 0}
-                className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-1.5 h-11"
+                className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs px-6 py-4 rounded-xl shadow-sm transition-all duration-200 flex items-center gap-1.5 h-11"
               >
                 <span>Generate Quotation</span> <ArrowRight className="w-4 h-4" />
               </Button>
@@ -699,7 +699,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                             <p className="text-[9px] text-slate-400 font-extrabold uppercase">Logistics Access Requirement</p>
                             <p className="text-slate-800 font-bold mt-0.5">{prereq.logistics}</p>
                           </div>
-                          <div className="col-span-2 border-t border-slate-200/30 pt-2 text-[10.5px] text-[#F59E0B] font-bold">
+                          <div className="col-span-2 border-t border-slate-200/30 pt-2 text-[10.5px] text-[#C5A880] font-bold">
                             <span className="text-slate-400 font-extrabold uppercase text-[9px] block">Operator Terms / Perks</span>
                             <p className="mt-0.5 leading-relaxed">{prereq.special}</p>
                           </div>
@@ -718,7 +718,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                   
                   <div className="border-b border-slate-800 pb-4">
                     <h3 className="font-extrabold text-sm uppercase tracking-wide flex items-center gap-1.5">
-                      <ShoppingBag className="w-4 h-4 text-[#F59E0B]" /> Bundle Quotation
+                      <ShoppingBag className="w-4 h-4 text-[#C5A880]" /> Bundle Quotation
                     </h3>
                     <p className="text-[10px] text-slate-400 mt-1 leading-relaxed font-semibold">Automatic package discounts calculated on selected categories.</p>
                   </div>
@@ -760,7 +760,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                   <div className="flex justify-between items-center bg-slate-850 border border-slate-800 p-3.5 rounded-2xl">
                     <span className="text-xs font-bold text-slate-350 uppercase tracking-wide">Optimized Grand Quote</span>
                     <div className="text-right">
-                      <span className="text-base font-black text-[#F59E0B] font-mono block">
+                      <span className="text-base font-black text-[#C5A880] font-mono block">
                         ₹{finalDiscountedTotal.toLocaleString()}
                       </span>
                       <span className="text-[9px] text-slate-500 font-semibold block uppercase">Excl. security deposits</span>
@@ -771,7 +771,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                   <Button
                     onClick={handleLockQuotation}
                     disabled={isPending}
-                    className="w-full bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-black text-xs h-11 rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all"
+                    className="w-full bg-[#C5A880] hover:bg-amber-600 text-slate-950 font-black text-xs h-11 rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all"
                   >
                     {isPending ? (
                       <span>Locking Quotation...</span>
@@ -784,7 +784,7 @@ export function EventPlanner({ products, categories }: EventPlannerProps) {
                   </Button>
 
                   <div className="flex gap-2 p-3 bg-slate-850 border border-slate-800 rounded-xl text-[10px] font-semibold text-slate-400">
-                    <ShieldCheck className="w-4 h-4 text-[#F59E0B] shrink-0 mt-0.5" />
+                    <ShieldCheck className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
                     <p className="leading-relaxed">
                       Locking this bundle will clear any existing draft checkout items, set your rent duration, and pre-load all recommended products with this custom discount applied.
                     </p>

@@ -496,7 +496,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
         method: razorpayMethodPrefill,
       },
       theme: {
-        color: "#F59E0B", // Match RentKart brand theme (amber)
+        color: "#C5A880", // Match RentKart brand theme (amber)
       },
       modal: {
         ondismiss: function () {
@@ -540,7 +540,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
               </div>
               <CardHeader className="pt-4.5 pb-2">
                 <CardTitle className="text-xs font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
-                  <Camera className="w-3.5 h-3.5 text-[#F59E0B]" /> Choose Profile Avatar
+                  <Camera className="w-3.5 h-3.5 text-[#6F4E37]" /> Choose Profile Avatar
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
@@ -554,12 +554,12 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         type="button"
                         onClick={() => setProfile({ ...profile, image: preset.url })}
                         className={`p-1 rounded-xl border-2 transition-all hover:scale-105 bg-slate-50/50 flex justify-center items-center relative cursor-pointer ${
-                          isSelected ? "border-[#F59E0B] bg-amber-500/5" : "border-slate-200 hover:border-slate-300"
+                          isSelected ? "border-[#C5A880] bg-[#FAF5EF]0/5" : "border-slate-200 hover:border-slate-300"
                         }`}
                       >
                         <img src={preset.url} alt={preset.name} className="w-8 h-8 rounded-full" />
                         {isSelected && (
-                          <span className="absolute -top-1 -right-1 bg-[#F59E0B] text-slate-950 rounded-full p-0.5 border border-white">
+                          <span className="absolute -top-1 -right-1 bg-[#C5A880] text-[#0F1A36] rounded-full p-0.5 border border-white">
                             <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </span>
                         )}
@@ -576,7 +576,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                     placeholder="Paste URL (https://...)"
                     value={profile.image}
                     onChange={(e) => setProfile({ ...profile, image: e.target.value })}
-                    className="text-xs rounded-xl h-8.5 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-8.5 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
               </CardContent>
@@ -611,7 +611,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. Rahul"
                           value={profile.firstName}
                           onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -622,7 +622,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. Sharma"
                           value={profile.lastName}
                           onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -637,7 +637,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                             onClick={() => setProfile({ ...profile, gender: "Male" })}
                             className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer ${
                               profile.gender === "Male"
-                                ? "bg-amber-500/10 border-[#F59E0B] text-[#F59E0B]"
+                                ? "bg-[#FAF5EF]0/10 border-[#C5A880] text-[#6F4E37]"
                                 : "border-slate-200 text-slate-500 hover:bg-slate-50/50"
                             }`}
                           >
@@ -649,7 +649,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                             onClick={() => setProfile({ ...profile, gender: "Female" })}
                             className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition-all duration-200 flex justify-center items-center gap-1.5 cursor-pointer ${
                               profile.gender === "Female"
-                                ? "bg-amber-500/10 border-[#F59E0B] text-[#F59E0B]"
+                                ? "bg-[#FAF5EF]0/10 border-[#C5A880] text-[#6F4E37]"
                                 : "border-slate-200 text-slate-500 hover:bg-slate-50/50"
                             }`}
                           >
@@ -667,7 +667,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           type="date"
                           value={formatToInputDate(profile.birthday)}
                           onChange={(e) => setProfile({ ...profile, birthday: formatFromInputDate(e.target.value) })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white cursor-pointer"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white cursor-pointer"
                         />
                       </div>
                     </div>
@@ -678,11 +678,11 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                     <div className="flex justify-between items-center">
                       <h4 className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Email Address</h4>
                       {!isEditingEmail ? (
-                        <span className="text-[9px] text-[#F59E0B] font-bold bg-amber-500/10 border border-amber-500/15 px-2 py-0.5 rounded select-none">
+                        <span className="text-[9px] text-[#6F4E37] font-bold bg-[#FAF5EF]0/10 border border-amber-500/15 px-2 py-0.5 rounded select-none">
                           Primary Email
                         </span>
                       ) : (
-                        <span className="text-[9px] text-amber-600 font-bold bg-amber-50 border border-amber-150 px-2 py-0.5 rounded flex items-center gap-1 select-none animate-pulse">
+                        <span className="text-[9px] text-[#6F4E37] font-bold bg-[#FAF5EF] border border-[#E5E4E2] px-2 py-0.5 rounded flex items-center gap-1 select-none animate-pulse">
                           Editing Mode
                         </span>
                       )}
@@ -696,7 +696,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         value={profile.email}
                         onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                         className={cn(
-                          "text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 transition-all placeholder:text-slate-400",
+                          "text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 transition-all placeholder:text-slate-400",
                           (!isEditingEmail || emailOtpSent) ? "bg-slate-100/80 text-slate-500 cursor-not-allowed select-none" : "bg-white"
                         )}
                       />
@@ -715,7 +715,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                             type="button" 
                             disabled={otpLoading}
                             onClick={handleSendEmailOTP}
-                            className="h-10 text-xs font-bold bg-slate-900 text-white hover:bg-[#F59E0B] hover:text-slate-955 rounded-xl transition-colors cursor-pointer shadow-sm"
+                            className="h-10 text-xs font-bold bg-slate-900 text-white hover:bg-[#C5A880] hover:text-[#0F1A36] rounded-xl transition-colors cursor-pointer shadow-sm"
                           >
                             {otpLoading ? <SmoothSpinner /> : null}
                             Send OTP
@@ -753,13 +753,13 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                             placeholder="••••••"
                             value={emailOtp}
                             onChange={(e) => setEmailOtp(e.target.value.replace(/[^0-9]/g, ""))}
-                            className="text-xs text-center tracking-[4px] font-black rounded-xl h-10 border-slate-200 w-32 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400 font-mono"
+                            className="text-xs text-center tracking-[4px] font-black rounded-xl h-10 border-slate-200 w-32 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400 font-mono"
                           />
                           <Button 
                             type="button" 
                             disabled={otpLoading}
                             onClick={handleVerifyEmailOTP}
-                            className="h-10 text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-600 rounded-xl transition-all cursor-pointer shadow-sm shrink-0 px-5"
+                            className="h-10 text-xs font-bold btn-beast rounded-xl transition-all cursor-pointer shadow-sm shrink-0 px-5"
                           >
                             {otpLoading ? <SmoothSpinner /> : null}
                             Verify OTP
@@ -789,7 +789,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           <Check className="w-2.5 h-2.5" /> Active Number
                         </span>
                       ) : (
-                        <span className="text-[9px] text-amber-600 font-bold bg-amber-50 border border-amber-150 px-2 py-0.5 rounded flex items-center gap-1 select-none animate-pulse">
+                        <span className="text-[9px] text-[#6F4E37] font-bold bg-[#FAF5EF] border border-[#E5E4E2] px-2 py-0.5 rounded flex items-center gap-1 select-none animate-pulse">
                           Editing Mode
                         </span>
                       )}
@@ -803,7 +803,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         value={profile.phoneNumber}
                         onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
                         className={cn(
-                          "text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 transition-all placeholder:text-slate-400",
+                          "text-xs rounded-xl h-10 border-slate-200 flex-1 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 transition-all placeholder:text-slate-400",
                           (!isEditingPhone || phoneOtpSent) ? "bg-slate-100/80 text-slate-500 cursor-not-allowed select-none" : "bg-white"
                         )}
                       />
@@ -822,7 +822,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                             type="button" 
                             disabled={otpLoading}
                             onClick={handleSavePhone}
-                            className="h-10 text-xs font-bold bg-slate-900 text-white hover:bg-[#F59E0B] hover:text-slate-955 rounded-xl transition-colors cursor-pointer shadow-sm"
+                            className="h-10 text-xs font-bold bg-slate-900 text-white hover:bg-[#C5A880] hover:text-[#0F1A36] rounded-xl transition-colors cursor-pointer shadow-sm"
                           >
                             {otpLoading ? <SmoothSpinner /> : null}
                             Save
@@ -852,7 +852,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           placeholder="e.g. 9876543211"
                           value={profile.alternatePhone}
                           onChange={(e) => setProfile({ ...profile, alternatePhone: e.target.value })}
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                       <div className="space-y-1.5">
@@ -861,7 +861,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           id="altHint"
                           type="text"
                           placeholder="e.g. Father, Spouse"
-                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                          className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -880,7 +880,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                     <Button 
                       type="submit" 
                       disabled={profileLoading || deleteLoading}
-                      className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-10 px-8 rounded-xl transition-all cursor-pointer shadow-sm"
+                      className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-10 px-8 rounded-xl transition-all cursor-pointer shadow-sm"
                     >
                       {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                       Save Details
@@ -944,7 +944,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
               
               <div className="flex justify-between items-start relative z-10">
                 <div className="space-y-1">
-                  <p className="text-[9px] text-[#F59E0B] font-bold uppercase tracking-widest font-mono">RentKart Pay</p>
+                  <p className="text-[9px] text-[#6F4E37] font-bold uppercase tracking-widest font-mono">RentKart Pay</p>
                   <div className="w-10 h-7 bg-gradient-to-br from-amber-300 via-amber-400 to-amber-200 rounded-md border border-amber-300/40 relative overflow-hidden shrink-0 shadow-inner opacity-90 mt-2">
                     <div className="absolute top-0 bottom-0 left-[30%] w-[1px] bg-amber-600/30" />
                     <div className="absolute top-0 bottom-0 left-[60%] w-[1px] bg-amber-600/30" />
@@ -970,7 +970,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
             <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white">
               <CardHeader>
                 <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
-                  <Plus className="w-4 h-4 text-[#F59E0B]" /> Deposit Wallet Funds
+                  <Plus className="w-4 h-4 text-[#6F4E37]" /> Deposit Wallet Funds
                 </CardTitle>
                 <CardDescription className="text-xs text-slate-500 font-semibold leading-relaxed">
                   {rzpKey 
@@ -988,7 +988,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       placeholder="e.g. 5000"
                       value={loadAmount}
                       onChange={(e) => setLoadAmount(e.target.value)}
-                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                     />
                     
                     {/* Prest Recharge Amount Pills */}
@@ -998,7 +998,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                           key={amt}
                           type="button"
                           onClick={() => setLoadAmount(amt)}
-                          className="text-[10px] font-bold px-2.5 py-1 border border-slate-200 text-slate-500 rounded-lg hover:border-[#F59E0B] hover:text-[#F59E0B] hover:bg-amber-500/5 transition-all cursor-pointer font-mono"
+                          className="text-[10px] font-bold px-2.5 py-1 border border-slate-200 text-slate-500 rounded-lg hover:border-[#C5A880] hover:text-[#6F4E37] hover:bg-[#FAF5EF]0/5 transition-all cursor-pointer font-mono"
                         >
                           + ₹{parseInt(amt).toLocaleString()}
                         </button>
@@ -1012,7 +1012,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       id="method"
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B] disabled:cursor-not-allowed disabled:opacity-50 font-semibold"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#C5A880] disabled:cursor-not-allowed disabled:opacity-50 font-semibold"
                     >
                       <option value="CREDIT_CARD" className="bg-white text-slate-900">Credit Card</option>
                       <option value="DEBIT_CARD" className="bg-white text-slate-900">Debit Card</option>
@@ -1032,7 +1032,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                   <Button 
                     type="submit" 
                     disabled={walletLoading}
-                    className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm uppercase tracking-wider"
+                    className="w-full bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm uppercase tracking-wider"
                   >
                     {walletLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     Confirm Deposit
@@ -1050,7 +1050,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1">
                     <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
-                      <History className="w-4 h-4 text-[#F59E0B]" /> Transaction Ledger
+                      <History className="w-4 h-4 text-[#6F4E37]" /> Transaction Ledger
                     </CardTitle>
                     <CardDescription className="text-xs">
                       Review credit and debit records in your virtual wallet.
@@ -1064,7 +1064,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                       placeholder="Search transactions..."
                       value={txSearch}
                       onChange={(e) => setTxSearch(e.target.value)}
-                      className="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-[#F59E0B] bg-slate-50/50 text-slate-900 placeholder:text-slate-400"
+                      className="w-full text-xs rounded-xl border border-slate-200 pl-8 pr-3 py-1.5 focus:outline-hidden focus:ring-1 focus:ring-[#C5A880] bg-slate-50/50 text-slate-900 placeholder:text-slate-400"
                     />
                     <svg
                       className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400"
@@ -1094,7 +1094,7 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                         onClick={() => setTxFilter(filter)}
                         className={`text-xs px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                           isActive
-                            ? "bg-[#F59E0B] text-slate-950 shadow-xs"
+                            ? "bg-[#C5A880] text-[#0F1A36] shadow-xs"
                             : "text-slate-505 hover:bg-slate-50 hover:text-slate-900"
                         }`}
                       >
@@ -1109,9 +1109,9 @@ export function SettingsForm({ initialUser, transactions: initialTransactions, d
                 {filteredTransactions.length === 0 ? (
                   <div className="p-10 flex flex-col items-center justify-center text-center space-y-4 max-w-sm mx-auto">
                     <div className="relative flex items-center justify-center w-16 h-16">
-                      <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+                      <div className="absolute inset-0 border border-dashed border-[#C5A880]/40 rounded-full animate-[spin_20s_linear_infinite]" />
                       <div className="h-11 w-11 bg-slate-900 border border-slate-800 text-white rounded-xl flex items-center justify-center shadow-xs">
-                        <History className="h-5 w-5 text-[#F59E0B]" />
+                        <History className="h-5 w-5 text-[#6F4E37]" />
                       </div>
                     </div>
                     <div className="space-y-1">

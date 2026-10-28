@@ -136,7 +136,7 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/60 pb-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2 uppercase">
-            Notification Center <Sparkles className="w-4.5 h-4.5 text-[#F59E0B] fill-[#F59E0B] animate-pulse" />
+            Notification Center <Sparkles className="w-4.5 h-4.5 text-[#C5A880] fill-[#C5A880] animate-pulse" />
           </h1>
           <p className="text-slate-505 text-xs mt-0.5">Stay updated with exclusive offers, price drops, transactions, and account rules.</p>
         </div>
@@ -146,20 +146,20 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
         {notifications.length === 0 ? (
           <div className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-sm rounded-3xl p-10 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
             <div className="relative flex items-center justify-center w-20 h-20">
-              <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+              <div className="absolute inset-0 border border-dashed border-[#C5A880]/40 rounded-full animate-[spin_20s_linear_infinite]" />
               <div className="h-14 w-14 bg-slate-900 border border-slate-800 text-white rounded-2xl flex items-center justify-center shadow-md">
-                <Bell className="h-6 w-6 text-[#F59E0B]" />
+                <Bell className="h-6 w-6 text-[#C5A880]" />
               </div>
             </div>
             <div className="space-y-1.5">
-              <span className="text-[9px] bg-amber-500/10 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Inbox Clean</span>
+              <span className="text-[9px] bg-[#FAF5EF] text-[#6F4E37] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Inbox Clean</span>
               <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-2">All Caught Up!</h3>
               <p className="text-xs text-slate-505 max-w-xs mx-auto leading-relaxed font-semibold">
                 You have no new notifications right now. Check back later for updates or explore available discount coupons.
               </p>
             </div>
             <Link href="/?tab=coupons">
-              <Button className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5">
+              <Button className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5">
                 Explore Promo Coupons
               </Button>
             </Link>
@@ -171,7 +171,7 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
               <div 
                 key={n.id} 
                 className={`bg-white border rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-300 relative overflow-hidden ${
-                  !n.isRead ? "border-amber-500/35 border-l-4 border-l-[#F59E0B] bg-[#F59E0B]/2 rounded-l-none" : "border-slate-200/70"
+                  !n.isRead ? "border-amber-500/35 border-l-4 border-l-[#C5A880] bg-[#C5A880]/2 rounded-l-none" : "border-slate-200/70"
                 }`}
               >
                 {/* Unread indicator dot */}
@@ -210,7 +210,7 @@ export function NotificationsTab({ initialNotifications }: NotificationsTabProps
                         size="sm" 
                         variant="ghost"
                         onClick={() => handleMarkAsRead(n.id)}
-                        className="text-slate-400 hover:text-[#F59E0B] hover:bg-amber-500/10 text-[10px] h-7.5 px-3 rounded-lg flex items-center gap-1 font-bold transition-colors cursor-pointer"
+                        className="text-slate-400 hover:text-[#C5A880] hover:bg-amber-500/10 text-[10px] h-7.5 px-3 rounded-lg flex items-center gap-1 font-bold transition-colors cursor-pointer"
                       >
                         <CheckCheck className="w-3.5 h-3.5" /> Mark as Read
                       </Button>

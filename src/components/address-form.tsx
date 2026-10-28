@@ -138,7 +138,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
         // Draggable Marker
         const marker = new mapboxgl.Marker({
           draggable: true,
-          color: "#F59E0B"
+          color: "#C5A880"
         })
         .setLngLat([defaultLng, defaultLat])
         .addTo(map)
@@ -418,7 +418,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
           <CardHeader className="flex flex-row items-center justify-between pb-4.5 border-b border-slate-100 flex-wrap gap-4">
             <div>
               <CardTitle className="text-xs font-bold text-slate-800 uppercase flex items-center gap-2 tracking-wide">
-                <MapPin className="w-4 h-4 text-[#F59E0B]" /> Manage Delivery Addresses
+                <MapPin className="w-4 h-4 text-[#C5A880]" /> Manage Delivery Addresses
               </CardTitle>
               <CardDescription className="text-xs mt-0.5 text-slate-500">
                 Add and configure multiple venues or setup addresses for checkout.
@@ -431,7 +431,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                 setEditingId(null)
               }}
               size="sm"
-              className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-8.5 rounded-xl flex items-center gap-1.5 transition-all shadow-sm cursor-pointer hover:scale-[1.02]"
+              className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-8.5 rounded-xl flex items-center gap-1.5 transition-all shadow-sm cursor-pointer hover:scale-[1.02]"
             >
               <Plus className="w-3.5 h-3.5" /> Add New Address
             </Button>
@@ -441,9 +441,9 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
             {addresses.length === 0 ? (
               <div className="p-10 flex flex-col items-center justify-center text-center space-y-4 max-w-sm mx-auto bg-white">
                 <div className="relative flex items-center justify-center w-16 h-16">
-                  <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+                  <div className="absolute inset-0 border border-dashed border-[#C5A880]/40 rounded-full animate-[spin_20s_linear_infinite]" />
                   <div className="h-11 w-11 bg-slate-900 border border-slate-800 text-white rounded-xl flex items-center justify-center shadow-xs">
-                    <Map className="h-5 w-5 text-[#F59E0B]" />
+                    <Map className="h-5 w-5 text-[#C5A880]" />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -501,7 +501,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                       <>
                         <button 
                           onClick={() => handleSetDefault(addr.id)} 
-                          className="text-[#F59E0B] hover:text-amber-600 transition-colors cursor-pointer"
+                          className="text-[#C5A880] hover:text-amber-600 transition-colors cursor-pointer"
                         >
                           Set as Default
                         </button>
@@ -535,7 +535,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
           <CardHeader className="pb-4.5 border-b border-slate-100 flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-xs font-bold text-slate-800 uppercase flex items-center gap-2 tracking-wide">
-                <MapPin className="w-4 h-4 text-[#F59E0B]" /> {editingId ? "Edit Setup Address" : "Add Setup Address"}
+                <MapPin className="w-4 h-4 text-[#C5A880]" /> {editingId ? "Edit Setup Address" : "Add Setup Address"}
               </CardTitle>
               <CardDescription className="text-xs">
                 Fill details below. These are stored securely to auto-populate checkout requests.
@@ -566,9 +566,9 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                   className="bg-slate-50 hover:bg-amber-500/10 text-slate-800 border border-slate-200 font-bold text-xs h-9.5 rounded-xl px-4 flex items-center gap-2 transition-all shadow-none cursor-pointer"
                 >
                   {detecting ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-[#F59E0B]" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#C5A880]" />
                   ) : (
-                    <Navigation className="w-3.5 h-3.5 text-[#F59E0B]" />
+                    <Navigation className="w-3.5 h-3.5 text-[#C5A880]" />
                   )}
                   {detecting ? "Locating setup area..." : "Use My Current Location"}
                 </Button>
@@ -580,7 +580,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                 <div className="relative w-full h-[250px] border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
                   <div id="mapbox-pin-map" className="w-full h-full" />
                   <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[9px] font-extrabold text-slate-700 shadow-xs border border-slate-100 flex items-center gap-1.5 z-10 select-none">
-                    <MapPin className="w-3.5 h-3.5 text-[#F59E0B]" /> Drag pin to your exact delivery house
+                    <MapPin className="w-3.5 h-3.5 text-[#C5A880]" /> Drag pin to your exact delivery house
                   </div>
                 </div>
                 {formData.latitude && formData.longitude && (
@@ -600,7 +600,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Rahul Sharma"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
 
@@ -612,7 +612,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543210"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
               </div>
@@ -627,7 +627,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 110001"
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
 
@@ -639,7 +639,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Near Central Park"
                     value={formData.locality}
                     onChange={(e) => setFormData({ ...formData, locality: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
               </div>
@@ -653,7 +653,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                   rows={3}
                   value={formData.areaStreet}
                   onChange={(e) => setFormData({ ...formData, areaStreet: e.target.value })}
-                  className="text-xs rounded-xl border-slate-200 min-h-[70px] focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                  className="text-xs rounded-xl border-slate-200 min-h-[70px] focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                 />
               </div>
 
@@ -667,7 +667,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. New Delhi"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-slate-900 bg-white placeholder:text-slate-400"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-slate-900 bg-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -677,7 +677,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     id="state"
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#F59E0B]"
+                    className="flex h-10 w-full rounded-xl border border-slate-200 bg-white text-slate-900 px-3 py-2 text-xs ring-offset-background placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#C5A880]"
                   >
                     {INDIAN_STATES.map((state) => (
                       <option key={state} value={state} className="bg-white text-slate-900">{state}</option>
@@ -696,7 +696,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. Opposite Public Park"
                     value={formData.landmark}
                     onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
 
@@ -708,7 +708,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                     placeholder="e.g. 9876543211"
                     value={formData.altPhone}
                     onChange={(e) => setFormData({ ...formData, altPhone: e.target.value })}
-                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
               </div>
@@ -723,7 +723,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                       name="type"
                       checked={formData.type === "HOME"}
                       onChange={() => setFormData({ ...formData, type: "HOME" })}
-                      className="h-4 w-4 text-[#F59E0B] focus:ring-[#F59E0B] accent-[#F59E0B]"
+                      className="h-4 w-4 text-[#C5A880] focus:ring-[#C5A880] accent-[#C5A880]"
                     />
                     Home (All-day delivery access)
                   </label>
@@ -734,7 +734,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                       name="type"
                       checked={formData.type === "WORK"}
                       onChange={() => setFormData({ ...formData, type: "WORK" })}
-                      className="h-4 w-4 text-[#F59E0B] focus:ring-[#F59E0B] accent-[#F59E0B]"
+                      className="h-4 w-4 text-[#C5A880] focus:ring-[#C5A880] accent-[#C5A880]"
                     />
                     Work (Delivery access 10 AM - 5 PM)
                   </label>
@@ -748,7 +748,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                   type="checkbox"
                   checked={formData.isDefault}
                   onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                  className="h-4 w-4 rounded border-slate-350 text-[#F59E0B] focus:ring-[#F59E0B] accent-[#F59E0B] cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-350 text-[#C5A880] focus:ring-[#C5A880] accent-[#C5A880] cursor-pointer"
                 />
                 <Label htmlFor="isDefault" className="text-xs font-bold text-slate-700 cursor-pointer select-none">
                   Set this address as default shipping setup location
@@ -768,7 +768,7 @@ export function AddressForm({ initialAddress }: AddressFormProps) {
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-10 px-8 rounded-xl transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
+                  className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-10 px-8 rounded-xl transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   Save Address

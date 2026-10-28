@@ -52,7 +52,7 @@ export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePick
       <PopoverTrigger asChild>
         <Button 
           disabled={isPending}
-          className="bg-[#f5820b] hover:bg-[#e07505] text-white font-extrabold text-xs h-9.5 px-6 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_2.5px_8px_rgba(245,130,11,0.15)] active:scale-[0.98] border-0"
+          className="btn-beast text-xs h-9.5 px-6 rounded-full transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98]"
         >
           {isPending ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -90,7 +90,7 @@ export function CartDatePicker({ orderId, initialFrom, initialTo }: CartDatePick
         <Button
           onClick={handleUpdate}
           disabled={isPending || !date?.from || !date?.to}
-          className="w-full bg-[#f5820b] hover:bg-[#e07505] disabled:bg-slate-100 disabled:text-slate-400 text-white font-extrabold text-xs h-9.5 rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-[0_2px_8px_rgba(245,130,11,0.15)] border-0 active:scale-[0.98]"
+          className="w-full btn-beast disabled:opacity-50 text-xs h-9.5 rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98]"
         >
           {isPending ? (
             <>

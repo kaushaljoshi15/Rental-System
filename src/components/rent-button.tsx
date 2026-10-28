@@ -95,12 +95,12 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
             >
               <span className="grid grid-cols-2 gap-2 w-full">
                 {/* Pick-Up Box */}
-                <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block w-full">
+                <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-[#C5A880] hover:ring-1 hover:ring-[#C5A880]/30 transition-all group cursor-pointer relative block w-full">
                   <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                     Pick-up Date
                   </span>
                   <span className="font-semibold text-slate-900 flex items-center gap-1.5 text-xs">
-                    <CalendarIcon className="w-3 sm:h-3 text-amber-500 group-hover:scale-110 transition-transform shrink-0" />
+                    <CalendarIcon className="w-3 sm:h-3 text-[#C5A880] group-hover:scale-110 transition-transform shrink-0" />
                     <span className="truncate">
                       {date?.from ? format(date.from, "MMM dd") : "Select"}
                     </span>
@@ -108,7 +108,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
                 </span>
 
                 {/* Return Box */}
-                <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block w-full">
+                <span className="p-2 border rounded-lg bg-white text-left shadow-sm hover:border-[#C5A880] hover:ring-1 hover:ring-[#C5A880]/30 transition-all group cursor-pointer relative block w-full">
                   <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                     Return Date
                   </span>
@@ -176,7 +176,7 @@ export function RentButton({ productId, price, stock }: RentButtonProps) {
             {/* Small Date Badge indicator with Edit Trigger */}
             <div className="flex items-center justify-between bg-slate-50 border border-slate-200/60 rounded-lg py-1 px-2 text-[9px] text-slate-700 font-bold select-none">
               <span className="flex items-center gap-1.5">
-                <CalendarIcon className="w-3 h-3 text-amber-500 shrink-0" />
+                <CalendarIcon className="w-3 h-3 text-[#C5A880] shrink-0" />
                 <span>{format(date.from, "MMM dd")} - {format(date.to, "MMM dd")}</span>
               </span>
               <Popover>

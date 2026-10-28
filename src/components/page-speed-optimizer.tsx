@@ -214,7 +214,7 @@ export function PageSpeedOptimizer() {
   return (
     <div className="fixed inset-0 bg-slate-950/20 backdrop-blur-[2px] z-[99999] flex items-center justify-center pointer-events-none transition-all duration-300">
       <div className="bg-white/95 border border-slate-200/60 p-5 rounded-2xl shadow-2xl flex flex-col items-center gap-3 max-w-[150px] w-full text-center scale-95 animate-in fade-in zoom-in-95 duration-200">
-        <div className="w-9 h-9 rounded-full border-[3px] border-slate-100 border-t-[#F59E0B] animate-spin" />
+        <div className="w-9 h-9 rounded-full border-[3px] border-slate-100 border-t-[#C5A880] animate-spin" />
         <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Loading Page...</span>
       </div>
     </div>

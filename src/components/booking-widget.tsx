@@ -111,12 +111,12 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
               <span className="flex flex-col gap-2.5 sm:grid sm:grid-cols-2 sm:gap-3 w-full">
                 
                 {/* Pick-Up Box */}
-                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block w-full">
+                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-[#C5A880] hover:ring-1 hover:ring-[#C5A880]/30 transition-all group cursor-pointer relative block w-full">
                    <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                      Pick-up Date
                    </span>
                    <span className="font-semibold text-slate-900 flex items-center gap-2">
-                      <CalendarIcon className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform shrink-0" />
+                      <CalendarIcon className="w-4 h-4 text-[#C5A880] group-hover:scale-110 transition-transform shrink-0" />
                       <span className="truncate">
                         {date?.from ? format(date.from, "MMM dd") : "Select"}
                       </span>
@@ -124,7 +124,7 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
                 </span>
 
                 {/* Return Box */}
-                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-amber-400 hover:ring-1 hover:ring-amber-100 transition-all group cursor-pointer relative block w-full">
+                <span className="p-3 border rounded-lg bg-white text-left shadow-sm hover:border-[#C5A880] hover:ring-1 hover:ring-[#C5A880]/30 transition-all group cursor-pointer relative block w-full">
                    <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1">
                      Return Date
                    </span>
@@ -171,7 +171,7 @@ export function BookingWidget({ product }: { product: ProductSummary }) {
         <div className="border-t border-slate-200 my-1"></div>
         <div className="flex justify-between items-center">
           <span className="font-bold text-slate-900">Total Estimate</span>
-          <span className="text-xl font-bold text-amber-500">₹{totalPrice.toLocaleString()}</span>
+          <span className="text-xl font-bold text-[#6F4E37]">₹{totalPrice.toLocaleString()}</span>
         </div>
       </div>
 

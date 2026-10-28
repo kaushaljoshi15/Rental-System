@@ -94,13 +94,13 @@ export function OrdersListClient({
       <div className="sticky top-[56px] md:relative md:top-auto z-30 flex flex-col md:flex-row gap-2 md:gap-3 items-center bg-white/95 backdrop-blur-md md:bg-slate-50/50 border-x-0 border-t-0 border-b border-slate-100 md:border md:border-slate-200/60 pt-2 pb-2 px-4 md:p-3 rounded-none md:rounded-2xl -mx-4 md:mx-0 shadow-[0_2px_15px_rgba(0,0,0,0.02)] md:shadow-none">
         {/* Search Input */}
         <div className="relative w-full md:flex-1">
-          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors ${searchQuery ? "text-[#F59E0B]" : "text-slate-400"}`} />
+          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors ${searchQuery ? "text-[#C5A880]" : "text-slate-400"}`} />
           <input
             type="text"
             placeholder="Search by Order ID, asset name, or vendor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full pl-9 pr-4 py-2 text-xs border rounded-xl bg-white focus:outline-none focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]/10 transition-all h-10 ${searchQuery ? "border-[#F59E0B] ring-1 ring-[#F59E0B]/10 font-semibold text-slate-900" : "border-slate-200 text-slate-700"}`}
+            className={`w-full pl-9 pr-4 py-2 text-xs border rounded-xl bg-white focus:outline-none focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/10 transition-all h-10 ${searchQuery ? "border-[#C5A880] ring-1 ring-[#C5A880]/10 font-semibold text-slate-900" : "border-slate-200 text-slate-700"}`}
           />
           {searchQuery && (
             <button
@@ -119,7 +119,7 @@ export function OrdersListClient({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className={`w-full md:w-40 px-3 py-2 text-xs border rounded-xl bg-white focus:outline-none focus:border-[#F59E0B] transition-all h-10 font-bold ${statusFilter !== "ALL" ? "border-[#F59E0B] text-[#F59E0B] bg-amber-50/15" : "border-slate-200 text-slate-700"}`}
+              className={`w-full md:w-40 px-3 py-2 text-xs border rounded-xl bg-white focus:outline-none focus:border-[#C5A880] transition-all h-10 font-bold ${statusFilter !== "ALL" ? "border-[#C5A880] text-[#C5A880] bg-amber-50/15" : "border-slate-200 text-slate-700"}`}
             >
               <option value="ALL">All Statuses</option>
               <option value="PENDING">Awaiting Approval</option>
@@ -135,7 +135,7 @@ export function OrdersListClient({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className={`w-full md:w-40 px-3 py-2 text-xs border rounded-xl bg-white focus:outline-none focus:border-[#F59E0B] transition-all h-10 font-bold ${sortBy !== "newest" ? "border-[#F59E0B] text-[#F59E0B] bg-amber-50/15" : "border-slate-200 text-slate-700"}`}
+              className={`w-full md:w-40 px-3 py-2 text-xs border rounded-xl bg-white focus:outline-none focus:border-[#C5A880] transition-all h-10 font-bold ${sortBy !== "newest" ? "border-[#C5A880] text-[#C5A880] bg-amber-50/15" : "border-slate-200 text-slate-700"}`}
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -151,13 +151,13 @@ export function OrdersListClient({
         {filteredOrders.length === 0 ? (
           <div className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-sm rounded-3xl p-10 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
             <div className="relative flex items-center justify-center w-20 h-20">
-              <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+              <div className="absolute inset-0 border border-dashed border-[#C5A880]/40 rounded-full animate-[spin_20s_linear_infinite]" />
               <div className="h-14 w-14 bg-slate-900 border border-slate-800 text-white rounded-2xl flex items-center justify-center shadow-md">
-                <Package className="h-6 w-6 text-[#F59E0B]" />
+                <Package className="h-6 w-6 text-[#C5A880]" />
               </div>
             </div>
             <div className="space-y-1.5">
-              <span className="text-[9px] bg-amber-500/10 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">No Matches</span>
+              <span className="text-[9px] bg-amber-500/10 text-[#C5A880] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">No Matches</span>
               <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-2">No matching bookings</h3>
               <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed font-semibold">
                 Try adjusting your search terms or filters to find what you are looking for.
@@ -182,7 +182,7 @@ export function OrdersListClient({
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 select-none shrink-0">
-                      <span className="bg-amber-500/10 text-[#F59E0B] text-[9px] md:text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">
+                      <span className="bg-amber-500/10 text-[#C5A880] text-[9px] md:text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">
                         {duration}d
                       </span>
                       <span className="bg-slate-100 text-slate-500 font-mono text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wider">

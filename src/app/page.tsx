@@ -360,7 +360,7 @@ export default async function HomePage({
             }
             className="h-9 w-9 rounded-xl flex items-center justify-center text-slate-700 hover:text-[#1d4ed8] hover:bg-slate-50 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 text-[#F59E0B]" />
+            <ArrowLeft className="w-5 h-5 text-[#C5A880]" />
           </Link>
           <span className="ml-2.5 font-extrabold text-slate-800 text-xs uppercase tracking-wider">
             {activeTab === "cart"
@@ -412,10 +412,10 @@ export default async function HomePage({
                   <Link
                     key={cat.id}
                     href={`/?category=${cat.slug}`}
-                    className="bg-white border border-slate-100/80 rounded-[28px] p-6 flex flex-col items-center justify-center text-center hover:shadow-[0_12px_32px_rgba(245,158,11,0.05)] hover:border-amber-200/50 hover:-translate-y-1 transition-all duration-300 group cursor-pointer focus:outline-none focus-visible:outline-none"
+                    className="bg-white border border-slate-100/80 rounded-[28px] p-6 flex flex-col items-center justify-center text-center hover:shadow-[0_12px_32px_rgba(197,168,128,0.12)] hover:border-[#C5A880]/50 hover:-translate-y-1 transition-all duration-300 group cursor-pointer focus:outline-none focus-visible:outline-none"
                   >
-                    <div className="w-16 h-16 rounded-[22px] bg-slate-50 border border-slate-100/50 text-slate-450 group-hover:bg-amber-50 group-hover:border-amber-100 group-hover:text-[#F59E0B] flex items-center justify-center mb-4 transition-all duration-300 shadow-xs group-hover:shadow-[0_4px_12px_rgba(245,158,11,0.06)]">
-                      <IconComponent className="w-7 h-7 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[3deg] fill-none group-hover:fill-[#F59E0B] stroke-current" strokeWidth={1.8} />
+                    <div className="w-16 h-16 rounded-[22px] bg-slate-50 border border-slate-100/50 text-slate-450 group-hover:bg-[#FAF5EF] group-hover:border-[#C5A880]/30 group-hover:text-[#6F4E37] flex items-center justify-center mb-4 transition-all duration-300 shadow-xs group-hover:shadow-[0_4px_12px_rgba(197,168,128,0.1)]">
+                      <IconComponent className="w-7 h-7 transition-all duration-300 group-hover:scale-110 group-hover:rotate-[3deg] fill-none group-hover:fill-[#C5A880] stroke-current" strokeWidth={1.8} />
                     </div>
                     <span className="font-semibold text-slate-600 text-xs tracking-wide group-hover:text-slate-900 group-hover:font-extrabold transition-all duration-300">{cat.name}</span>
                   </Link>
@@ -650,7 +650,7 @@ export default async function HomePage({
 
                       const trustPerks = [
                         { icon: <Sparkles className="w-5 h-5 text-purple-600" />, title: "Sanitized & Altered", desc: "Professional dry-cleaning & custom alteration tailoring included" },
-                        { icon: <ShieldCheck className="w-5 h-5 text-amber-500" />, title: "₹0 Security Deposit", desc: "Rent seamlessly via digital Aadhaar/KYC verification" },
+                        { icon: <ShieldCheck className="w-5 h-5 text-[#C5A880]" />, title: "₹0 Security Deposit", desc: "Rent seamlessly via digital Aadhaar/KYC verification" },
                         { icon: <Truck className="w-5 h-5 text-emerald-500" />, title: "Home Fit Trials", desc: "Schedule sizing & trial delivery before the main wedding day" },
                         { icon: <RotateCcw className="w-5 h-5 text-rose-500" />, title: "Free Pickups", desc: "Complimentary reverse courier collection from your doorstep" },
                       ];
@@ -682,7 +682,7 @@ export default async function HomePage({
                           <div className={`relative w-full rounded-3xl p-6 md:p-8 text-white overflow-hidden shadow-lg bg-gradient-to-br ${themeBg}`}>
                             <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.03] pointer-events-none" />
                             <div className="relative z-10 max-w-2xl space-y-3">
-                              <span className="text-[10px] bg-amber-500 text-slate-950 font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                              <span className="text-[10px] bg-[#C5A880] text-[#0F1A36] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
                                 PLATFORM SPONSOR
                               </span>
                               <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-none">
@@ -736,7 +736,7 @@ export default async function HomePage({
                                   <Link
                                     href={`/products/${product.id}`}
                                     key={product.id}
-                                    className="flex-shrink-0 w-44 bg-white border border-slate-200/85 rounded-2xl p-2 flex flex-col justify-between h-[285px] shadow-sm hover:border-[#F59E0B]/50 hover:scale-[1.015] transition-all"
+                                    className="flex-shrink-0 w-44 bg-white border border-slate-200/85 rounded-2xl p-2 flex flex-col justify-between h-[285px] shadow-sm hover:border-[#C5A880]/50 hover:scale-[1.015] transition-all"
                                   >
                                     <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
                                       <Image 
@@ -780,7 +780,7 @@ export default async function HomePage({
 
                             <div className="relative z-10 space-y-6">
                               <div className="text-center space-y-1">
-                                <span className="text-[9px] bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span className="text-[9px] bg-[#C5A880] text-[#0F1A36] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                                   HASSLE FREE HIRE
                                 </span>
                                 <h2 className="text-base font-extrabold uppercase tracking-wide text-white">How RentKart Operations Work</h2>
@@ -790,10 +790,10 @@ export default async function HomePage({
                               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-2">
                                 {howItWorks.map((step, idx) => (
                                   <div key={idx} className="bg-slate-850/80 border border-slate-800 rounded-2xl p-4 space-y-3 relative group">
-                                    <div className="absolute top-3 right-4 text-slate-700 font-mono font-black text-2xl group-hover:text-amber-500/40 transition-colors">
+                                    <div className="absolute top-3 right-4 text-slate-700 font-mono font-black text-2xl group-hover:text-[#C5A880]/40 transition-colors">
                                       {step.step}
                                     </div>
-                                    <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-500 font-black text-xs">
+                                    <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[#C5A880] font-black text-xs">
                                       {idx + 1}
                                     </div>
                                     <div>
@@ -825,7 +825,7 @@ export default async function HomePage({
                                   <Link
                                     href={`/products/${product.id}`}
                                     key={product.id}
-                                    className="flex-shrink-0 w-44 bg-white border border-slate-200/85 rounded-2xl p-2 flex flex-col justify-between h-[285px] shadow-sm hover:border-[#F59E0B]/50 hover:scale-[1.015] transition-all"
+                                    className="flex-shrink-0 w-44 bg-white border border-slate-200/85 rounded-2xl p-2 flex flex-col justify-between h-[285px] shadow-sm hover:border-[#C5A880]/50 hover:scale-[1.015] transition-all"
                                   >
                                     <div className="aspect-square bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
                                       <Image 
@@ -909,7 +909,7 @@ export default async function HomePage({
             <h4 className="font-bold text-white mb-3 select-none">Partners Hub</h4>
             <ul className="space-y-2 text-xs">
               {/* Subtle Seller landing link (Our pro seller central gateway) */}
-              <li><Link href="/seller-center" className="hover:text-amber-500 font-extrabold text-[#F59E0B] uppercase tracking-wider">Sell on RentKart</Link></li>
+              <li><Link href="/seller-center" className="hover:text-[#FAF5EF] font-extrabold text-[#C5A880] uppercase tracking-wider">Sell on RentKart</Link></li>
               <li><Link href="#" className="hover:text-white font-semibold">Vendor Code of Conduct</Link></li>
               <li><Link href="#" className="hover:text-white font-semibold">Insurance Policy</Link></li>
               <li><Link href="/contact" className="hover:text-white font-semibold">Support Center</Link></li>

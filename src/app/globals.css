@@ -361,11 +361,11 @@
 }
 
 .text-amber-955 {
-  color: #78350f !important; /* amber-900 */
+  color: #6F4E37 !important; /* Mocha Brown */
 }
 
 .text-amber-55 {
-  color: #d97706 !important; /* amber-600 */
+  color: #C5A880 !important; /* Champagne Gold */
 }
 
 .placeholder\:text-slate-650::placeholder,
@@ -374,7 +374,7 @@
 }
 
 .bg-amber-55 {
-  background-color: #fef3c7 !important; /* amber-100 */
+  background-color: #FAF5EF !important; /* Warm Ivory */
 }
 
 .border-slate-205 {

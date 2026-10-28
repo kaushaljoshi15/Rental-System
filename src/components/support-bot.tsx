@@ -206,7 +206,7 @@ export function SupportBot() {
                 d="M 10,66 A 43,43 0 0,0 90,66"
                 fill="none"
               />
-              <text className="text-[7.6px] font-black tracking-[0.15em] fill-[#F59E0B] uppercase">
+              <text className="text-[7.6px] font-black tracking-[0.15em] fill-[#C5A880] uppercase">
                 <textPath href="#bottomTextPath" startOffset="50%" textAnchor="middle">
                   Sahayak Support
                 </textPath>
@@ -216,7 +216,7 @@ export function SupportBot() {
 
           <Button 
             onClick={() => setIsOpen(true)}
-            className="h-14 w-14 rounded-full bg-[#F59E0B] hover:bg-amber-600 text-slate-950 shadow-xl shadow-amber-500/10 hover:scale-105 transition-all duration-300 flex items-center justify-center p-0 border border-amber-400 cursor-pointer shrink-0 relative z-10"
+            className="h-14 w-14 rounded-full bg-[#0F1A36] hover:bg-[#16254c] text-[#C5A880] shadow-xl shadow-[#0F1A36]/30 hover:scale-105 transition-all duration-300 flex items-center justify-center p-0 border-2 border-[#C5A880] cursor-pointer shrink-0 relative z-10"
           >
             <MessageSquare className="w-5.5 h-5.5" />
           </Button>
@@ -231,7 +231,7 @@ export function SupportBot() {
           <div className="bg-slate-900 p-4 flex justify-between items-center text-white shrink-0 border-b border-slate-800 shadow-xs">
             <div className="flex items-center gap-2.5">
               <div className="bg-slate-850 p-1.5 rounded-full border border-slate-800 animate-seesaw">
-                <Bot className="w-4.5 h-4.5 text-[#F59E0B]" />
+                <Bot className="w-4.5 h-4.5 text-[#C5A880]" />
               </div>
               <div>
                 <h4 className="font-extrabold text-xs tracking-wider uppercase text-slate-100">Sahayak Support</h4>
@@ -259,7 +259,7 @@ export function SupportBot() {
               >
                 {/* Sender Avatar */}
                 <div className={`h-7 w-7 rounded-full border shrink-0 flex items-center justify-center shadow-xs select-none animate-seesaw ${
-                  msg.sender === "bot" ? "bg-amber-50 border-amber-100 text-[#F59E0B]" : "bg-slate-100 border-slate-200 text-slate-700"
+                  msg.sender === "bot" ? "bg-[#FAF5EF] border-[#E5E4E2] text-[#6F4E37]" : "bg-slate-100 border-slate-200 text-slate-700"
                 }`}>
                   {msg.sender === "bot" ? <Bot className="w-3.5 h-3.5" /> : <User className="w-3.5 h-3.5" />}
                 </div>
@@ -282,11 +282,11 @@ export function SupportBot() {
             {/* Typing State Indicator */}
             {isTyping && (
               <div className="flex gap-2.5 items-start">
-                <div className="h-7 w-7 rounded-full border bg-amber-50 border-amber-100 text-[#F59E0B] flex items-center justify-center shadow-xs select-none animate-seesaw">
+                <div className="h-7 w-7 rounded-full border bg-[#FAF5EF] border-[#E5E4E2] text-[#6F4E37] flex items-center justify-center shadow-xs select-none animate-seesaw">
                   <Bot className="w-3.5 h-3.5" />
                 </div>
                 <div className="p-3 rounded-2xl bg-white border border-slate-200/60 rounded-tl-none shadow-xs flex items-center gap-1.5">
-                  <Loader2 className="w-3.5 h-3.5 text-[#F59E0B] animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 text-[#C5A880] animate-spin" />
                   <span className="text-[10px] text-slate-400 font-bold">Bot is writing...</span>
                 </div>
               </div>
@@ -302,7 +302,7 @@ export function SupportBot() {
                 <button
                   key={prompt}
                   onClick={() => handleSend(prompt)}
-                  className="text-[10px] font-extrabold text-[#F59E0B] hover:text-amber-600 bg-amber-50 hover:bg-amber-100/80 border border-amber-200/40 px-2.5 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                  className="text-[10px] font-extrabold text-[#C5A880] hover:text-amber-600 bg-[#FAF5EF] hover:bg-[#F5F4F2] border border-[#E5E4E2] px-2.5 py-1.5 rounded-lg transition-all shrink-0 flex items-center gap-1 cursor-pointer whitespace-nowrap"
                 >
                   {prompt} <ArrowRight className="w-2.5 h-2.5" />
                 </button>
@@ -317,11 +317,11 @@ export function SupportBot() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything..."
               onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
-              className="flex-1 bg-white border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] text-xs rounded-xl h-9 text-slate-900 placeholder:text-slate-400"
+              className="flex-1 bg-white border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] text-xs rounded-xl h-9 text-slate-900 placeholder:text-slate-400"
             />
             <Button 
               onClick={() => handleSend(input)}
-              className="bg-[#F59E0B] hover:bg-amber-600 text-slate-950 rounded-xl h-9 px-3 shrink-0 cursor-pointer border border-amber-400"
+              className="btn-beast rounded-xl h-9 px-3 shrink-0 cursor-pointer shadow-xs"
             >
               <Send className="w-3.5 h-3.5" />
             </Button>

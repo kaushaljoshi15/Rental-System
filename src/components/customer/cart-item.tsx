@@ -71,13 +71,13 @@ export function CartItem({ line, startDate, endDate }: CartItemProps) {
 
       {/* Description and rate details */}
       <div className="flex-grow text-center sm:text-left space-y-0.5 min-w-0">
-        <h4 className="font-extrabold text-slate-900 text-xs sm:text-sm tracking-tight leading-snug truncate group-hover:text-amber-600 transition-colors">
+        <h4 className="font-extrabold text-slate-900 text-xs sm:text-sm tracking-tight leading-snug truncate group-hover:text-[#6F4E37] transition-colors">
           {line.product.name}
         </h4>
         <div className="flex items-center justify-center sm:justify-start gap-2 text-[11px] text-slate-500 font-semibold mt-1">
           <span className="font-mono text-slate-700">₹{line.price.toLocaleString()} / day</span>
           <span className="text-slate-200 font-normal">|</span>
-          <span className="text-[#F59E0B] font-extrabold uppercase text-[9px] tracking-wider bg-amber-50/60 border border-amber-100/30 px-1.5 py-0.5 rounded-md">{duration} days rent</span>
+          <span className="text-[#6F4E37] font-extrabold uppercase text-[9px] tracking-wider bg-[#FAF5EF] border border-[#E5E4E2] px-1.5 py-0.5 rounded-md">{duration} days rent</span>
         </div>
       </div>
 
@@ -100,7 +100,7 @@ export function CartItem({ line, startDate, endDate }: CartItemProps) {
           size="icon" 
           onClick={() => handleUpdateQuantity(line.quantity + 1)}
           disabled={isPending}
-          className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#F59E0B] hover:bg-amber-50/50 disabled:opacity-30 disabled:pointer-events-none transition-all"
+          className="h-7 w-7 rounded-lg text-slate-400 hover:text-[#6F4E37] hover:bg-[#FAF5EF] disabled:opacity-30 disabled:pointer-events-none transition-all"
         >
           <Plus className="w-3 h-3" />
         </Button>

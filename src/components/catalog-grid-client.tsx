@@ -224,22 +224,22 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
       <button
         onClick={() => updateParams({ category: null })}
         className={`w-full text-left text-xs py-1 transition-colors flex items-center justify-between font-semibold ${
-          !activeCategorySlug ? "text-[#D97706] font-bold" : "text-slate-600 hover:text-slate-900"
+          !activeCategorySlug ? "text-[#6F4E37] font-bold" : "text-slate-600 hover:text-slate-900"
         }`}
       >
         <span>All Categories</span>
-        {!activeCategorySlug && <Check className="w-3.5 h-3.5 text-[#D97706]" />}
+        {!activeCategorySlug && <Check className="w-3.5 h-3.5 text-[#C5A880]" />}
       </button>
       {allCategories.map((cat) => (
         <button
           key={cat.id}
           onClick={() => updateParams({ category: cat.slug })}
           className={`w-full text-left text-xs py-1 transition-colors flex items-center justify-between font-semibold ${
-            activeCategorySlug === cat.slug ? "text-[#D97706] font-bold" : "text-slate-600 hover:text-slate-900"
+            activeCategorySlug === cat.slug ? "text-[#6F4E37] font-bold" : "text-slate-600 hover:text-slate-900"
           }`}
         >
           <span className="truncate pr-2">{cat.name}</span>
-          {activeCategorySlug === cat.slug && <Check className="w-3.5 h-3.5 text-[#D97706]" />}
+          {activeCategorySlug === cat.slug && <Check className="w-3.5 h-3.5 text-[#C5A880]" />}
         </button>
       ))}
     </div>
@@ -252,11 +252,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
         <button
           onClick={() => selectPresetPrice(null, "1000")}
           className={`w-full text-left text-xs font-semibold py-0.5 flex items-center gap-2 ${
-            activeMinPrice === "" && activeMaxPrice === "1000" ? "text-[#D97706]" : "text-slate-600"
+            activeMinPrice === "" && activeMaxPrice === "1000" ? "text-[#6F4E37]" : "text-slate-600"
           }`}
         >
           <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-white ${
-            activeMinPrice === "" && activeMaxPrice === "1000" ? "bg-[#F59E0B] border-[#F59E0B]" : "border-slate-300"
+            activeMinPrice === "" && activeMaxPrice === "1000" ? "bg-[#C5A880] border-[#C5A880]" : "border-slate-300"
           }`}>
             {activeMinPrice === "" && activeMaxPrice === "1000" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
           </div>
@@ -265,11 +265,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
         <button
           onClick={() => selectPresetPrice("1000", "3000")}
           className={`w-full text-left text-xs font-semibold py-0.5 flex items-center gap-2 ${
-            activeMinPrice === "1000" && activeMaxPrice === "3000" ? "text-[#D97706]" : "text-slate-600"
+            activeMinPrice === "1000" && activeMaxPrice === "3000" ? "text-[#6F4E37]" : "text-slate-600"
           }`}
         >
           <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-white ${
-            activeMinPrice === "1000" && activeMaxPrice === "3000" ? "bg-[#F59E0B] border-[#F59E0B]" : "border-slate-300"
+            activeMinPrice === "1000" && activeMaxPrice === "3000" ? "bg-[#C5A880] border-[#C5A880]" : "border-slate-300"
           }`}>
             {activeMinPrice === "1000" && activeMaxPrice === "3000" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
           </div>
@@ -278,11 +278,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
         <button
           onClick={() => selectPresetPrice("3000", "5000")}
           className={`w-full text-left text-xs font-semibold py-0.5 flex items-center gap-2 ${
-            activeMinPrice === "3000" && activeMaxPrice === "5000" ? "text-[#D97706]" : "text-slate-600"
+            activeMinPrice === "3000" && activeMaxPrice === "5000" ? "text-[#6F4E37]" : "text-slate-600"
           }`}
         >
           <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-white ${
-            activeMinPrice === "3000" && activeMaxPrice === "5000" ? "bg-[#F59E0B] border-[#F59E0B]" : "border-slate-300"
+            activeMinPrice === "3000" && activeMaxPrice === "5000" ? "bg-[#C5A880] border-[#C5A880]" : "border-slate-300"
           }`}>
             {activeMinPrice === "3000" && activeMaxPrice === "5000" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
           </div>
@@ -291,11 +291,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
         <button
           onClick={() => selectPresetPrice("5000", null)}
           className={`w-full text-left text-xs font-semibold py-0.5 flex items-center gap-2 ${
-            activeMinPrice === "5000" && activeMaxPrice === "" ? "text-[#D97706]" : "text-slate-600"
+            activeMinPrice === "5000" && activeMaxPrice === "" ? "text-[#6F4E37]" : "text-slate-600"
           }`}
         >
           <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-white ${
-            activeMinPrice === "5000" && activeMaxPrice === "" ? "bg-[#F59E0B] border-[#F59E0B]" : "border-slate-300"
+            activeMinPrice === "5000" && activeMaxPrice === "" ? "bg-[#C5A880] border-[#C5A880]" : "border-slate-300"
           }`}>
             {activeMinPrice === "5000" && activeMaxPrice === "" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
           </div>
@@ -316,7 +316,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
               }
             }}
             min="0"
-            className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#F59E0B]"
+            className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#C5A880]"
             suppressHydrationWarning
           />
         </div>
@@ -333,11 +333,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
               }
             }}
             min="0"
-            className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#F59E0B]"
+            className="w-full text-xs border border-slate-300 rounded px-2 py-1 text-slate-800 focus:outline-none focus:border-[#C5A880]"
             suppressHydrationWarning
           />
         </div>
-        <button type="submit" className="bg-[#F59E0B] hover:bg-[#D97706] text-white font-extrabold text-[10px] uppercase tracking-wide px-3 py-1 rounded transition-colors">
+        <button type="submit" className="bg-[#E6E0F0] hover:bg-[#ded5eb] text-[#3C2A21] border border-[#C5A880] font-extrabold text-[10px] uppercase tracking-wide px-3 py-1 rounded transition-colors shadow-xs">
           Go
         </button>
       </form>
@@ -350,11 +350,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
       <button
         onClick={() => updateParams({ rating: activeRating === "4" ? null : "4" })}
         className={`w-full text-left text-xs font-semibold py-0.5 flex items-center gap-2 ${
-          activeRating === "4" ? "text-[#D97706]" : "text-slate-600"
+          activeRating === "4" ? "text-[#6F4E37]" : "text-slate-600"
         }`}
       >
         <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-white ${
-          activeRating === "4" ? "bg-[#F59E0B] border-[#F59E0B]" : "border-slate-300"
+          activeRating === "4" ? "bg-[#C5A880] border-[#C5A880]" : "border-slate-300"
         }`}>
           {activeRating === "4" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
         </div>
@@ -363,11 +363,11 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
       <button
         onClick={() => updateParams({ rating: activeRating === "3" ? null : "3" })}
         className={`w-full text-left text-xs font-semibold py-0.5 flex items-center gap-2 ${
-          activeRating === "3" ? "text-[#D97706]" : "text-slate-600"
+          activeRating === "3" ? "text-[#6F4E37]" : "text-slate-600"
         }`}
       >
         <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center text-white ${
-          activeRating === "3" ? "bg-[#F59E0B] border-[#F59E0B]" : "border-slate-300"
+          activeRating === "3" ? "bg-[#C5A880] border-[#C5A880]" : "border-slate-300"
         }`}>
           {activeRating === "3" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
         </div>
@@ -387,7 +387,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
           {(searchQuery || activeCategorySlug || activeSort || activeMinPrice || activeMaxPrice || activeRating) && (
             <button
               onClick={clearAllFilters}
-              className="text-[10px] font-black text-[#D97706] uppercase hover:underline"
+              className="text-[10px] font-black text-[#C5A880] hover:text-[#6F4E37] uppercase hover:underline"
             >
               Clear All
             </button>
@@ -504,8 +504,8 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
         {/* Results grid */}
         {displayedProducts.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-lg border border-slate-200 shadow-sm flex flex-col items-center justify-center p-6 space-y-4">
-            <div className="h-14 w-14 bg-amber-50 rounded-full flex items-center justify-center border border-amber-100">
-              <AlertCircle className="h-6 w-6 text-amber-500" />
+            <div className="h-14 w-14 bg-[#FAF5EF] rounded-full flex items-center justify-center border border-[#E5E4E2]">
+              <AlertCircle className="h-6 w-6 text-[#C5A880]" />
             </div>
             <div className="space-y-1">
               <h3 className="text-base font-black text-slate-900 uppercase tracking-tight">No rentable assets found</h3>
@@ -515,7 +515,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
             </div>
             <button
               onClick={clearAllFilters}
-              className="bg-[#F59E0B] hover:bg-[#D97706] text-white font-extrabold text-xs uppercase tracking-wider px-6 py-2.5 rounded shadow-md transition-colors"
+              className="btn-beast font-extrabold text-xs uppercase tracking-wider px-6 py-2.5 rounded shadow-md transition-colors"
             >
               Clear All Filters
             </button>
@@ -620,7 +620,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
               <div className="col-span-full flex justify-center py-6 select-none">
                 <button
                   onClick={() => setVisibleCount((prev) => prev + 24)}
-                  className="bg-[#F59E0B] hover:bg-[#D97706] text-white text-xs font-black uppercase tracking-wider px-8 py-3 rounded-lg shadow hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer border-0"
+                  className="btn-beast text-xs font-black uppercase tracking-wider px-8 py-3 rounded-lg shadow hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
                 >
                   Load More Products ({displayedProducts.length - visibleCount} remaining)
                 </button>
@@ -673,7 +673,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
               </button>
               <button
                 onClick={() => setShowMobileFilters(false)}
-                className="w-full py-2.5 bg-[#F59E0B] hover:bg-[#D97706] font-extrabold text-xs uppercase tracking-wider text-white rounded shadow-md transition-colors"
+                className="w-full py-2.5 btn-beast font-extrabold text-xs uppercase tracking-wider rounded shadow-md transition-colors"
               >
                 Apply Filters
               </button>
@@ -710,12 +710,12 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
                   }}
                   className={`w-full text-left py-2.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-between ${
                     (opt.value === "" && !activeSort) || activeSort === opt.value
-                      ? "text-[#D97706] bg-amber-50/50 font-black"
+                      ? "text-[#6F4E37] bg-[#FAF5EF] font-black"
                       : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   <span>{opt.label}</span>
-                  {((opt.value === "" && !activeSort) || activeSort === opt.value) && <Check className="w-4 h-4 text-[#D97706]" />}
+                  {((opt.value === "" && !activeSort) || activeSort === opt.value) && <Check className="w-4 h-4 text-[#C5A880]" />}
                 </button>
               ))}
             </div>

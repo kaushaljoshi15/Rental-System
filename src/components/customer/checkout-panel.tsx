@@ -507,10 +507,10 @@ export function CheckoutPanel({
     <div className="space-y-6">
       {/* Razorpay Integration Connection Banner */}
       {!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ? (
-        <div className="p-3 bg-amber-50/60 border border-amber-200/40 rounded-xl text-[11px] text-amber-800 leading-normal font-sans font-medium flex gap-2.5 items-start shadow-sm">
-          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <div className="p-3 bg-[#FAF5EF] border border-[#E5E4E2] rounded-xl text-[11px] text-[#6F4E37] leading-normal font-sans font-medium flex gap-2.5 items-start shadow-sm">
+          <AlertCircle className="w-4 h-4 text-[#C5A880] shrink-0 mt-0.5" />
           <div>
-            <span className="font-bold">Simulated Sandbox Mode</span>: To enable real-time Card, UPI, and Net Banking checkouts via **Razorpay**, add your <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold text-amber-900">NEXT_PUBLIC_RAZORPAY_KEY_ID</code> to your <code className="bg-amber-100 px-1 py-0.5 rounded font-mono font-bold text-amber-900">.env</code> file and restart your terminal dev server (<code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-amber-900">npm run dev</code>).
+            <span className="font-bold">Simulated Sandbox Mode</span>: To enable real-time Card, UPI, and Net Banking checkouts via **Razorpay**, add your <code className="bg-[#FAF5EF] px-1 py-0.5 rounded font-mono font-bold text-[#6F4E37]">NEXT_PUBLIC_RAZORPAY_KEY_ID</code> to your <code className="bg-[#FAF5EF] px-1 py-0.5 rounded font-mono font-bold text-[#6F4E37]">.env</code> file and restart your terminal dev server (<code className="bg-[#FAF5EF] px-1 py-0.5 rounded font-mono text-[#6F4E37]">npm run dev</code>).
           </div>
         </div>
       ) : (
@@ -539,10 +539,10 @@ export function CheckoutPanel({
             <span className="text-slate-800 font-bold font-mono">₹{baseTotal.toLocaleString()}</span>
           </div>
           {weekendSurcharge > 0 && (
-            <div className="flex justify-between items-center text-amber-600">
+            <div className="flex justify-between items-center text-[#C5A880]">
               <span className="flex items-center gap-1">
                 Weekend Surcharge
-                <span className="text-[8px] bg-amber-500/10 text-[#F59E0B] px-1.5 py-0.5 rounded font-black uppercase tracking-wider scale-90">Peak</span>
+                <span className="text-[8px] bg-amber-500/10 text-[#6F4E37] px-1.5 py-0.5 rounded font-black uppercase tracking-wider scale-90">Peak</span>
               </span>
               <span className="font-mono font-bold">+ ₹{weekendSurcharge.toLocaleString()}</span>
             </div>
@@ -570,12 +570,12 @@ export function CheckoutPanel({
         </div>
           {/* Grand Estimate Card */}
         <div className="flex justify-between items-center mb-6 bg-gradient-to-r from-slate-900 to-slate-950 text-white p-4.5 rounded-2xl border border-slate-800/80 shadow-md relative overflow-hidden select-none">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/[0.03] rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#FAF5EF]/50 rounded-full blur-2xl pointer-events-none" />
           <div className="space-y-1 relative z-10 text-left">
-            <span className="text-[9px] font-black uppercase tracking-widest text-amber-500/80">Estimated Total Due</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-[#8D7B68]">Estimated Total Due</span>
             <p className="text-[8px] text-slate-450 font-bold leading-none">Simulation all inclusive</p>
           </div>
-          <span className="text-xl font-black text-[#F59E0B] font-mono tracking-tight relative z-10">
+          <span className="text-xl font-black text-[#6F4E37] font-mono tracking-tight relative z-10">
             ₹{grandTotal.toLocaleString()}
           </span>
         </div>
@@ -584,7 +584,7 @@ export function CheckoutPanel({
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-2.5">
           <div className="flex items-center justify-between text-left">
             <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Building className="w-3.5 h-3.5 text-[#F59E0B]" /> Delivery Destination
+              <Building className="w-3.5 h-3.5 text-[#6F4E37]" /> Delivery Destination
             </span>
             {!defaultAddress && (
               <span className="text-[8px] font-black text-rose-600 uppercase bg-rose-50 border border-rose-100/70 px-1.5 py-0.5 rounded-md">Required</span>
@@ -623,7 +623,7 @@ export function CheckoutPanel({
         {/* Promo Coupon Form */}
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-2.5 font-sans">
           <Label htmlFor="coupon" className="text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Ticket className="w-3.5 h-3.5 text-[#F59E0B]" /> Add Promo Code
+            <Ticket className="w-3.5 h-3.5 text-[#6F4E37]" /> Add Promo Code
           </Label>
           <div className="flex gap-2">
             <Input
@@ -649,7 +649,7 @@ export function CheckoutPanel({
                 type="button"
                 onClick={handleApplyCoupon}
                 disabled={validatingCoupon || !couponCode.trim()}
-                className="bg-[#f5820b] hover:bg-[#e07505] disabled:bg-slate-100 disabled:text-slate-400 text-white font-black text-xs h-10 rounded-full px-6 shadow-[0_2px_8px_rgba(245,130,11,0.2)] transition-all cursor-pointer border-0"
+                className="btn-beast disabled:opacity-50 text-xs h-10 rounded-full px-6 transition-all cursor-pointer shadow-sm"
               >
                 {validatingCoupon ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Apply"}
               </Button>
@@ -666,7 +666,7 @@ export function CheckoutPanel({
         {/* Payment Methods */}
         <div className="border-t border-slate-100 pt-4.5 mb-6 space-y-3">
           <Label className="text-[9px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <CreditCard className="w-3.5 h-3.5 text-[#F59E0B]" /> Select Payment Method
+            <CreditCard className="w-3.5 h-3.5 text-[#6F4E37]" /> Select Payment Method
           </Label>
           <div className="grid grid-cols-1 gap-2.5">
             {[
@@ -687,19 +687,19 @@ export function CheckoutPanel({
                   onClick={() => setPaymentMethod(opt.value)}
                   className={`group flex items-center justify-between p-3.5 border rounded-2xl cursor-pointer transition-all duration-200 select-none text-left ${
                     isSelected 
-                      ? "border-[#F59E0B] bg-amber-500/[0.03] shadow-xs" 
+                      ? "border-[#C5A880] bg-[#FAF5EF]/50 shadow-xs" 
                       : "border-slate-200/60 hover:border-slate-300 hover:bg-slate-50/20"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                      isSelected ? "border-[#F59E0B] bg-[#F59E0B]" : "border-slate-350 bg-white group-hover:border-slate-450"
+                      isSelected ? "border-[#C5A880] bg-[#C5A880]" : "border-slate-350 bg-white group-hover:border-slate-450"
                     }`}>
                       {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-slate-950" />}
                     </div>
                     <div className="space-y-0.5">
                       <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                        {isWallet && <Wallet className="w-3.5 h-3.5 text-[#F59E0B]" />}
+                        {isWallet && <Wallet className="w-3.5 h-3.5 text-[#6F4E37]" />}
                         {opt.label}
                       </span>
                       <p className="text-[10px] text-slate-400 font-semibold leading-none">{opt.desc}</p>
@@ -716,9 +716,9 @@ export function CheckoutPanel({
           </div>
 
           {paymentMethod === "CASH_ON_DELIVERY" && (
-            <div className="flex flex-col gap-2 p-3.5 bg-amber-50/60 text-amber-900 rounded-2xl border border-amber-200/40 text-xs mt-3.5 font-sans text-left">
+            <div className="flex flex-col gap-2 p-3.5 bg-amber-50/60 text-[#6F4E37] rounded-2xl border border-amber-200/40 text-xs mt-3.5 font-sans text-left">
               <div className="flex gap-2.5 items-start">
-                <Coins className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+                <Coins className="w-4 h-4 shrink-0 mt-0.5 text-[#C5A880]" />
                 <div className="space-y-1">
                   <p className="font-extrabold text-slate-900">Cash on Delivery (COD) Selected</p>
                   <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">
@@ -742,7 +742,7 @@ export function CheckoutPanel({
                     type="button"
                     onClick={handleRechargeWallet}
                     disabled={recharging}
-                    className="w-full bg-[#f5820b] hover:bg-[#e07505] disabled:bg-slate-100 disabled:text-slate-400 text-white font-black text-xs h-10.5 rounded-full cursor-pointer border-0 shadow-[0_3px_10px_rgba(245,130,11,0.25)] transition-all active:scale-[0.99] flex items-center justify-center gap-1.5"
+                    className="w-full btn-beast text-xs h-10 px-6 rounded-full transition-all cursor-pointer shadow-sm"
                   >
                     {recharging ? (
                       <>
@@ -770,7 +770,7 @@ export function CheckoutPanel({
           <Button 
             type="submit" 
             disabled={checkoutLoading || hasInsufficientWallet || !defaultAddress || !!locationError}
-            className="w-full bg-[#f5820b] hover:bg-[#e07505] disabled:from-slate-100 disabled:to-slate-100 disabled:bg-slate-100 text-white disabled:text-slate-400 font-black text-xs uppercase tracking-wider h-12 shadow-[0_4px_14px_rgba(245,130,11,0.3)] hover:shadow-[0_6px_20px_rgba(245,130,11,0.4)] active:scale-[0.99] hover:-translate-y-0.5 disabled:translate-y-0 disabled:shadow-none transition-all rounded-full cursor-pointer border-0 flex items-center justify-center gap-2"
+            className="w-full btn-beast text-xs h-10 px-6 rounded-full transition-all cursor-pointer shadow-sm"
           >
             {checkoutLoading ? (
               <span className="flex items-center gap-1.5 justify-center font-black">
@@ -820,7 +820,7 @@ export function CheckoutPanel({
               
               <div className="space-y-4">
                 <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                  <CreditCard className="w-5 h-5 text-[#F59E0B]" />
+                  <CreditCard className="w-5 h-5 text-[#6F4E37]" />
                   <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider">Secure Card Gateway</h4>
                 </div>
                 
@@ -899,7 +899,7 @@ export function CheckoutPanel({
                         setActiveModal("CARD_OTP")
                       }, 1500)
                     }}
-                    className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-11.5 rounded-xl cursor-pointer"
+                    className="w-full bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-11.5 rounded-xl cursor-pointer"
                   >
                     Proceed to OTP Verification
                   </Button>
@@ -913,7 +913,7 @@ export function CheckoutPanel({
             <Card className="w-full max-w-sm bg-white rounded-3xl p-6 border border-slate-100 shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                  <Smartphone className="w-5 h-5 text-amber-500" />
+                  <Smartphone className="w-5 h-5 text-[#C5A880]" />
                   <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider font-sans">3D Secure OTP Portal</h4>
                 </div>
                 
@@ -988,7 +988,7 @@ export function CheckoutPanel({
                             { id: "gpay", label: "Google Pay", color: "border-blue-500/10 hover:border-blue-500/40 hover:bg-blue-50/5 text-blue-600" },
                             { id: "phonepe", label: "PhonePe", color: "border-purple-500/10 hover:border-purple-500/40 hover:bg-purple-50/5 text-purple-600" },
                             { id: "paytm", label: "Paytm", color: "border-sky-500/10 hover:border-sky-500/40 hover:bg-sky-50/5 text-sky-600" },
-                            { id: "amazon", label: "Amazon Pay", color: "border-amber-500/10 hover:border-amber-500/40 hover:bg-amber-50/5 text-amber-600" },
+                            { id: "amazon", label: "Amazon Pay", color: "border-amber-500/10 hover:border-amber-500/40 hover:bg-amber-50/5 text-[#C5A880]" },
                           ].map((app) => (
                             <button
                               type="button"
@@ -1014,9 +1014,9 @@ export function CheckoutPanel({
                         <button
                           type="button"
                           onClick={() => setUpiShowScanner(true)}
-                          className="w-full flex items-center justify-center gap-2.5 p-3.5 border border-slate-200 hover:border-[#F59E0B] hover:bg-amber-50/[0.02] rounded-2xl font-bold text-xs text-slate-800 transition-all cursor-pointer bg-white"
+                          className="w-full flex items-center justify-center gap-2.5 p-3.5 border border-slate-200 hover:border-[#C5A880] hover:bg-amber-50/[0.02] rounded-2xl font-bold text-xs text-slate-800 transition-all cursor-pointer bg-white"
                         >
-                          <QrCode className="w-4 h-4 text-[#F59E0B]" />
+                          <QrCode className="w-4 h-4 text-[#6F4E37]" />
                           <span>Display Merchant QR Code</span>
                         </button>
 
@@ -1054,7 +1054,7 @@ export function CheckoutPanel({
                       <div className="space-y-4 flex flex-col items-center w-full">
                         {/* Pulsing Scan QR Panel */}
                         <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden max-w-[200px] shadow-sm">
-                          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#F59E0B] to-transparent animate-[bounce_2s_infinite]" />
+                          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#C5A880] to-transparent animate-[bounce_2s_infinite]" />
                           <QrCode className="w-36 h-36 text-slate-900 animate-pulse" strokeWidth={1.2} />
                           <span className="text-[9px] font-black uppercase text-slate-450 mt-2 tracking-widest">RentKart Merchant QR</span>
                         </div>
@@ -1086,7 +1086,7 @@ export function CheckoutPanel({
                   </div>
                 ) : (
                   <div className="space-y-5 text-center font-sans py-3">
-                    <div className="w-14 h-14 rounded-full bg-amber-50 text-[#F59E0B] border border-amber-100 flex items-center justify-center mx-auto animate-pulse">
+                    <div className="w-14 h-14 rounded-full bg-amber-50 text-[#6F4E37] border border-amber-100 flex items-center justify-center mx-auto animate-pulse">
                       <Smartphone className="w-7 h-7" />
                     </div>
 
@@ -1147,7 +1147,7 @@ export function CheckoutPanel({
 
               <div className="space-y-4">
                 <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-                  <Building className="w-5 h-5 text-[#F59E0B]" />
+                  <Building className="w-5 h-5 text-[#6F4E37]" />
                   <h4 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider font-sans">Secure Net Banking Portal</h4>
                 </div>
 
@@ -1292,8 +1292,8 @@ export function CheckoutPanel({
           {activeModal === "PROCESSING" && (
             <Card className="w-full max-w-xs bg-white rounded-3xl p-6 border border-slate-100 shadow-2xl text-center flex flex-col items-center justify-center py-10 animate-in zoom-in-95 duration-200 select-none font-sans">
               <div className="relative flex items-center justify-center mb-5">
-                <div className="absolute w-16 h-16 rounded-full border-4 border-slate-100 border-t-[#F59E0B] animate-spin" />
-                <Lock className="w-5 h-5 text-[#F59E0B] animate-pulse" />
+                <div className="absolute w-16 h-16 rounded-full border-4 border-slate-100 border-t-[#C5A880] animate-spin" />
+                <Lock className="w-5 h-5 text-[#6F4E37] animate-pulse" />
               </div>
               <p className="text-xs font-black text-slate-805 uppercase tracking-widest mb-1.5 font-sans">Processing secure payment</p>
               <p className="text-[10px] text-slate-400 leading-normal font-semibold max-w-[190px] font-sans">
@@ -1327,7 +1327,7 @@ export function CheckoutPanel({
                   animation: ticket-pop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
                 }
                 .shiny-btn {
-                  background: linear-gradient(90deg, #F59E0B, #FBBF24, #F59E0B);
+                  background: linear-gradient(90deg, #C5A880, #FBBF24, #C5A880);
                   background-size: 200% auto;
                   animation: shine 3s linear infinite;
                 }
@@ -1349,7 +1349,7 @@ export function CheckoutPanel({
                 const distance = 80 + Math.random() * 80;
                 const x = Math.cos((angle * Math.PI) / 180) * distance;
                 const y = Math.sin((angle * Math.PI) / 180) * distance - 20;
-                const colors = ["#F59E0B", "#EF4444", "#3B82F6", "#10B981", "#8B5CF6", "#EC4899"];
+                const colors = ["#C5A880", "#EF4444", "#3B82F6", "#10B981", "#8B5CF6", "#EC4899"];
                 const color = colors[i % colors.length];
                 return (
                   <div

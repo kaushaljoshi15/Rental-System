@@ -117,10 +117,10 @@ export function GiftCardsManager() {
         <Card className="border border-slate-200/60 shadow-xs rounded-2xl bg-white">
           <CardHeader>
             <CardTitle className="text-sm font-bold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
-              <Plus className="w-4 h-4 text-[#F59E0B]" /> Claim Voucher / Gift Card
+              <Plus className="w-4 h-4 text-[#C5A880]" /> Claim Voucher / Gift Card
             </CardTitle>
             <CardDescription className="text-xs">
-              Redeem gift card code to instantly load funds into your Gift Card balance. Try <span className="font-mono font-bold text-[#F59E0B] bg-slate-100 px-1 py-0.5 rounded">FREEGOLD</span> or <span className="font-mono font-bold text-[#F59E0B] bg-slate-100 px-1 py-0.5 rounded">GC-1000</span>.
+              Redeem gift card code to instantly load funds into your Gift Card balance. Try <span className="font-mono font-bold text-[#C5A880] bg-slate-100 px-1 py-0.5 rounded">FREEGOLD</span> or <span className="font-mono font-bold text-[#C5A880] bg-slate-100 px-1 py-0.5 rounded">GC-1000</span>.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -133,13 +133,13 @@ export function GiftCardsManager() {
                   placeholder="e.g. FREEGOLD"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] font-mono tracking-widest font-bold uppercase"
+                  className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] font-mono tracking-widest font-bold uppercase"
                 />
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
+                className="w-full bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
               >
                 {loading ? "Redeeming..." : "Claim Gift Card"}
               </Button>
@@ -310,7 +310,7 @@ export function SavedCardsManager() {
           <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Secure Saved Cards</h2>
           <Button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-8.5 rounded-xl transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+            className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-8.5 rounded-xl transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" /> Add New Card
           </Button>
@@ -392,7 +392,7 @@ export function SavedCardsManager() {
                       const v = e.target.value.replace(/\s+/g, "").replace(/(\d{4})/g, "$1 ").trim()
                       setCardNum(v.substring(0, 19))
                     }}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] font-mono font-semibold"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] font-mono font-semibold"
                   />
                 </div>
 
@@ -404,7 +404,7 @@ export function SavedCardsManager() {
                     placeholder="MEET SHARMA"
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] uppercase font-bold"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] uppercase font-bold"
                   />
                 </div>
 
@@ -423,7 +423,7 @@ export function SavedCardsManager() {
                         }
                         setCardExpiry(v.substring(0, 5))
                       }}
-                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] font-mono font-semibold"
+                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] font-mono font-semibold"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -434,7 +434,7 @@ export function SavedCardsManager() {
                       placeholder="•••"
                       value={cardCvv}
                       onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").substring(0, 4))}
-                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B] font-mono font-semibold"
+                      className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880] font-mono font-semibold"
                     />
                   </div>
                 </div>
@@ -442,7 +442,7 @@ export function SavedCardsManager() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
+                  className="w-full bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
                 >
                   {loading ? "Saving Card..." : "Save Card Details"}
                 </Button>
@@ -532,7 +532,7 @@ export function SavedUpiManager() {
           <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wide">Saved UPI Handles</h2>
           <Button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-8.5 rounded-xl transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+            className="bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-8.5 rounded-xl transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" /> Add UPI ID
           </Button>
@@ -589,7 +589,7 @@ export function SavedUpiManager() {
                     placeholder="e.g. username@upi"
                     value={vpa}
                     onChange={(e) => setVpa(e.target.value)}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
 
@@ -601,14 +601,14 @@ export function SavedUpiManager() {
                     placeholder="MEET SHARMA"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#F59E0B] focus-visible:border-[#F59E0B]"
+                    className="text-xs rounded-xl h-10 border-slate-200 focus-visible:ring-[#C5A880] focus-visible:border-[#C5A880]"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-slate-900 hover:bg-[#F59E0B] hover:text-slate-950 text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
+                  className="w-full bg-slate-900 hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-10 rounded-xl transition-all cursor-pointer shadow-sm"
                 >
                   {loading ? "Verifying VPA..." : "Link UPI ID"}
                 </Button>

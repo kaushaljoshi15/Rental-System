@@ -74,7 +74,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
       <div className="flex h-full flex-col">
         {/* Logo/Header */}
         <div className="flex h-16 items-center gap-3 border-b border-slate-800 px-6">
-          <div className="p-2 rounded-lg shadow-md shrink-0 bg-[#F59E0B] text-[#0F172A]">
+          <div className="p-2 rounded-lg shadow-md shrink-0 bg-[#C5A880] text-[#0F172A]">
             {role === "ADMIN" && <Settings className="w-5 h-5" />}
             {role === "VENDOR" && <Store className="w-5 h-5" />}
             {role === "CUSTOMER" && <ShoppingCart className="w-5 h-5" />}
@@ -103,7 +103,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
                 className={cn(
                   "group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-200",
                   isActive
-                    ? "bg-[#F59E0B] text-[#0F172A] shadow-lg font-extrabold"
+                    ? "bg-[#C5A880] text-[#0F172A] shadow-lg font-extrabold"
                     : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
                 )}
               >

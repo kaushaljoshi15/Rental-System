@@ -350,7 +350,7 @@ export function MobileCategories({ categories, products, isLoggedIn }: MobileCat
           background: transparent;
         }
         .content-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(245, 158, 11, 0.35); /* amber-500 with opacity */
+          background: rgba(197, 168, 128, 0.45); /* amber-500 with opacity */
           border-radius: 9999px;
         }
         .content-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -359,7 +359,7 @@ export function MobileCategories({ categories, products, isLoggedIn }: MobileCat
         .content-scrollbar {
           -ms-overflow-style: auto;
           scrollbar-width: thin;
-          scrollbar-color: rgba(245, 158, 11, 0.35) transparent;
+          scrollbar-color: rgba(197, 168, 128, 0.45) transparent;
           overscroll-behavior: contain;
         }
       `}</style>
@@ -368,7 +368,7 @@ export function MobileCategories({ categories, products, isLoggedIn }: MobileCat
       <div className="h-14 bg-white border-b border-slate-100 shadow-[0_2px_15px_rgba(0,0,0,0.04)] px-4 flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-3">
           <Link href="/" className="p-1.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-[#1d4ed8] transition-colors">
-            <ArrowLeft className="w-5 h-5 text-[#F59E0B]" />
+            <ArrowLeft className="w-5 h-5 text-[#C5A880]" />
           </Link>
           <span className="font-extrabold text-slate-800 text-xs uppercase tracking-wider">All Categories</span>
         </div>
@@ -480,7 +480,7 @@ export function MobileCategories({ categories, products, isLoggedIn }: MobileCat
                           </div>
                           <h4 className="text-[10px] font-bold text-slate-800 line-clamp-2 leading-tight mb-1">{prod.name}</h4>
                         </div>
-                        <p className="text-[10px] font-extrabold text-[#F59E0B]">₹{prod.priceDaily}/day</p>
+                        <p className="text-[10px] font-extrabold text-[#6F4E37]">₹{prod.priceDaily}/day</p>
                       </Link>
                     ))}
 
@@ -502,7 +502,7 @@ export function MobileCategories({ categories, products, isLoggedIn }: MobileCat
                   <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest mb-3">Have you tried?</h3>
                   <div className="grid grid-cols-3 gap-2.5">
                     <div className="flex flex-col items-center text-center">
-                      <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-500 border border-amber-100 flex items-center justify-center shadow-sm">
+                      <div className="w-12 h-12 rounded-full bg-[#FAF5EF] text-[#C5A880] border border-[#E5E4E2] flex items-center justify-center shadow-sm">
                         <Gift className="w-5 h-5" />
                       </div>
                       <span className="text-[9px] text-slate-700 font-bold mt-1.5">Claim Now</span>
@@ -579,7 +579,7 @@ export function MobileCategories({ categories, products, isLoggedIn }: MobileCat
                             <h4 className="text-[10px] font-bold text-slate-800 line-clamp-2 leading-tight mb-1">{prod.name}</h4>
                           </div>
                           <div className="flex items-center justify-between mt-1">
-                            <p className="text-[10px] font-extrabold text-[#F59E0B]">₹{prod.priceDaily}/d</p>
+                            <p className="text-[10px] font-extrabold text-[#6F4E37]">₹{prod.priceDaily}/d</p>
                             <span className="text-[8px] font-black uppercase text-blue-600 hover:text-blue-800 transition-colors">Rent</span>
                           </div>
                         </Link>

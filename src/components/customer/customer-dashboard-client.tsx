@@ -104,7 +104,7 @@ export function CustomerDashboardClient({
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-32 space-y-4">
         <div className="relative w-16 h-16 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full border-4 border-amber-200 border-t-[#F59E0B] animate-spin" />
+          <div className="absolute inset-0 rounded-full border-4 border-amber-200 border-t-[#C5A880] animate-spin" />
         </div>
         <p className="text-slate-500 font-bold text-xs uppercase tracking-wider animate-pulse">Loading Account Ledger...</p>
       </div>
@@ -156,7 +156,7 @@ export function CustomerDashboardClient({
                       <div className="relative flex items-center justify-center w-20 h-20">
                         <div className="absolute inset-0 border border-dashed border-slate-200 rounded-full animate-[spin_20s_linear_infinite]" />
                         <div className="h-14 w-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-md">
-                          <ShoppingBag className="h-5 w-5 text-[#F59E0B]" />
+                          <ShoppingBag className="h-5 w-5 text-[#C5A880]" />
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -167,7 +167,7 @@ export function CustomerDashboardClient({
                         </p>
                       </div>
                       <Link href="/">
-                        <Button className="bg-primary hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs rounded-xl h-11 px-8 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5 border-0">
+                        <Button className="bg-primary hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs rounded-xl h-11 px-8 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200 flex items-center gap-1.5 border-0">
                           Browse Catalog
                         </Button>
                       </Link>
@@ -181,7 +181,7 @@ export function CustomerDashboardClient({
                         {/* Schedule Summary Banner */}
                         <div className="p-6 bg-gradient-to-br from-slate-50/80 via-white to-slate-50/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100">
                           <div className="flex items-center gap-4 w-full sm:w-auto">
-                            <div className="bg-amber-50/60 p-3 rounded-2xl text-[#F59E0B] shrink-0 border border-amber-100/40 shadow-sm shadow-amber-500/5">
+                            <div className="bg-amber-50/60 p-3 rounded-2xl text-[#C5A880] shrink-0 border border-amber-100/40 shadow-sm shadow-amber-500/5">
                               <CalendarIcon className="w-5 h-5" />
                             </div>
                             <div className="space-y-0.5">
@@ -204,7 +204,7 @@ export function CustomerDashboardClient({
                                     <button
                                       onClick={() => handleAdjustDays(1)}
                                       disabled={isAdjustingDays}
-                                      className="p-0.5 rounded text-slate-450 hover:text-[#F59E0B] hover:bg-amber-55 transition-all cursor-pointer"
+                                      className="p-0.5 rounded text-slate-450 hover:text-[#C5A880] hover:bg-amber-55 transition-all cursor-pointer"
                                       title="Increase Days"
                                     >
                                       <Plus className="w-3 h-3" />
@@ -270,7 +270,7 @@ export function CustomerDashboardClient({
                   <img
                     src={user.image || AVATAR_PRESETS[0].url}
                     alt="Profile Avatar"
-                    className="w-12 h-12 rounded-full border-2 border-[#F59E0B]/80 shadow-md shadow-amber-500/5 bg-slate-850 object-cover ring-2 ring-amber-500/10 ring-offset-2 ring-offset-[#0F172A]"
+                    className="w-12 h-12 rounded-full border-2 border-[#C5A880]/80 shadow-md shadow-amber-500/5 bg-slate-850 object-cover ring-2 ring-amber-500/10 ring-offset-2 ring-offset-[#0F172A]"
                   />
                   <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-50 border-2 border-[#0F172A] animate-pulse" />
                 </div>
@@ -289,7 +289,7 @@ export function CustomerDashboardClient({
                       href="/?tab=orders"
                       prefetch={true}
                       className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "orders"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -298,7 +298,7 @@ export function CustomerDashboardClient({
                         Orders & Bookings
                       </span>
                       {user.orders?.length > 0 && (
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${activeTab === "orders" ? "bg-[#F59E0B] text-slate-950" : "bg-slate-800 text-slate-350"
+                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${activeTab === "orders" ? "bg-[#C5A880] text-slate-950" : "bg-slate-800 text-slate-350"
                           }`}>
                           {user.orders.length}
                         </span>
@@ -309,7 +309,7 @@ export function CustomerDashboardClient({
                       href="/?tab=wishlist"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "wishlist"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -321,7 +321,7 @@ export function CustomerDashboardClient({
                       href="/?tab=notifications"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "notifications"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -333,7 +333,7 @@ export function CustomerDashboardClient({
                       href="/?tab=event-planner"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "event-planner"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -350,7 +350,7 @@ export function CustomerDashboardClient({
                       href="/?tab=profile"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "profile"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -362,7 +362,7 @@ export function CustomerDashboardClient({
                       href="/?tab=addresses"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "addresses"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -379,7 +379,7 @@ export function CustomerDashboardClient({
                       href="/?tab=wallet"
                       prefetch={true}
                       className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "wallet"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -387,7 +387,7 @@ export function CustomerDashboardClient({
                         <CreditCard className="w-4 h-4 shrink-0" />
                         Wallet & Ledger
                       </span>
-                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${activeTab === "wallet" ? "bg-[#F59E0B] text-slate-950" : "bg-slate-800 text-[#F59E0B]"
+                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${activeTab === "wallet" ? "bg-[#C5A880] text-slate-950" : "bg-slate-800 text-[#C5A880]"
                         }`}>
                         ₹{user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                       </span>
@@ -397,7 +397,7 @@ export function CustomerDashboardClient({
                       href="/?tab=coupons"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "coupons"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -409,7 +409,7 @@ export function CustomerDashboardClient({
                       href="/?tab=gift-cards"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "gift-cards"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -421,7 +421,7 @@ export function CustomerDashboardClient({
                       href="/?tab=saved-cards"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "saved-cards"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -433,7 +433,7 @@ export function CustomerDashboardClient({
                       href="/?tab=saved-upi"
                       prefetch={true}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide border-l-2 transition-all duration-200 ${activeTab === "saved-upi"
-                          ? "border-[#F59E0B] bg-slate-800/40 text-[#F59E0B] font-bold"
+                          ? "border-[#C5A880] bg-slate-800/40 text-[#C5A880] font-bold"
                           : "border-transparent text-slate-400 hover:bg-slate-800/20 hover:text-white hover:pl-4"
                         }`}
                     >
@@ -445,7 +445,7 @@ export function CustomerDashboardClient({
 
                 <div className="pt-4 border-t border-slate-800/60">
                   <LogoutLink
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide text-[#F59E0B]/85 hover:bg-rose-950/20 hover:text-rose-400 transition-colors border-l-2 border-transparent"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide text-[#C5A880]/85 hover:bg-rose-950/20 hover:text-rose-400 transition-colors border-l-2 border-transparent"
                   >
                     <LogOut className="w-4 h-4 shrink-0 text-rose-450" />
                     Sign Out Account
@@ -467,14 +467,14 @@ export function CustomerDashboardClient({
                           <img
                             src={user.image || AVATAR_PRESETS[0].url}
                             alt="Profile Avatar"
-                            className="w-16 h-16 rounded-full border-2 border-[#F59E0B] object-cover ring-2 ring-amber-500/10 ring-offset-2 ring-offset-[#0F172A]"
+                            className="w-16 h-16 rounded-full border-2 border-[#C5A880] object-cover ring-2 ring-amber-500/10 ring-offset-2 ring-offset-[#0F172A]"
                           />
                           <div className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-[#0F172A] rounded-full animate-pulse" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-black text-white truncate">{user.name}</span>
-                            <span className="text-[9px] bg-amber-500/10 border border-[#F59E0B]/30 text-[#F59E0B] px-2 py-0.5 rounded-full font-black uppercase tracking-wider shrink-0 animate-pulse">
+                            <span className="text-[9px] bg-amber-500/10 border border-[#C5A880]/30 text-[#C5A880] px-2 py-0.5 rounded-full font-black uppercase tracking-wider shrink-0 animate-pulse">
                               Client
                             </span>
                           </div>
@@ -486,7 +486,7 @@ export function CustomerDashboardClient({
                       <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
                         <div>
                           <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Active Wallet Balance</p>
-                          <p className="text-lg font-black text-[#F59E0B] mt-0.5">₹{user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                          <p className="text-lg font-black text-[#C5A880] mt-0.5">₹{user.walletBalance.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
                         </div>
                         <Link href="/?tab=wallet">
                           <Button size="sm" className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-750 font-bold text-xs h-8 rounded-xl px-4">
@@ -499,7 +499,7 @@ export function CustomerDashboardClient({
                     {/* 2x2 Action Cards */}
                     <div className="grid grid-cols-2 gap-3.5">
                       <Link href="/?tab=orders" className="bg-white border border-slate-200/60 rounded-2xl p-4 flex flex-col justify-between h-24 hover:border-amber-300 transition-colors shadow-[0_2px_8px_rgba(0,0,0,0.02)] group">
-                        <div className="bg-amber-55/10 text-[#F59E0B] w-8 h-8 rounded-xl flex items-center justify-center font-bold">
+                        <div className="bg-amber-55/10 text-[#C5A880] w-8 h-8 rounded-xl flex items-center justify-center font-bold">
                           <Package className="w-4.5 h-4.5" />
                         </div>
                         <div>
@@ -697,7 +697,7 @@ export function CustomerDashboardClient({
                         {/* Section 1: Rented Items */}
                         <div className="p-6 border-b border-slate-100 bg-slate-50/20">
                           <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <Package className="w-4 h-4 text-[#F59E0B]" /> Items Rented
+                            <Package className="w-4 h-4 text-[#C5A880]" /> Items Rented
                           </h3>
                           <div className="space-y-3">
                             {selectedOrder.lines.map((line: any) => (
@@ -722,7 +722,7 @@ export function CustomerDashboardClient({
                                       <span className="font-bold text-slate-650 font-mono">{durationDays} {durationDays === 1 ? "Day" : "Days"}</span>
                                     </div>
                                     <p className="text-[9px] font-bold text-slate-455 uppercase mt-1 select-none">
-                                      Vendor: <span className="text-[#F59E0B] font-bold">{line.product.vendor?.companyName || line.product.vendor?.name || "Prime Partner"}</span>
+                                      Vendor: <span className="text-[#C5A880] font-bold">{line.product.vendor?.companyName || line.product.vendor?.name || "Prime Partner"}</span>
                                     </p>
                                   </div>
                                 </div>
@@ -738,7 +738,7 @@ export function CustomerDashboardClient({
                         {/* Section 2: Lifecycle Tracker */}
                         <div className="p-6 border-b border-slate-100 bg-white">
                           <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider mb-8 flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-[#F59E0B]" /> Rental Lifecycle Track
+                            <Clock className="w-4 h-4 text-[#C5A880]" /> Rental Lifecycle Track
                           </h3>
                           <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-4 max-w-3xl mx-auto">
                             <div className="absolute top-4.5 left-[12%] right-[12%] hidden md:block h-[2px] bg-slate-100" />
@@ -757,7 +757,7 @@ export function CustomerDashboardClient({
                                   <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0 border-2 transition-all duration-300 ${isCancelled && idx > 0
                                       ? "bg-rose-50 border-rose-200 text-rose-500"
                                       : isDone
-                                        ? "bg-[#F59E0B] border-[#F59E0B] text-slate-950 shadow-md shadow-amber-500/10 ring-4 ring-amber-100"
+                                        ? "bg-[#C5A880] border-[#C5A880] text-slate-950 shadow-md shadow-amber-500/10 ring-4 ring-amber-100"
                                         : "bg-white border-slate-200 text-slate-400"
                                     }`}>
                                     {isCancelled && idx > 0 ? "✕" : isDone ? "✓" : idx + 1}
@@ -777,7 +777,7 @@ export function CustomerDashboardClient({
                           {/* Venue Details */}
                           <div className="p-6 space-y-4">
                             <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-2.5 border-b border-slate-100">
-                              <MapPin className="w-4 h-4 text-[#F59E0B]" /> Venue / Booking Details
+                              <MapPin className="w-4 h-4 text-[#C5A880]" /> Venue / Booking Details
                             </h3>
                             <div className="space-y-3.5 text-xs font-semibold leading-relaxed text-slate-700">
                               <div>
@@ -794,7 +794,7 @@ export function CustomerDashboardClient({
                           {/* Billing & Payout */}
                           <div className="p-6 space-y-4">
                             <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-2.5 border-b border-slate-100">
-                              <CreditCard className="w-4 h-4 text-[#F59E0B]" /> Price Details
+                              <CreditCard className="w-4 h-4 text-[#C5A880]" /> Price Details
                             </h3>
                             
                             {(() => {
@@ -874,7 +874,7 @@ export function CustomerDashboardClient({
 
                                   <div className="flex justify-between pt-3.5 border-t border-slate-100 font-black text-slate-900 text-sm">
                                     <span>Grand Total Paid</span>
-                                    <span className="font-mono text-[#F59E0B] text-sm">₹{selectedOrder.totalAmount.toLocaleString()}</span>
+                                    <span className="font-mono text-[#C5A880] text-sm">₹{selectedOrder.totalAmount.toLocaleString()}</span>
                                   </div>
 
                                   <div className="pt-3 border-t border-slate-100/60 text-[10px] font-bold text-slate-500 uppercase flex items-center justify-between">
@@ -895,7 +895,7 @@ export function CustomerDashboardClient({
                           </div>
                           <div className="flex flex-wrap items-center gap-3 shrink-0">
                             <Link href="/?tab=profile">
-                              <Button className="bg-[#0F172A] hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-10 rounded-xl px-5 transition-colors border-0">
+                              <Button className="bg-[#0F172A] hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-10 rounded-xl px-5 transition-colors border-0">
                                 Contact Support
                               </Button>
                             </Link>
@@ -949,20 +949,20 @@ export function CustomerDashboardClient({
                   {wishlistItems.length === 0 ? (
                     <div className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-sm rounded-3xl p-10 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
                       <div className="relative flex items-center justify-center w-20 h-20">
-                        <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+                        <div className="absolute inset-0 border border-dashed border-[#C5A880]/40 rounded-full animate-[spin_20s_linear_infinite]" />
                         <div className="h-14 w-14 bg-slate-900 border border-slate-800 text-white rounded-2xl flex items-center justify-center shadow-md">
-                          <Heart className="h-6 w-6 text-[#F59E0B]" />
+                          <Heart className="h-6 w-6 text-[#C5A880]" />
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <span className="text-[9px] bg-amber-500/10 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Wishlist Empty</span>
+                        <span className="text-[9px] bg-amber-500/10 text-[#C5A880] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Wishlist Empty</span>
                         <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-2">Your Wishlist is Empty</h3>
                         <p className="text-xs text-slate-505 max-w-xs mx-auto leading-relaxed font-semibold">
                           Save rentable assets here to make selecting and scheduling items for future bookings and checkouts easy!
                         </p>
                       </div>
                       <Link href="/">
-                        <Button className="bg-primary hover:bg-[#F59E0B] hover:text-[#0F172A] text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200">
+                        <Button className="bg-primary hover:bg-[#C5A880] hover:text-[#0F172A] text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200">
                           Browse Products
                         </Button>
                       </Link>
@@ -1023,7 +1023,7 @@ export function CustomerDashboardClient({
 
                                   <p className="text-slate-455 text-[10px] font-bold uppercase flex items-center justify-center sm:justify-start gap-1">
                                     <span>Sold by:</span>
-                                    <span className="text-[#F59E0B] font-bold hover:underline cursor-pointer">
+                                    <span className="text-[#C5A880] font-bold hover:underline cursor-pointer">
                                       {product.vendor?.companyName || product.vendor?.name || "Prime Partner"}
                                     </span>
                                   </p>
@@ -1045,7 +1045,7 @@ export function CustomerDashboardClient({
                                 />
                                 {isAvailable ? (
                                   <Link href={`/products/${product.id}`} className="block w-full sm:w-auto">
-                                    <Button size="sm" className="bg-primary hover:bg-[#F59E0B] hover:text-slate-955 text-white font-extrabold text-xs h-9 px-4.5 rounded-xl transition-colors w-full sm:w-auto cursor-pointer shadow-sm">
+                                    <Button size="sm" className="bg-primary hover:bg-[#C5A880] hover:text-[#0F1A36] text-white font-extrabold text-xs h-9 px-4.5 rounded-xl transition-colors w-full sm:w-auto cursor-pointer shadow-sm">
                                       Rent Asset
                                     </Button>
                                   </Link>
@@ -1161,20 +1161,20 @@ export function CustomerDashboardClient({
                     {coupons.length === 0 && (
                       <div className="col-span-2 bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-sm rounded-3xl p-10 flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-5">
                         <div className="relative flex items-center justify-center w-20 h-20">
-                          <div className="absolute inset-0 border border-dashed border-[#F59E0B]/40 rounded-full animate-[spin_20s_linear_infinite]" />
+                          <div className="absolute inset-0 border border-dashed border-[#C5A880]/40 rounded-full animate-[spin_20s_linear_infinite]" />
                           <div className="h-14 w-14 bg-slate-900 border border-slate-800 text-white rounded-2xl flex items-center justify-center shadow-md">
-                            <Ticket className="h-6 w-6 text-[#F59E0B]" />
+                            <Ticket className="h-6 w-6 text-[#C5A880]" />
                           </div>
                         </div>
                         <div className="space-y-1.5">
-                          <span className="text-[9px] bg-amber-500/10 text-[#F59E0B] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Coupons Clean</span>
+                          <span className="text-[9px] bg-amber-500/10 text-[#C5A880] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Coupons Clean</span>
                           <h3 className="text-base font-black text-slate-900 uppercase tracking-wide mt-2">No Active Coupons</h3>
                           <p className="text-xs text-slate-550 max-w-xs mx-auto leading-relaxed font-semibold">
                             There are no discount coupon vouchers active at the moment. Keep checkouts active to trigger seasonal deals!
                           </p>
                         </div>
                         <Link href="/">
-                          <Button className="bg-primary hover:bg-[#F59E0B] hover:text-[#0F172A] text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200">
+                          <Button className="bg-primary hover:bg-[#C5A880] hover:text-[#0F172A] text-white font-extrabold text-xs rounded-xl h-10 px-6 cursor-pointer shadow-sm hover:scale-[1.02] transition-all duration-200">
                             Explore Catalog
                           </Button>
                         </Link>
