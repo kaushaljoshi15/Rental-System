@@ -185,3 +185,4 @@ export function FeaturedBrandsRow({ items = DEFAULT_BRANDS }: FeaturedBrandsRowP
     </div>
   )
 }
+
