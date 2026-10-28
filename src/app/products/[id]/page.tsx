@@ -147,13 +147,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
         {/* ========================================================= */}
         {/* FLIPKART DESKTOP 2-COLUMN LAYOUT:                         */}
-        {/* Left: Interactive Multi-Angle Gallery                     */}
+        {/* Left: 2-Column Photo Grid (All Photos Showing, Pinned)     */}
         {/* Right: ONE Seamlessly Formatted Unified Container         */}
         {/* ========================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* LEFT COLUMN: Gallery (5 cols) */}
-          <div className="lg:col-span-5">
+          {/* LEFT COLUMN: Gallery with all photos (6 cols, pinned) */}
+          <div className="lg:col-span-6 lg:sticky lg:top-24 lg:self-start">
             <ProductImageGallery
               productId={product.id}
               productName={product.name}
@@ -162,12 +162,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               mainImage={product.image}
               galleryImages={product.gallery || []}
               isWishlisted={isWishlisted}
-              totalStock={product.totalStock}
             />
           </div>
 
-          {/* RIGHT COLUMN: ONE Unified Formatted Box (7 cols) */}
-          <div className="lg:col-span-7">
+          {/* RIGHT COLUMN: ONE Unified Formatted Box (6 cols) */}
+          <div className="lg:col-span-6 lg:sticky lg:top-24 lg:self-start">
             <ProductUnifiedDetailCard
               product={product}
               isWishlisted={isWishlisted}
