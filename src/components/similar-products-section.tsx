@@ -167,3 +167,4 @@ export function SimilarProductsSection({ products, categoryName }: SimilarProduc
     </section>
   )
 }
+

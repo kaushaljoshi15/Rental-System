@@ -462,3 +462,4 @@ export function ProductSpecificationsAndReviews({ product }: ProductDetailsProps
     </div>
   )
 }
+
