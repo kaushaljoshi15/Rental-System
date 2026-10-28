@@ -3,7 +3,17 @@
 import React, { useState, useMemo } from "react"
 import Image from "next/image"
 import { WishlistButton } from "@/components/wishlist-button"
-import { Share2, ChevronLeft, ChevronRight, Maximize2, ShieldCheck, Truck, X } from "lucide-react"
+import {
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  ShieldCheck,
+  Truck,
+  X,
+  LayoutGrid,
+  Image as ImageIcon
+} from "lucide-react"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 
@@ -63,8 +73,7 @@ export function ProductImageGallery({
         "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&q=80&w=1000", // Kettlebells in gym
         "https://images.unsplash.com/photo-1586401100295-7a8096fd231a?auto=format&fit=crop&q=80&w=1000", // Adjustable Kettlebell Set
         "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=1000", // Workout weight plates
-        "https://images.unsplash.com/photo-1518622358385-8ea7d0794bf6?auto=format&fit=crop&q=80&w=1000", // Gym training equipment
-        "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&q=80&w=1000"  // Fitness exercise setup
+        "https://images.unsplash.com/photo-1518622358385-8ea7d0794bf6?auto=format&fit=crop&q=80&w=1000"  // Gym training equipment
       ]
     } else if (text.includes("camera") || text.includes("lens") || text.includes("dslr") || text.includes("sony") || text.includes("canon")) {
       categoryAngles = [
@@ -124,7 +133,7 @@ export function ProductImageGallery({
       ]
     }
 
-    // Populate at least 4 photos
+    // Populate up to 4-6 photos
     for (const angle of categoryAngles) {
       if (!list.includes(angle)) {
         list.push(angle)
@@ -135,8 +144,19 @@ export function ProductImageGallery({
     return list
   }, [mainImage, galleryImages, categorySlug, categoryName, productName])
 
-  // Lightbox / Zoom State
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [viewMode, setViewMode] = useState<"featured" | "grid">("featured")
   const [zoomIndex, setZoomIndex] = useState<number | null>(null)
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setActiveIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))
+  }
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setActiveIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1))
+  }
 
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -148,68 +168,179 @@ export function ProductImageGallery({
     }
   }
 
+  const currentImage = allImages[activeIndex] || allImages[0]
+
   return (
     <div className="space-y-4 select-none">
-      {/* ========================================================= */}
-      {/* FLIPKART 2-COLUMN PHOTO GRID (All Photos Showing Here!)   */}
-      {/* ========================================================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
-        {allImages.map((img, idx) => {
-          const isFirst = idx === 0
-          const isSecond = idx === 1
 
-          return (
+      {/* ========================================================= */}
+      {/* 1. VIEW MODE SWITCHER (Featured View vs All Angles Grid)  */}
+      {/* ========================================================= */}
+      <div className="flex items-center justify-between pb-1">
+        <span className="text-[11px] font-bold text-[#8D7B68] uppercase tracking-wider">
+          Product Gallery ({allImages.length} Angles)
+        </span>
+        <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-slate-200 shadow-2xs">
+          <button
+            onClick={() => setViewMode("featured")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              viewMode === "featured"
+                ? "bg-[#0F1A36] text-[#C5A880] shadow-2xs"
+                : "text-slate-600 hover:text-black"
+            }`}
+          >
+            <ImageIcon className="w-3.5 h-3.5" />
+            <span>Showcase</span>
+          </button>
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              viewMode === "grid"
+                ? "bg-[#0F1A36] text-[#C5A880] shadow-2xs"
+                : "text-slate-600 hover:text-black"
+            }`}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            <span>All Angles Grid</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 2. MAIN SHOWCASE VIEW                                     */}
+      {/* ========================================================= */}
+      {viewMode === "featured" ? (
+        <div className="space-y-3.5">
+          {/* Main Large Showcase Photo */}
+          <div className="bg-white rounded-3xl overflow-hidden border border-[#E5E4E2] shadow-sm aspect-[4/3] relative flex items-center justify-center group w-full">
+            <Image
+              src={currentImage}
+              alt={`${productName} view ${activeIndex + 1}`}
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="object-cover group-hover:scale-[1.02] transition-transform duration-500 cursor-zoom-in"
+              onClick={() => setZoomIndex(activeIndex)}
+            />
+
+            {/* Category Pill Tag */}
+            <Badge className="absolute top-4 left-4 bg-[#0F1A36]/90 backdrop-blur-md text-[#C5A880] border border-[#C5A880]/30 shadow-xs font-sans text-[10px] font-black uppercase tracking-wider px-3 py-1 pointer-events-none">
+              {categoryName || "Rental Item"}
+            </Badge>
+
+            {/* Floating Actions on Top Right (Wishlist & Share) */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+              <button
+                onClick={handleShare}
+                className="h-9 w-9 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 shadow-xs flex items-center justify-center text-slate-700 hover:text-[#6F4E37] hover:scale-110 active:scale-95 transition-all cursor-pointer"
+                aria-label="Share Product"
+                title="Share this listing"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+              <WishlistButton
+                productId={productId}
+                initialIsWishlisted={isWishlisted}
+                variant="detail"
+              />
+            </div>
+
+            {/* Next / Prev Navigation Arrows */}
+            {allImages.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrev}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 shadow-md flex items-center justify-center text-slate-800 hover:text-black hover:bg-white hover:scale-105 active:scale-95 transition-all opacity-0 group-hover:opacity-100 cursor-pointer z-10"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-200 shadow-md flex items-center justify-center text-slate-800 hover:text-black hover:bg-white hover:scale-105 active:scale-95 transition-all opacity-0 group-hover:opacity-100 cursor-pointer z-10"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+            )}
+
+            {/* Image Counter & Fullscreen trigger */}
+            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 z-10">
+              <span className="bg-black/70 backdrop-blur-md text-white text-[10px] font-mono font-bold px-2.5 py-1 rounded-full shadow-xs">
+                {activeIndex + 1} / {allImages.length}
+              </span>
+              <button
+                onClick={() => setZoomIndex(activeIndex)}
+                className="p-1.5 rounded-full bg-black/70 backdrop-blur-md text-white hover:bg-black/90 transition-colors cursor-pointer"
+                title="Expand image"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Interactive Thumbnails Row (All Photos are Showing Here!) */}
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2.5">
+            {allImages.map((img, idx) => {
+              const isSelected = idx === activeIndex
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setActiveIndex(idx)}
+                  onMouseEnter={() => setActiveIndex(idx)}
+                  className={`aspect-square rounded-xl overflow-hidden relative border-2 transition-all duration-200 cursor-pointer shadow-2xs bg-[#FAF5EF] ${
+                    isSelected
+                      ? "border-[#C5A880] ring-2 ring-[#C5A880]/30 scale-105"
+                      : "border-[#E5E4E2] hover:border-slate-400 opacity-80 hover:opacity-100"
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt={`${productName} thumbnail ${idx + 1}`}
+                    fill
+                    sizes="120px"
+                    className="object-cover"
+                  />
+                  {isSelected && (
+                    <div className="absolute bottom-0 inset-x-0 h-1 bg-[#C5A880]" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      ) : (
+        /* ========================================================= */
+        /* 3. ALL ANGLES 2-COLUMN GRID VIEW (Flipkart Style)         */
+        /* ========================================================= */
+        <div className="grid grid-cols-2 gap-3">
+          {allImages.map((img, idx) => (
             <div
               key={idx}
-              onClick={() => setZoomIndex(idx)}
-              className="bg-white rounded-2xl overflow-hidden border border-[#E5E4E2] shadow-xs aspect-[4/3] sm:aspect-square relative flex items-center justify-center group cursor-zoom-in"
+              onClick={() => {
+                setActiveIndex(idx)
+                setZoomIndex(idx)
+              }}
+              className="bg-white rounded-2xl overflow-hidden border border-[#E5E4E2] shadow-2xs aspect-square relative flex items-center justify-center group cursor-zoom-in"
             >
               <Image
                 src={img}
                 alt={`${productName} angle ${idx + 1}`}
                 fill
-                priority={idx < 2}
-                sizes="(max-width: 1024px) 50vw, 30vw"
+                sizes="(max-width: 1024px) 50vw, 25vw"
                 className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
               />
-
-              {/* Category Badge on First Photo */}
-              {isFirst && (
-                <Badge className="absolute top-3 left-3 bg-[#0F1A36]/90 backdrop-blur-md text-[#C5A880] border border-[#C5A880]/30 shadow-xs font-sans text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 pointer-events-none">
-                  {categoryName || "Rental Item"}
-                </Badge>
-              )}
-
-              {/* Floating Wishlist & Share Buttons on Top-Right of Second Photo (Flipkart Reference) */}
-              {isSecond && (
-                <div className="absolute top-3 right-3 flex items-center gap-1.5 z-20">
-                  <button
-                    onClick={handleShare}
-                    className="h-8 w-8 rounded-full bg-white/95 backdrop-blur-md border border-slate-200 shadow-xs flex items-center justify-center text-slate-700 hover:text-[#6F4E37] hover:scale-110 active:scale-95 transition-all cursor-pointer"
-                    aria-label="Share Product"
-                    title="Share this listing"
-                  >
-                    <Share2 className="w-3.5 h-3.5" />
-                  </button>
-                  <WishlistButton
-                    productId={productId}
-                    initialIsWishlisted={isWishlisted}
-                    variant="detail"
-                  />
-                </div>
-              )}
-
-              {/* Expand icon on hover */}
-              <div className="absolute bottom-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full bg-black/60 text-white backdrop-blur-sm pointer-events-none">
-                <Maximize2 className="w-3 h-3" />
+              <div className="absolute bottom-2 right-2 bg-black/60 px-2 py-0.5 rounded text-[9px] font-mono text-white">
+                Angle {idx + 1}
               </div>
             </div>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* ========================================================= */}
-      {/* DELIVERABLES & TRUST BADGES                               */}
+      {/* 4. DELIVERABLES & TRUST BADGES                            */}
       {/* ========================================================= */}
       <div className="bg-white rounded-2xl p-4 border border-[#E5E4E2] grid grid-cols-1 sm:grid-cols-2 gap-3 shadow-2xs">
         <div className="flex items-start gap-2.5">
@@ -242,7 +373,7 @@ export function ProductImageGallery({
       </div>
 
       {/* ========================================================= */}
-      {/* HIGH-RES FULLSCREEN LIGHTBOX (When clicked)               */}
+      {/* 5. FULLSCREEN HIGH-RES LIGHTBOX MODAL                     */}
       {/* ========================================================= */}
       {zoomIndex !== null && (
         <div
@@ -257,7 +388,6 @@ export function ProductImageGallery({
             <X className="w-6 h-6" />
           </button>
 
-          {/* Prev arrow */}
           {allImages.length > 1 && (
             <button
               onClick={(e) => {
@@ -271,7 +401,6 @@ export function ProductImageGallery({
             </button>
           )}
 
-          {/* Active Image */}
           <div
             className="relative max-w-4xl max-h-[85vh] w-full h-[75vh] flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
@@ -284,7 +413,6 @@ export function ProductImageGallery({
             />
           </div>
 
-          {/* Next arrow */}
           {allImages.length > 1 && (
             <button
               onClick={(e) => {
@@ -298,7 +426,6 @@ export function ProductImageGallery({
             </button>
           )}
 
-          {/* Counter */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-1.5 rounded-full text-white text-xs font-mono font-bold">
             {zoomIndex + 1} / {allImages.length}
           </div>

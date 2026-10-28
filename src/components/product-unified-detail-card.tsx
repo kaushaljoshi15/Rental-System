@@ -260,23 +260,6 @@ export function ProductUnifiedDetailCard({ product, isWishlisted }: ProductUnifi
     }
   }
 
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    const el = containerRef.current
-    if (!el) return
-
-    const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 6
-    const isAtTop = el.scrollTop <= 2
-
-    // When right side scrolling content is over, scroll full page!
-    if (e.deltaY > 0 && isAtBottom) {
-      window.scrollBy({ top: e.deltaY, behavior: "auto" })
-    } else if (e.deltaY < 0 && isAtTop) {
-      window.scrollBy({ top: e.deltaY, behavior: "auto" })
-    }
-  }
-
   const depositVal = product.securityDeposit > 0
     ? product.securityDeposit
     : product.priceDaily > 3000
@@ -288,11 +271,7 @@ export function ProductUnifiedDetailCard({ product, isWishlisted }: ProductUnifi
           : 500
 
   return (
-    <div
-      ref={containerRef}
-      onWheel={handleWheel}
-      className="bg-white rounded-3xl border border-[#E5E4E2] shadow-sm p-6 sm:p-8 space-y-6 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto overscroll-y-auto scrollbar-thin scrollbar-thumb-slate-200 hover:scrollbar-thumb-slate-300"
-    >
+    <div className="bg-white rounded-3xl border border-[#E5E4E2] shadow-sm p-6 sm:p-8 space-y-6">
 
       {/* ======================================================== */}
       {/* 1. HEADER: BRAND, TITLE, RATINGS & LIVE COUNTDOWN DEAL   */}
