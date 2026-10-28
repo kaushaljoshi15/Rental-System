@@ -58,6 +58,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
   
   // Local state for active parameters to update UI in microseconds without server roundtrips
   const [activeCategorySlug, setActiveCategorySlug] = useState(searchParams.get("category") || "")
+  const [activeQuery, setActiveQuery] = useState(searchParams.get("query") || "")
   const [activeSort, setActiveSort] = useState(searchParams.get("sort") || "")
   const [activeMinPrice, setActiveMinPrice] = useState(searchParams.get("minPrice") || "")
   const [activeMaxPrice, setActiveMaxPrice] = useState(searchParams.get("maxPrice") || "")
@@ -67,6 +68,27 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
   const [minInput, setMinInput] = useState(activeMinPrice)
   const [maxInput, setMaxInput] = useState(activeMaxPrice)
   const [visibleCount, setVisibleCount] = useState(24)
+
+  // Listen to poster & ad clicks from TopSelectionRow, SpotlightRow, and FeaturedBrandsRow
+  useEffect(() => {
+    const handleRentkartFilter = (e: any) => {
+      const { category, query } = e.detail || {}
+      if (category !== undefined) {
+        setActiveCategorySlug(category || "")
+      }
+      if (query !== undefined) {
+        setActiveQuery(query || "")
+      }
+      setVisibleCount(24)
+      const el = document.getElementById("catalog-grid")
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" })
+      }
+    }
+
+    window.addEventListener("rentkart-filter", handleRentkartFilter)
+    return () => window.removeEventListener("rentkart-filter", handleRentkartFilter)
+  }, [])
 
   // Reset visible products count when filters or search queries change
   useEffect(() => {
@@ -216,7 +238,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
     }
 
     return result
-  }, [initialProducts, activeCategorySlug, activeMinPrice, activeMaxPrice, activeRating, activeSort]);
+  }, [initialProducts, activeCategorySlug, activeQuery, activeMinPrice, activeMaxPrice, activeRating, activeSort]);
 
   // Render Category sidebar items
   const renderCategoriesList = () => (
@@ -377,7 +399,7 @@ export function CatalogGridClient({ initialProducts, userWishlistProductIds, all
   )
 
   return (
-    <div className="w-full flex flex-col lg:flex-row gap-5 items-start select-none">
+    <div id="catalog-grid" className="w-full flex flex-col lg:flex-row gap-5 items-start select-none scroll-mt-20">
       
       {/* 1. LEFT SIDEBAR: FILTERS (DESKTOP) */}
       <aside className="w-64 shrink-0 bg-white border border-slate-200 rounded-lg shadow-sm hidden lg:block overflow-hidden sticky top-28 self-start">

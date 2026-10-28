@@ -78,6 +78,8 @@ import { HeroCarousel } from "@/components/hero-carousel"
 import { RecentlyViewedSection } from "@/components/recently-viewed-section"
 import { TopSelectionRow } from "@/components/top-selection-row"
 import { SpotlightRow } from "@/components/spotlight-row"
+import { FeaturedBrandsRow } from "@/components/featured-brands-row"
+import { PremiumPartnersRow } from "@/components/premium-partners-row"
 import { SettingsForm } from "@/components/customer/settings-form"
 import { AVATAR_PRESETS } from "@/lib/avatars"
 import { AddressForm } from "@/components/address-form"
@@ -445,80 +447,113 @@ export default async function HomePage({
               <div className="space-y-16">
                 {!searchQuery && (
                   <>
-                {/* Row 1: Top Selection */}
+                {/* Row 1: Top Selection Posters */}
                 <TopSelectionRow 
                   items={[
-                    { name: "Canon Pro DSLR", badge: "Most-loved", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400" },
-                    { name: "JBL Concert Sound", badge: "Grab Or Gone", image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80&w=400" },
-                    { name: "Designer Bridal Wear", badge: "Popular", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400" },
-                    { name: "Executive Office Chairs", badge: "Best Picks", image: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?auto=format&fit=crop&q=80&w=400" },
+                    { 
+                      name: "DSLR Cameras", 
+                      categoryName: "Cinema & Photography",
+                      category: "dslr-cameras", 
+                      query: "Canon",
+                      badge: "MOST-LOVED", 
+                      headline: "Canon EOS 5D Mark IV Cinema Kit", 
+                      subtitle: "Full-Frame 4K • Pro Zoom Lenses Included", 
+                      offer: "From ₹1,200/day", 
+                      image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800" 
+                    },
+                    { 
+                      name: "Concert Audio", 
+                      categoryName: "Pro Live Sound",
+                      category: "pa-systems", 
+                      query: "JBL",
+                      badge: "CONCERT RIG", 
+                      headline: "JBL Professional Line-Array PA Rig", 
+                      subtitle: "2000W Active Speakers & Stage Subwoofers", 
+                      offer: "From ₹2,499/day", 
+                      image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&q=80&w=800" 
+                    },
+                    { 
+                      name: "Wedding Couture", 
+                      categoryName: "Royal Fashion",
+                      category: "wedding-fashion", 
+                      query: "Bridal",
+                      badge: "ROYAL COUTURE", 
+                      headline: "Designer Bridal Lehengas & Sherwanis", 
+                      subtitle: "Handcrafted Zari Embroidery • Dry-Cleaned", 
+                      offer: "From ₹1,999/day", 
+                      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800" 
+                    },
+                    { 
+                      name: "Office Furniture", 
+                      categoryName: "Ergonomic Work",
+                      category: "office-chairs", 
+                      query: "Herman",
+                      badge: "EXECUTIVE PICK", 
+                      headline: "Herman Miller Aeron Ergonomic Classic", 
+                      subtitle: "PostureFit SL Back Support • Pellicle Mesh", 
+                      offer: "From ₹449/day", 
+                      image: "https://images.unsplash.com/photo-1580481072645-022f9a6dbf27?auto=format&fit=crop&q=80&w=800" 
+                    },
                   ]}
                 />
 
                 {/* Row 2: Premium Rent Partners */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-black text-[#6F4E37] uppercase tracking-tight">Premium Rent Partners</h3>
-                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 md:grid md:grid-cols-3">
-                    {[
-                      { brand: "Sony Cinema", offer: "Up to 40% Off", desc: "Pro video packages", image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=400" },
-                      { brand: "Manyavar Groom", offer: "Up to 30% Off", desc: "Luxury wedding fashion", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=400" },
-                      { brand: "DJI Enterprise", offer: "Flat 15% Off", desc: "Drones & stabilizers", image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&q=80&w=400" },
-                    ].map((partner, idx) => (
-                      <Link href={`/?query=${encodeURIComponent(partner.brand)}`} key={idx} className="flex-shrink-0 w-64 md:w-auto bg-white border border-[#E5E4E2] rounded-2xl overflow-hidden p-3 shadow-xs flex flex-col justify-between hover:border-[#C5A880]/60 hover:shadow-md transition-all duration-200">
-                        <div className="aspect-[16/10] bg-[#FAF5EF] rounded-xl overflow-hidden relative shrink-0">
-                          <Image
-                            src={partner.image}
-                            alt={partner.brand}
-                            fill
-                            sizes="(max-width: 768px) 50vw, 33vw"
-                            className="object-cover"
-                          />
-                          <span className="absolute top-2.5 right-2.5 bg-[#0F1A36]/80 text-[#C5A880] border border-[#C5A880]/30 font-extrabold text-[8px] uppercase tracking-wider px-2 py-0.5 rounded-full select-none shadow-xs">Partner</span>
-                        </div>
-                        <div className="pt-3.5 space-y-1">
-                          <h4 className="text-[10px] font-extrabold text-[#8D7B68] uppercase tracking-wider">{partner.brand}</h4>
-                          <p className="text-[#6F4E37] text-sm font-black uppercase tracking-wide leading-tight">{partner.offer}</p>
-                          <p className="text-[#8D7B68] text-xs font-semibold">{partner.desc}</p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                <PremiumPartnersRow />
 
-                {/* Row 3: Featured Brands */}
-                <div className="space-y-4 select-none">
-                  <h3 className="text-lg font-black text-[#6F4E37] uppercase tracking-tight">Featured Brands</h3>
-                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-                    {[
-                      { brand: "Canon", tagline: "Premium glass range", offer: "Shop now", image: "https://images.unsplash.com/photo-1617005082133-548c4dd27f35?auto=format&fit=crop&q=80&w=400" },
-                      { brand: "Pioneer DJ", tagline: "Pro mixing gear", offer: "Sale is live", image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=400" },
-                      { brand: "Herman Miller", tagline: "Top comfort for work", offer: "Shop now", image: "https://images.unsplash.com/photo-1589384267710-7a259678a59a?auto=format&fit=crop&q=80&w=400" },
-                      { brand: "Bose Pro", tagline: "Bold sound acoustics", offer: "Min. 30% Off", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400" },
-                      { brand: "Apple Workstation", tagline: "MacBook Pro M3", offer: "From ₹1,599/d", image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=400" }
-                    ].map((b, idx) => (
-                      <Link href={`/?query=${encodeURIComponent(b.brand)}`} key={idx} className="flex-shrink-0 w-64 bg-[#0F1A36] border border-[#1A274E] rounded-2xl overflow-hidden p-3 relative h-36 flex flex-col justify-between text-white shadow-md hover:scale-[1.02] transition-transform duration-200">
-                        <div className="absolute inset-0 opacity-30 bg-cover bg-center" style={{ backgroundImage: `url(${b.image})` }} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0F1A36] via-[#0F1A36]/70 to-transparent" />
-                        <div className="relative z-10 flex justify-between items-start">
-                          <span className="text-[10px] font-black uppercase tracking-wider text-[#C5A880]">{b.brand}</span>
-                          <span className="text-[8px] bg-white/20 text-white font-extrabold px-1.5 py-0.5 rounded uppercase">AD</span>
-                        </div>
-                        <div className="relative z-10 space-y-1">
-                          <p className="text-[11px] font-semibold text-slate-200 leading-tight">{b.tagline}</p>
-                          <p className="text-xs font-black uppercase text-[#E6E0F0] tracking-wide">{b.offer}</p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+                {/* Row 3: Featured Brands [AD] Posters */}
+                <FeaturedBrandsRow />
 
-                {/* Row 4: Spotlight's On */}
+                {/* Row 4: Spotlight's On Posters */}
                 <SpotlightRow 
                   items={[
-                    { name: "Wedding Gowns", badge: "From ₹1,199/day", image: "https://images.unsplash.com/photo-1605001011156-cbf0b0f67a51?auto=format&fit=crop&q=80&w=400", action: "Shop now" },
-                    { name: "Studio Mics", badge: "Under ₹499/day", image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=400", action: "Pro Audio" },
-                    { name: "Camping Tents", badge: "Min. 40% Off", image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=400", action: "Coleman rigs" },
-                    { name: "PlayStation 5", badge: "Min. 50% Off", image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=400", action: "Consoles & VR" },
+                    { 
+                      name: "Wedding Fashion", 
+                      categoryName: "Bridal Couture",
+                      category: "wedding-fashion", 
+                      query: "Gown",
+                      badge: "TRENDING STORE", 
+                      headline: "Royal Bridal & Reception Gowns", 
+                      subtitle: "Hand-embellished luxury reception gowns", 
+                      offer: "From ₹1,199/day", 
+                      action: "Wedding Store", 
+                      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=800" 
+                    },
+                    { 
+                      name: "Studio Recording", 
+                      categoryName: "Broadcast Audio",
+                      category: "microphones", 
+                      query: "Shure",
+                      badge: "PRO RECORDING", 
+                      headline: "Shure SM7B & Podcast Studio Mics", 
+                      subtitle: "Dynamic vocal mic with boom arm & shockmount", 
+                      offer: "Under ₹499/day", 
+                      action: "Studio Audio", 
+                      image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=800" 
+                    },
+                    { 
+                      name: "Camping & Trekking", 
+                      categoryName: "Outdoor Expedition",
+                      category: "camping-tents", 
+                      query: "Camping",
+                      badge: "ALL-WEATHER", 
+                      headline: "Coleman WeatherTec 4-Person Tents", 
+                      subtitle: "Waterproof dome tents with ground mats", 
+                      offer: "Min. 40% Off", 
+                      action: "Camping Rigs", 
+                      image: "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&q=80&w=800" 
+                    },
+                    { 
+                      name: "Gaming Gear", 
+                      categoryName: "Next-Gen Gaming",
+                      category: "gaming-consoles", 
+                      query: "PlayStation",
+                      badge: "GAMING HIT", 
+                      headline: "Sony PlayStation 5 Console & 4K VR", 
+                      subtitle: "DualSense wireless controllers & games pack", 
+                      offer: "From ₹399/day", 
+                      action: "Rent Consoles", 
+                      image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&q=80&w=800" 
+                    },
                   ]}
                 />
 
